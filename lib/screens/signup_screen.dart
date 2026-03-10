@@ -1,7 +1,11 @@
 import 'package:cityfix/controllers/auth_controller.dart';
 import 'package:cityfix/screens/wrapper.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
+
+import 'package:cityfix/widgets/input_field.dart';
+import 'package:cityfix/widgets/primary_gradient_button.dart';
+import 'package:cityfix/widgets/password_strength_indicator.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -17,6 +21,18 @@ class _SignupScreenState extends State<SignupScreen> {
   TextEditingController confirmPassword = TextEditingController();
   AuthController authController = AuthController();
 
+  bool showPass = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    password.addListener(() {
+      setState(() {});
+    });
+  }
+
+  //backend---------------------------------------------------------------------
   signUp() async {
     await authController.signUp(
       fullName.text,
@@ -24,49 +40,170 @@ class _SignupScreenState extends State<SignupScreen> {
       password.text,
       confirmPassword.text,
     );
+
     Navigator.of(context).pop();
   }
+  //------------------------------------------------------------------------------
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Sign Up')),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            children: [
-              TextField(
-                controller: fullName,
-                decoration: const InputDecoration(labelText: 'Full Name'),
+      body: Column(
+        children: [
+          // Header
+          Container(
+            padding: const EdgeInsets.only(
+              top: 52,
+              left: 28,
+              right: 28,
+              bottom: 36,
+            ),
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Color(0xFF1D4ED8),
+                  Color(0xFF2563EB),
+                  Color(0xFF3B82F6),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
               ),
-              const SizedBox(height: 15),
-              TextField(
-                controller: email,
-                decoration: const InputDecoration(labelText: 'Email'),
-              ),
-              const SizedBox(height: 15),
-              TextField(
-                controller: password,
-                obscureText: true,
-                decoration: const InputDecoration(labelText: 'Password'),
-              ),
-              const SizedBox(height: 15),
-              TextField(
-                controller: confirmPassword,
-                obscureText: true,
-                decoration: const InputDecoration(
-                  labelText: 'Confirm Password',
+              borderRadius: BorderRadius.vertical(bottom: Radius.circular(32)),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                GestureDetector(
+                  onTap: () => Navigator.pop(context),
+                  child: Container(
+                    width: 36,
+                    height: 36,
+                    decoration: const BoxDecoration(
+                      color: Color(0x1AFFFFFF),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.arrow_back,
+                      color: Colors.white,
+                      size: 18,
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 24),
+
+                const Text(
+                  'Create account ✨',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 26,
+                    color: Colors.white,
+                  ),
+                ),
+
+                const SizedBox(height: 6),
+
+                const Text(
+                  'Join and help improve your city today',
+                  style: TextStyle(fontSize: 14, color: Color(0x99FFFFFF)),
+                ),
+              ],
+            ),
+          ),
+
+          Expanded(
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 28,
+                ),
+                child: Column(
+                  children: [
+                    InputField(
+                      controller: fullName,
+                      icon: Icons.person_outline,
+                      placeholder: 'Full name',
+                    ),
+
+                    const SizedBox(height: 14),
+
+                    InputField(
+                      controller: email,
+                      icon: Icons.email_outlined,
+                      placeholder: 'Email address',
+                      keyboardType: TextInputType.emailAddress,
+                    ),
+
+                    const SizedBox(height: 14),
+
+                    InputField(
+                      controller: password,
+                      icon: Icons.lock_outline,
+                      placeholder: 'Password',
+                      obscureText: !showPass,
+                      rightEl: IconButton(
+                        icon: Icon(
+                          showPass
+                              ? Icons.visibility_outlined
+                              : Icons.visibility_off_outlined,
+                          color: const Color(0xFF94A3B8),
+                          size: 20,
+                        ),
+                        onPressed: () => setState(() => showPass = !showPass),
+                      ),
+                    ),
+
+                    if (password.text.isNotEmpty)
+                      PasswordStrengthIndicator(password: password.text),
+
+                    const SizedBox(height: 14),
+
+                    InputField(
+                      controller: confirmPassword,
+                      icon: Icons.lock_outline,
+                      placeholder: 'Confirm password',
+                      obscureText: true,
+                    ),
+
+                    const SizedBox(height: 28),
+
+                    PrimaryGradientButton(
+                      text: 'Create Account 🚀',
+                      onPressed: () => signUp(),
+                    ),
+
+                    const SizedBox(height: 24),
+
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text(
+                          'Already have an account? ',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Color(0xFF64748B),
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () => Navigator.pop(context),
+                          child: const Text(
+                            'Sign In',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Color(0xFF1D4ED8),
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
               ),
-              const SizedBox(height: 30),
-              ElevatedButton(
-                onPressed: () => signUp(),
-                child: const Text('Sign Up'),
-              ),
-            ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
