@@ -1,38 +1,35 @@
+import 'package:cityfix/models/user_model.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class AuthController {
-  //1 method for signing up a user================================================================
-  Future signUp(
-    String fullName,
-    String email,
-    String password,
-    String confirmPassword,
-  ) async {
-    // Check if passwords match
-    if (password != confirmPassword) {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _db = FirebaseFirestore.instance;
+
+  //sign up -------------------------------------------------------------------------
+  Future signUp(UserModel user, String confirmPassword) async {
+    if (user.password != confirmPassword) {
       print('Passwords do not match');
-      return; //if they don't match we return and do not proceed to firebase
+      return;
     }
 
-    // Create user in Firebase
-    await FirebaseAuth.instance.createUserWithEmailAndPassword(
-      email: email,
-      password: password,
+    // 1. Create user in Firebase Auth
+    await _auth.createUserWithEmailAndPassword(
+      email: user.email,
+      password: user.password,
     );
+
+    // 2. Save user info to Firestore
+    await _db.collection("users").add(user.toJson());
   }
 
-  //2 method for signing in a user=================================================================
-
-  //this method will return something in the future so we use Future
+  //log in -------------------------------------------------------------------------
   Future signIn(String email, String password) async {
-    await FirebaseAuth.instance.signInWithEmailAndPassword(
-      email: email,
-      password: password,
-    );
+    await _auth.signInWithEmailAndPassword(email: email, password: password);
   }
 
-  //3 method for signing out a user================================================================
+  //log out -------------------------------------------------------------------------
   Future signOut() async {
-    await FirebaseAuth.instance.signOut();
+    await _auth.signOut();
   }
 }

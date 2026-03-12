@@ -1,4 +1,5 @@
 import 'package:cityfix/controllers/auth_controller.dart';
+import 'package:cityfix/models/user_model.dart';
 import 'package:cityfix/screens/wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -15,11 +16,11 @@ class SignupScreen extends StatefulWidget {
 }
 
 class _SignupScreenState extends State<SignupScreen> {
-  TextEditingController fullName = TextEditingController();
-  TextEditingController email = TextEditingController();
-  TextEditingController password = TextEditingController();
-  TextEditingController confirmPassword = TextEditingController();
-  AuthController authController = AuthController();
+  TextEditingController _fullNameController = TextEditingController();
+  TextEditingController _emailController = TextEditingController();
+  TextEditingController _passwordController = TextEditingController();
+  TextEditingController _confirmPasswordController = TextEditingController();
+  final AuthController _authController = AuthController();
 
   bool showPass = false;
 
@@ -27,20 +28,20 @@ class _SignupScreenState extends State<SignupScreen> {
   void initState() {
     super.initState();
 
-    password.addListener(() {
+    _passwordController.addListener(() {
       setState(() {});
     });
   }
 
   //backend---------------------------------------------------------------------
-  signUp() async {
-    await authController.signUp(
-      fullName.text,
-      email.text,
-      password.text,
-      confirmPassword.text,
+  _signUp() async {
+    final user = UserModel(
+      fullName: _fullNameController.text,
+      email: _emailController.text,
+      password: _passwordController.text,
     );
 
+    await _authController.signUp(user, _confirmPasswordController.text);
     Navigator.of(context).pop();
   }
   //------------------------------------------------------------------------------
@@ -93,7 +94,7 @@ class _SignupScreenState extends State<SignupScreen> {
                 const SizedBox(height: 24),
 
                 const Text(
-                  'Create account ✨',
+                  'Create account ',
                   style: TextStyle(
                     fontWeight: FontWeight.w700,
                     fontSize: 26,
@@ -121,7 +122,7 @@ class _SignupScreenState extends State<SignupScreen> {
                 child: Column(
                   children: [
                     InputField(
-                      controller: fullName,
+                      controller: _fullNameController,
                       icon: Icons.person_outline,
                       placeholder: 'Full name',
                     ),
@@ -129,7 +130,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     const SizedBox(height: 14),
 
                     InputField(
-                      controller: email,
+                      controller: _emailController,
                       icon: Icons.email_outlined,
                       placeholder: 'Email address',
                       keyboardType: TextInputType.emailAddress,
@@ -138,7 +139,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     const SizedBox(height: 14),
 
                     InputField(
-                      controller: password,
+                      controller: _passwordController,
                       icon: Icons.lock_outline,
                       placeholder: 'Password',
                       obscureText: !showPass,
@@ -154,13 +155,15 @@ class _SignupScreenState extends State<SignupScreen> {
                       ),
                     ),
 
-                    if (password.text.isNotEmpty)
-                      PasswordStrengthIndicator(password: password.text),
+                    if (_passwordController.text.isNotEmpty)
+                      PasswordStrengthIndicator(
+                        password: _passwordController.text,
+                      ),
 
                     const SizedBox(height: 14),
 
                     InputField(
-                      controller: confirmPassword,
+                      controller: _confirmPasswordController,
                       icon: Icons.lock_outline,
                       placeholder: 'Confirm password',
                       obscureText: true,
@@ -169,8 +172,8 @@ class _SignupScreenState extends State<SignupScreen> {
                     const SizedBox(height: 28),
 
                     PrimaryGradientButton(
-                      text: 'Create Account 🚀',
-                      onPressed: () => signUp(),
+                      text: 'Create Account ',
+                      onPressed: () => _signUp(),
                     ),
 
                     const SizedBox(height: 24),

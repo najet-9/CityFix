@@ -13,16 +13,19 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  TextEditingController email = TextEditingController();
-  TextEditingController password = TextEditingController();
-  AuthController authController = AuthController();
+  TextEditingController _emailController = TextEditingController();
+  TextEditingController _passwordController = TextEditingController();
+  final AuthController _authController = AuthController();
 
   bool showPass = false;
   bool loading = false;
 
-  signIn() async {
+  _signIn() async {
     setState(() => loading = true);
-    await authController.signIn(email.text, password.text);
+    await _authController.signIn(
+      _emailController.text,
+      _passwordController.text,
+    );
     setState(() => loading = false);
   }
 
@@ -95,7 +98,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         const SizedBox(height: 28),
                         const Text(
-                          'Welcome back 👋',
+                          'Welcome back ',
                           style: TextStyle(
                             fontWeight: FontWeight.w700,
                             fontSize: 26,
@@ -127,7 +130,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   children: [
                     // Email
                     InputField(
-                      controller: email,
+                      controller: _emailController,
                       icon: Icons.email_outlined,
                       placeholder: 'Email address',
                       keyboardType: TextInputType.emailAddress,
@@ -135,7 +138,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     const SizedBox(height: 14),
                     // Password
                     InputField(
-                      controller: password,
+                      controller: _passwordController,
                       icon: Icons.lock_outline,
                       placeholder: 'Password',
                       obscureText: !showPass,
@@ -172,7 +175,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           )
                         : PrimaryGradientButton(
                             text: 'Sign In →',
-                            onPressed: signIn,
+                            onPressed: _signIn,
                           ),
                     const SizedBox(height: 28),
                     // Or continue with divider

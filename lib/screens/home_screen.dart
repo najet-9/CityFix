@@ -1,7 +1,5 @@
 //this is the home page
-//if u want to display the email : final user = FirebaseAuth.instance.currentUser;
 import 'package:cityfix/controllers/auth_controller.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -12,11 +10,10 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final user = FirebaseAuth.instance.currentUser;
-  AuthController authController = AuthController();
+  final AuthController _authController = AuthController();
 
-  signOut() async {
-    await authController.signOut();
+  _signOut() async {
+    await _authController.signOut();
   }
 
   @override
@@ -25,7 +22,7 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(title: const Text('Home Screen')),
       body: Center(child: Text('Welcome to the Home Screen!')),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => signOut(),
+        onPressed: () => _signOut(),
         child: const Icon(Icons.logout),
       ),
     );
