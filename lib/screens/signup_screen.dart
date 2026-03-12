@@ -1,8 +1,5 @@
 import 'package:cityfix/controllers/auth_controller.dart';
-import 'package:cityfix/screens/wrapper.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-
 import 'package:cityfix/widgets/input_field.dart';
 import 'package:cityfix/widgets/primary_gradient_button.dart';
 import 'package:cityfix/widgets/password_strength_indicator.dart';
@@ -15,56 +12,74 @@ class SignupScreen extends StatefulWidget {
 }
 
 class _SignupScreenState extends State<SignupScreen> {
-  TextEditingController fullName = TextEditingController();
-  TextEditingController email = TextEditingController();
-  TextEditingController password = TextEditingController();
-  TextEditingController confirmPassword = TextEditingController();
-  AuthController authController = AuthController();
+  final TextEditingController fullName = TextEditingController();
+  final TextEditingController email = TextEditingController();
+  final TextEditingController password = TextEditingController();
+  final TextEditingController confirmPassword = TextEditingController();
+  final AuthController authController = AuthController();
 
   bool showPass = false;
+  bool isLoading = false;
 
   @override
   void initState() {
     super.initState();
-
-    password.addListener(() {
-      setState(() {});
-    });
+    password.addListener(() => setState(() {}));
   }
 
-  //backend---------------------------------------------------------------------
-  signUp() async {
-    await authController.signUp(
-      fullName.text,
-      email.text,
-      password.text,
-      confirmPassword.text,
-    );
+  // --- LOGIQUE BACKEND COMPLÈTE ---
+  Future<void> _handleSignUp() async {
+    // 1. Vérifications locales
+    if (fullName.text.isEmpty || email.text.isEmpty || password.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Veuillez remplir tous les champs")),
+      );
+      return;
+    }
 
-    Navigator.of(context).pop();
+    if (password.text != confirmPassword.text) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Les mots de passe ne correspondent pas")),
+      );
+      return;
+    }
+
+    // 2. Lancement du chargement
+    setState(() => isLoading = true);
+
+    try {
+      // 3. Appel au contrôleur Firebase
+      await authController.signUp(
+        fullName.text.trim(),
+        email.text.trim(),
+        password.text.trim(),
+        confirmPassword.text.trim(),
+      );
+      
+      // Pas de navigation manuelle ! 
+      // Le Wrapper détectera le changement d'état via StreamBuilder.
+    } catch (e) {
+      if (mounted) {
+        setState(() => isLoading = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Erreur : ${e.toString()}")),
+        );
+      }
+    }
   }
-  //------------------------------------------------------------------------------
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: Column(
         children: [
-          // Header
+          // Header Dégradé
           Container(
-            padding: const EdgeInsets.only(
-              top: 52,
-              left: 28,
-              right: 28,
-              bottom: 36,
-            ),
+            padding: const EdgeInsets.only(top: 52, left: 28, right: 28, bottom: 36),
             decoration: const BoxDecoration(
               gradient: LinearGradient(
-                colors: [
-                  Color(0xFF1D4ED8),
-                  Color(0xFF2563EB),
-                  Color(0xFF3B82F6),
-                ],
+                colors: [Color(0xFF1D4ED8), Color(0xFF2563EB), Color(0xFF3B82F6)],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
@@ -75,131 +90,47 @@ class _SignupScreenState extends State<SignupScreen> {
               children: [
                 GestureDetector(
                   onTap: () => Navigator.pop(context),
-                  child: Container(
-                    width: 36,
-                    height: 36,
-                    decoration: const BoxDecoration(
-                      color: Color(0x1AFFFFFF),
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.arrow_back,
-                      color: Colors.white,
-                      size: 18,
-                    ),
-                  ),
+                  child: const Icon(Icons.arrow_back, color: Colors.white),
                 ),
-
                 const SizedBox(height: 24),
-
-                const Text(
-                  'Create account ✨',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 26,
-                    color: Colors.white,
-                  ),
-                ),
-
-                const SizedBox(height: 6),
-
-                const Text(
-                  'Join and help improve your city today',
-                  style: TextStyle(fontSize: 14, color: Color(0x99FFFFFF)),
-                ),
+                const Text('Create account ✨', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 26, color: Colors.white)),
               ],
             ),
           ),
 
+          // Formulaire
           Expanded(
             child: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                  vertical: 28,
-                ),
-                child: Column(
-                  children: [
-                    InputField(
-                      controller: fullName,
-                      icon: Icons.person_outline,
-                      placeholder: 'Full name',
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                children: [
+                  InputField(controller: fullName, icon: Icons.person_outline, placeholder: 'Full name'),
+                  const SizedBox(height: 14),
+                  InputField(controller: email, icon: Icons.email_outlined, placeholder: 'Email address', keyboardType: TextInputType.emailAddress),
+                  const SizedBox(height: 14),
+                  InputField(
+                    controller: password,
+                    icon: Icons.lock_outline,
+                    placeholder: 'Password',
+                    obscureText: !showPass,
+                    rightEl: IconButton(
+                      icon: Icon(showPass ? Icons.visibility_outlined : Icons.visibility_off_outlined),
+                      onPressed: () => setState(() => showPass = !showPass),
                     ),
-
-                    const SizedBox(height: 14),
-
-                    InputField(
-                      controller: email,
-                      icon: Icons.email_outlined,
-                      placeholder: 'Email address',
-                      keyboardType: TextInputType.emailAddress,
-                    ),
-
-                    const SizedBox(height: 14),
-
-                    InputField(
-                      controller: password,
-                      icon: Icons.lock_outline,
-                      placeholder: 'Password',
-                      obscureText: !showPass,
-                      rightEl: IconButton(
-                        icon: Icon(
-                          showPass
-                              ? Icons.visibility_outlined
-                              : Icons.visibility_off_outlined,
-                          color: const Color(0xFF94A3B8),
-                          size: 20,
-                        ),
-                        onPressed: () => setState(() => showPass = !showPass),
+                  ),
+                  if (password.text.isNotEmpty) PasswordStrengthIndicator(password: password.text),
+                  const SizedBox(height: 14),
+                  InputField(controller: confirmPassword, icon: Icons.lock_outline, placeholder: 'Confirm password', obscureText: true),
+                  const SizedBox(height: 28),
+                  
+                  // Bouton avec état de chargement
+                  isLoading 
+                    ? const CircularProgressIndicator(color: Color(0xFF1D4ED8))
+                    : PrimaryGradientButton(
+                        text: 'Create Account 🚀', 
+                        onPressed: _handleSignUp,
                       ),
-                    ),
-
-                    if (password.text.isNotEmpty)
-                      PasswordStrengthIndicator(password: password.text),
-
-                    const SizedBox(height: 14),
-
-                    InputField(
-                      controller: confirmPassword,
-                      icon: Icons.lock_outline,
-                      placeholder: 'Confirm password',
-                      obscureText: true,
-                    ),
-
-                    const SizedBox(height: 28),
-
-                    PrimaryGradientButton(
-                      text: 'Create Account 🚀',
-                      onPressed: () => signUp(),
-                    ),
-
-                    const SizedBox(height: 24),
-
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Text(
-                          'Already have an account? ',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Color(0xFF64748B),
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: () => Navigator.pop(context),
-                          child: const Text(
-                            'Sign In',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Color(0xFF1D4ED8),
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+                ],
               ),
             ),
           ),
