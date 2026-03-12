@@ -19,7 +19,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   bool showPass = false;
   bool loading = false;
-
+  //backend==============================
   _signIn() async {
     setState(() => loading = true);
     await _authController.signIn(
@@ -27,7 +27,9 @@ class _LoginScreenState extends State<LoginScreen> {
       _passwordController.text,
     );
     setState(() => loading = false);
+    Navigator.of(context).pop();
   }
+  //====================================
 
   @override
   Widget build(BuildContext context) {
