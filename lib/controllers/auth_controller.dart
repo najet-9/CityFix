@@ -1,6 +1,7 @@
 import 'package:cityfix/models/user_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthController {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -32,8 +33,22 @@ class AuthController {
   Future signOut() async {
     await _auth.signOut();
   }
-}
 
+
+// Google Sign-In ----------------------------------------------------------------
+  Future signInWithGoogle() async {
+    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+    final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
+
+    final credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth?.accessToken,
+      idToken: googleAuth?.idToken,
+    );
+
+    return await _auth.signInWithCredential(credential);
+  }
+
+}
 class ProfileController {
   // Simuler une déconnexion
   void signOut() {

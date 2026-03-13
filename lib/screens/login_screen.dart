@@ -204,7 +204,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     const SizedBox(height: 20),
                     // Google sign-in
                     OutlinedButton(
-                      onPressed: () {},
+                      onPressed: () async {
+                        await AuthController().signInWithGoogle();
+                      },
                       style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         side: const BorderSide(
