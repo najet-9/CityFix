@@ -1,7 +1,7 @@
 import 'package:cityfix/controllers/auth_controller.dart';
-import 'package:cityfix/screens/wrapper.dart';
+//import 'package:cityfix/screens/wrapper.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+//import 'package:get/get.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
