@@ -34,7 +34,6 @@ class AuthController {
     await _auth.signOut();
   }
 
-
 // Google Sign-In ----------------------------------------------------------------
   Future signInWithGoogle() async {
     final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
