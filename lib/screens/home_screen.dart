@@ -3,6 +3,7 @@ import 'package:cityfix/screens/report_detail_screen.dart'; // L'IMPORT EST ICI
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cityfix/screens/profile_screen.dart';
+import 'package:cityfix/screens/submit_page.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -206,6 +207,11 @@ class _HomeScreenState extends State<HomeScreen> {
             GestureDetector(
               onTap: () {
                 // Ici tu pourras naviguer vers la page Submit plus tard
+                Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const SubmitPage()),
+    );
+                
               },
               child: Container(
                 height: 55,
