@@ -33,3 +33,15 @@ class AuthController {
     await _auth.signOut();
   }
 }
+
+class ProfileController {
+  // Simuler une déconnexion
+  void signOut() {
+    print("Déconnexion de l'utilisateur...");
+  }
+
+  // Navigation vers une autre page
+  void navigateTo(String route) {
+    print("Navigation vers $route");
+  }
+}
