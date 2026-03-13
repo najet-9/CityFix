@@ -35,14 +35,34 @@ class _SignupScreenState extends State<SignupScreen> {
 
   //backend---------------------------------------------------------------------
   _signUp() async {
-    final user = UserModel(
-      fullName: _fullNameController.text,
-      email: _emailController.text,
-      password: _passwordController.text,
-    );
+    try {
+      final user = UserModel(
+        fullName: _fullNameController.text,
+        email: _emailController.text,
+        password: _passwordController.text,
+      );
 
-    await _authController.signUp(user, _confirmPasswordController.text);
-    Navigator.of(context).pop();
+      await _authController.signUp(user, _confirmPasswordController.text);
+      Navigator.of(context).pop();
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            e.toString().replaceAll('Exception: ', ''),
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          backgroundColor: const Color(0xFF1D4ED8),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          margin: const EdgeInsets.all(16),
+        ),
+      );
+    }
   }
   //------------------------------------------------------------------------------
 

@@ -8,9 +8,13 @@ class AuthController {
 
   //sign up -------------------------------------------------------------------------
   Future signUp(UserModel user, String confirmPassword) async {
+    // validation
+    if (user.fullName.isEmpty || user.email.isEmpty || user.password.isEmpty) {
+      throw Exception('Please fill in all fields');
+    }
+
     if (user.password != confirmPassword) {
-      print('Passwords do not match');
-      return;
+      throw Exception('Passwords do not match');
     }
 
     // 1. Create user in Firebase Auth
