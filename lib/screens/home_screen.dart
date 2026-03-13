@@ -2,6 +2,7 @@ import 'package:cityfix/controllers/auth_controller.dart';
 import 'package:cityfix/screens/report_detail_screen.dart'; // L'IMPORT EST ICI
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:cityfix/screens/profile_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -229,7 +230,17 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
 
             _navItem(Icons.notifications_none_outlined, "Alerts"),
-            _navItem(Icons.person_outline, "Profile"),
+            _navItem(
+              Icons.person_outline,
+              "Profile",
+              onTap: () {
+                // Cette commande dit à l'application d'afficher TON interface
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ProfileScreen()),
+                );
+              },
+            ),
           ],
         ),
       ),
@@ -376,24 +387,32 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _navItem(IconData icon, String label, {bool isSelected = false}) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(
-          icon,
-          color: isSelected ? const Color(0xFF2B58E4) : Colors.grey[400],
-          size: 28,
-        ),
-        Text(
-          label,
-          style: TextStyle(
+  Widget _navItem(
+    IconData icon,
+    String label, {
+    bool isSelected = false,
+    VoidCallback? onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap, // C'est ici qu'on autorise le clic
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            icon,
             color: isSelected ? const Color(0xFF2B58E4) : Colors.grey[400],
-            fontSize: 12,
-            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+            size: 28,
           ),
-        ),
-      ],
+          Text(
+            label,
+            style: TextStyle(
+              color: isSelected ? const Color(0xFF2B58E4) : Colors.grey[400],
+              fontSize: 12,
+              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
