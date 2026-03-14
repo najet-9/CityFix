@@ -30,7 +30,19 @@ class AuthController {
 
   //log in -------------------------------------------------------------------------
   Future signIn(String email, String password) async {
-    await _auth.signInWithEmailAndPassword(email: email, password: password);
+    try {
+      await _auth.signInWithEmailAndPassword(email: email, password: password);
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'user-not-found') {
+        throw Exception('No account found with this email');
+      } else if (e.code == 'wrong-password') {
+        throw Exception('Wrong password');
+      } else if (e.code == 'invalid-email') {
+        throw Exception('Invalid email address');
+      } else {
+        throw Exception('Something went wrong. Try again');
+      }
+    }
   }
 
   //log out -------------------------------------------------------------------------
@@ -38,11 +50,11 @@ class AuthController {
     await _auth.signOut();
   }
 
-
-// Google Sign-In ----------------------------------------------------------------
+  // Google Sign-In ----------------------------------------------------------------
   Future signInWithGoogle() async {
     final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-    final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
+    final GoogleSignInAuthentication? googleAuth =
+        await googleUser?.authentication;
 
     final credential = GoogleAuthProvider.credential(
       accessToken: googleAuth?.accessToken,
@@ -51,8 +63,8 @@ class AuthController {
 
     return await _auth.signInWithCredential(credential);
   }
-
 }
+
 class ProfileController {
   // Simuler une déconnexion
   void signOut() {

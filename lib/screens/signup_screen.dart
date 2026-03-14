@@ -33,13 +33,13 @@ class _SignupScreenState extends State<SignupScreen> {
     });
   }
 
-  //backend---------------------------------------------------------------------
+  //backend ---------------------------------------------------------------------
   _signUp() async {
     try {
       final user = UserModel(
         fullName: _fullNameController.text,
         email: _emailController.text,
-        password: _passwordController.text,
+        password: _passwordController.text, //R
       );
 
       await _authController.signUp(user, _confirmPasswordController.text);
