@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cityfix/widgets/input_field.dart';
 import 'package:cityfix/widgets/primary_gradient_button.dart';
+import 'package:cityfix/screens/home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -20,14 +21,39 @@ class _LoginScreenState extends State<LoginScreen> {
   bool showPass = false;
   bool loading = false;
   //backend==============================
-  _signIn() async {
-    setState(() => loading = true);
-    await _authController.signIn(
-      _emailController.text,
-      _passwordController.text,
-    );
-    setState(() => loading = false);
-    Navigator.of(context).pop();
+  Future _signIn() async {
+    //try to sign in
+    try {
+      setState(() => loading = true);
+      await _authController.signIn(
+        _emailController.text.trim(),
+        _passwordController.text.trim(),
+      );
+      if (!mounted) return;
+      setState(() => loading = false);
+      Navigator.of(context).pop();
+      //if an exception occurs, we catch it and show a snackbar with the error message
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => loading = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            e.toString().replaceAll('Exception: ', ''),
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          backgroundColor: const Color(0xFF1D4ED8),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          margin: const EdgeInsets.all(16),
+        ),
+      );
+    }
   }
   //====================================
 
@@ -169,6 +195,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     const SizedBox(height: 32),
                     // Sign in button
+                    //loading================================================
                     loading
                         ? const Center(
                             child: CircularProgressIndicator(
@@ -206,6 +233,12 @@ class _LoginScreenState extends State<LoginScreen> {
                     OutlinedButton(
                       onPressed: () async {
                         await AuthController().signInWithGoogle();
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const HomeScreen(),
+                          ),
+                        );
                       },
                       style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 14),

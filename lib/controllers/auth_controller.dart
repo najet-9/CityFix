@@ -25,22 +25,26 @@ class AuthController {
     );
 
     // 2. Save user info to Firestore
-    await _db.collection("users").add(user.toJson());
+    await _db.collection("users").add(user.toJson()); //here is the problem
   }
 
   //log in -------------------------------------------------------------------------
   Future signIn(String email, String password) async {
+    if (email.isEmpty || password.isEmpty) {
+      throw Exception('Please fill in all fields');
+    }
     try {
       await _auth.signInWithEmailAndPassword(email: email, password: password);
     } on FirebaseAuthException catch (e) {
-      if (e.code == 'user-not-found') {
-        throw Exception('No account found with this email');
-      } else if (e.code == 'wrong-password') {
-        throw Exception('Wrong password');
-      } else if (e.code == 'invalid-email') {
-        throw Exception('Invalid email address');
-      } else {
-        throw Exception('Something went wrong. Try again');
+      switch (e.code) {
+        case 'invalid-credential':
+        case 'user-not-found':
+        case 'wrong-password':
+          throw Exception('Invalid email or password');
+        case 'invalid-email':
+          throw Exception('Invalid email address');
+        default:
+          throw Exception('Something went wrong. Try again');
       }
     }
   }
