@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cityfix/widgets/input_field.dart';
 import 'package:cityfix/widgets/primary_gradient_button.dart';
-
+import 'package:cityfix/screens/home_screen.dart';
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -206,6 +206,10 @@ class _LoginScreenState extends State<LoginScreen> {
                     OutlinedButton(
                       onPressed: () async {
                         await AuthController().signInWithGoogle();
+                        Navigator.pushReplacement(
+                         context,
+                        MaterialPageRoute(builder: (context) => const HomeScreen()),
+                         );
                       },
                       style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 14),

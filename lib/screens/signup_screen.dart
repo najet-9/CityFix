@@ -1,12 +1,7 @@
 import 'package:cityfix/controllers/auth_controller.dart';
-import 'package:cityfix/models/user_model.dart';
 import 'package:cityfix/screens/wrapper.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-
-import 'package:cityfix/widgets/input_field.dart';
-import 'package:cityfix/widgets/primary_gradient_button.dart';
-import 'package:cityfix/widgets/password_strength_indicator.dart';
+import 'package:get/get.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
