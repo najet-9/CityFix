@@ -25,7 +25,7 @@ class AuthController {
     );
 
     // 2. Save user info to Firestore
-    await _db.collection("users").add(user.toJson()); //here is the problem
+    await _db.collection("users").add(user.toJson());
   }
 
   //log in -------------------------------------------------------------------------
