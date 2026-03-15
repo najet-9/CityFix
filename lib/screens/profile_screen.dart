@@ -1,4 +1,5 @@
 import 'package:cityfix/controllers/auth_controller.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -88,6 +89,8 @@ class ProfileScreen extends StatelessWidget {
 }
 
 Widget _buildHeader() {
+  String userName =
+      FirebaseAuth.instance.currentUser?.email?.split('@')[0] ?? "User";
   return Container(
     padding: EdgeInsets.only(top: 60, bottom: 30),
     decoration: BoxDecoration(
@@ -110,7 +113,7 @@ Widget _buildHeader() {
         ),
         SizedBox(height: 10),
         Text(
-          "Roukia Johnson",
+          userName,
           style: TextStyle(
             color: Colors.white,
             fontSize: 20,
