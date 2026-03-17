@@ -70,7 +70,9 @@ flutter:
   uses-material-design: true
   assets:
     - assets/images/cityfix_logo.png
-
+    - assets/images/onboarding1.png
+    - assets/images/onboarding2.png
+    - assets/images/onboarding3.png
   # To add assets to your application, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg
