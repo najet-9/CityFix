@@ -32,7 +32,7 @@ class _SignupScreenState extends State<SignupScreen> {
     });
   }
 
-  //backend ---------------------------------------------------------------------
+  //==============================================BACKEND==============================
   _signUp() async {
     try {
       final user = UserModel(
@@ -42,7 +42,7 @@ class _SignupScreenState extends State<SignupScreen> {
       );
 
       await _authController.signUp(user, _confirmPasswordController.text);
-      Navigator.of(context).pop();
+      Navigator.of(context).popUntil((route) => route.isFirst);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

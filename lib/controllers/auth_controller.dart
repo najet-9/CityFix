@@ -10,7 +10,10 @@ class AuthController {
   //sign up -------------------------------------------------------------------------
   Future signUp(UserModel user, String confirmPassword) async {
     // validation
-    if (user.fullName.isEmpty || user.email.isEmpty || user.password.isEmpty) {
+    if (user.fullName.isEmpty ||
+        user.email.isEmpty ||
+        user.password.isEmpty ||
+        confirmPassword.isEmpty) {
       throw Exception('Please fill in all fields');
     }
 
@@ -19,10 +22,23 @@ class AuthController {
     }
 
     // 1. Create user in Firebase Auth
-    await _auth.createUserWithEmailAndPassword(
-      email: user.email,
-      password: user.password,
-    );
+    try {
+      await _auth.createUserWithEmailAndPassword(
+        email: user.email,
+        password: user.password,
+      );
+    } on FirebaseAuthException catch (e) {
+      switch (e.code) {
+        case 'email-already-in-use':
+          throw Exception('Email is already in use');
+        case 'invalid-email':
+          throw Exception('Invalid email address');
+        case 'weak-password':
+          throw Exception('Password is too weak');
+        default:
+          throw Exception('Something went wrong. Try again');
+      }
+    }
 
     // 2. Save user info to Firestore
     await _db.collection("users").add(user.toJson());
@@ -37,6 +53,7 @@ class AuthController {
       await _auth.signInWithEmailAndPassword(email: email, password: password);
     } on FirebaseAuthException catch (e) {
       switch (e.code) {
+        //all the three has the same message, so we can group them together
         case 'invalid-credential':
         case 'user-not-found':
         case 'wrong-password':

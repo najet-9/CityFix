@@ -20,8 +20,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   bool showPass = false;
   bool loading = false;
-  //backend==============================
-  Future _signIn() async {
+  //==============================================BACKEND==============================
+  _signIn() async {
     //try to sign in
     try {
       setState(() => loading = true);
@@ -29,9 +29,9 @@ class _LoginScreenState extends State<LoginScreen> {
         _emailController.text.trim(),
         _passwordController.text.trim(),
       );
-      if (!mounted) return;
+      if (!mounted) return; // "if I'm no longer on screen, stop here"
       setState(() => loading = false);
-      Navigator.of(context).pop();
+      Navigator.of(context).popUntil((route) => route.isFirst);
       //if an exception occurs, we catch it and show a snackbar with the error message
     } catch (e) {
       if (!mounted) return;
@@ -39,6 +39,9 @@ class _LoginScreenState extends State<LoginScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
+            //1] e.toString() gives us the full error message,
+            //which starts with "Exception: " followed by the actual message we threw in the AuthController
+            //2] we remove the "Exception: " part from the error message to make it cleaner
             e.toString().replaceAll('Exception: ', ''),
             style: const TextStyle(
               color: Colors.white,
