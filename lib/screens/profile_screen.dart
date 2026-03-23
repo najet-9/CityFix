@@ -1,12 +1,31 @@
 import 'package:cityfix/controllers/auth_controller.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'privacy_security_screen.dart';
 
-class ProfileScreen extends StatelessWidget {
-  
-  final AuthController authController = AuthController();
+class ProfileScreen extends StatefulWidget {
+  const ProfileScreen({super.key});
 
-  ProfileScreen({super.key});
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  final AuthController authController = AuthController();
+  String userName = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserName();
+  }
+
+  Future<void> _loadUserName() async {
+    final name = await authController.getUserName();
+    setState(() {
+      userName = name;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,10 +49,30 @@ class ProfileScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 15),
-                  _buildMenuItem(context, Icons.assignment_outlined, "My Reports", Colors.brown[300]!),
-                  _buildMenuItem(context, Icons.language, "Language", Colors.blue[300]!),
-                  _buildMenuItem(context, Icons.lock_outline, "Privacy & Security", Colors.green[300]!),
-                  _buildMenuItem(context, Icons.help_outline, "Help & Support", Colors.red[300]!),
+                  _buildMenuItem(
+                    context,
+                    Icons.assignment_outlined,
+                    "My Reports",
+                    Colors.brown[300]!,
+                  ),
+                  _buildMenuItem(
+                    context,
+                    Icons.language,
+                    "Language",
+                    Colors.blue[300]!,
+                  ),
+                  _buildMenuItem(
+                    context,
+                    Icons.lock_outline,
+                    "Privacy & Security",
+                    Colors.green[300]!,
+                  ),
+                  _buildMenuItem(
+                    context,
+                    Icons.help_outline,
+                    "Help & Support",
+                    Colors.red[300]!,
+                  ),
                   _buildMenuItem(
                     context,
                     Icons.door_front_door_outlined,
@@ -76,8 +115,9 @@ class ProfileScreen extends StatelessWidget {
             child: Icon(Icons.person, size: 50, color: Colors.grey),
           ),
           const SizedBox(height: 10),
-          const Text(
-            "Roukia Johnson",
+          Text(
+            //do not touch this line, it is used to extract the username from the email
+            userName,
             style: TextStyle(
               color: Colors.white,
               fontSize: 20,
@@ -133,14 +173,23 @@ class ProfileScreen extends StatelessWidget {
               fontSize: 18,
             ),
           ),
-          Text(label, style: const TextStyle(color: Colors.white70, fontSize: 11)),
+          Text(
+            label,
+            style: const TextStyle(color: Colors.white70, fontSize: 11),
+          ),
         ],
       ),
     );
   }
 
   // --- Menu Item Widget ---
-  Widget _buildMenuItem(BuildContext context, IconData icon, String title, Color iconBg, {bool isLogout = false}) {
+  Widget _buildMenuItem(
+    BuildContext context,
+    IconData icon,
+    String title,
+    Color iconBg, {
+    bool isLogout = false,
+  }) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
@@ -170,12 +219,14 @@ class ProfileScreen extends StatelessWidget {
         onTap: () async {
           if (isLogout) {
             await authController.signOut();
-            
-            Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
+
+            Navigator.of(
+              context,
+            ).pushNamedAndRemoveUntil('/login', (route) => false);
           } else if (title == "Privacy & Security") {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) =>  PrivacySecurityScreen()),
+              MaterialPageRoute(builder: (context) => PrivacySecurityScreen()),
             );
           }
         },
@@ -196,7 +247,10 @@ class ProfileScreen extends StatelessWidget {
       items: const [
         BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: "Home"),
         BottomNavigationBarItem(icon: Icon(Icons.map_outlined), label: "Map"),
-        BottomNavigationBarItem(icon: Icon(Icons.notifications_outlined), label: "Alerts"),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.notifications_outlined),
+          label: "Alerts",
+        ),
         BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profile"),
       ],
     );

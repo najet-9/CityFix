@@ -16,17 +16,26 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final AuthController _authController = AuthController();
+  String userName = '';
 
   _signOut() async {
     await _authController.signOut();
   }
 
   @override
-  Widget build(BuildContext context) {
-    // Extraction du nom de l'utilisateur
-    String userName =
-        FirebaseAuth.instance.currentUser?.email?.split('@')[0] ?? "User";
+  void initState() {
+    super.initState();
+    _loadUserName();
+  }
 
+  Future<void> _loadUserName() async {
+    final name = await _authController.getUserName();
+    setState(() {
+      userName = name;
+    });
+  }
+
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FE),
       body: SingleChildScrollView(
