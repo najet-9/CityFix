@@ -1,5 +1,4 @@
 import 'package:cityfix/controllers/auth_controller.dart';
-import 'package:cityfix/screens/map_screen.dart';
 import 'package:cityfix/screens/report_detail_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -213,17 +212,7 @@ class _HomeScreenState extends State<HomeScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             _navItem(Icons.home_filled, "Home", isSelected: true),
-
-            _navItem(
-              Icons.person_outline,
-              "Map",
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => MapScreen()),
-                );
-              },
-            ),
+            _navItem(Icons.map_outlined, "Map"),
 
             // BOUTON CENTRAL "+" CARRÉ ARRONDI
             GestureDetector(

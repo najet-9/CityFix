@@ -15,7 +15,8 @@ class Wrapper extends StatefulWidget {
 
 class _WrapperState extends State<Wrapper> {
   late final AuthController authController;
-  bool? _showOnboarding; // null = chargement, true = voir onboarding, false = fini
+  bool?
+  _showOnboarding; // null = chargement, true = voir onboarding, false = fini
 
   @override
   void initState() {
@@ -59,7 +60,9 @@ class _WrapperState extends State<Wrapper> {
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Scaffold(body: Center(child: CircularProgressIndicator()));
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
         }
 
         if (snapshot.hasData && snapshot.data != null) {
