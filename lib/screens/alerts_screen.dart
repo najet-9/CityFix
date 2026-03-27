@@ -117,10 +117,10 @@ class AlertsScreen extends StatelessWidget {
           _navItem(Icons.map_outlined, "Maps"),
 
          // BOUTON CENTRAL "+" FLOTTANT
-// On utilise GestureDetector pour rendre le conteneur cliquable
+
 GestureDetector(
   onTap: () {
-    // Navigation vers ta page de soumission
+
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => const SubmitPage()), // Assure-toi d'importer SubmitPage

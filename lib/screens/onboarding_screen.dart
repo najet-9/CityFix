@@ -15,17 +15,17 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     {
       "title": "Welcome to CITYFIX DZ",
       "subtitle": "Report urban problems in seconds and help improve your city.",
-      "image": "assets/onboarding1.png", // Remplace par tes images
+      "image": "assets/images/onboarding1.png", 
     },
     {
       "title": "Report Issues Instantly",
       "subtitle": "Take a photo, add a description, and we automatically capture your location.",
-      "image": "assets/onboarding2.png",
+      "image": "assets/images/onboarding2.png",
     },
     {
       "title": "Track & Get Notified",
       "subtitle": "Follow your reports in real-time and get notified when problems are resolved.",
-      "image": "assets/onboarding3.png",
+      "image": "assets/images/onboarding3.png",
     },
   ];
 
@@ -138,7 +138,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     );
   }
 
-  // --- MODAL OU PAGE DE CHOIX LOGIN/SIGNUP (p1 sur ton image) ---
+  // --- MODAL OU PAGE DE CHOIX LOGIN/SIGNUP
   void _showLoginOptions(BuildContext context) {
     showModalBottomSheet(
       context: context,

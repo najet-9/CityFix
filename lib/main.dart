@@ -4,6 +4,12 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:cityfix/firebase_options.dart';
 import 'package:cityfix/screens/wrapper.dart'; // Import unique du Wrapper
 import 'package:cityfix/screens/profile_screen.dart';
+import 'package:cityfix/screens/login_screen.dart';
+import 'package:cityfix/screens/signup_screen.dart';
+import 'package:cityfix/screens/home_screen.dart';
+import 'package:cityfix/screens/onboarding_screen.dart';
+
+
 
 void main() async {
   // 1. Initialisation des services Flutter et Firebase
