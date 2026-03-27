@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'privacy_security_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
-  
   final AuthController authController = AuthController();
 
   ProfileScreen({super.key});
@@ -30,10 +29,30 @@ class ProfileScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 15),
-                  _buildMenuItem(context, Icons.assignment_outlined, "My Reports", Colors.brown[300]!),
-                  _buildMenuItem(context, Icons.language, "Language", Colors.blue[300]!),
-                  _buildMenuItem(context, Icons.lock_outline, "Privacy & Security", Colors.green[300]!),
-                  _buildMenuItem(context, Icons.help_outline, "Help & Support", Colors.red[300]!),
+                  _buildMenuItem(
+                    context,
+                    Icons.assignment_outlined,
+                    "My Reports",
+                    Colors.brown[300]!,
+                  ),
+                  _buildMenuItem(
+                    context,
+                    Icons.language,
+                    "Language",
+                    Colors.blue[300]!,
+                  ),
+                  _buildMenuItem(
+                    context,
+                    Icons.lock_outline,
+                    "Privacy & Security",
+                    Colors.green[300]!,
+                  ),
+                  _buildMenuItem(
+                    context,
+                    Icons.help_outline,
+                    "Help & Support",
+                    Colors.red[300]!,
+                  ),
                   _buildMenuItem(
                     context,
                     Icons.door_front_door_outlined,
@@ -133,14 +152,23 @@ class ProfileScreen extends StatelessWidget {
               fontSize: 18,
             ),
           ),
-          Text(label, style: const TextStyle(color: Colors.white70, fontSize: 11)),
+          Text(
+            label,
+            style: const TextStyle(color: Colors.white70, fontSize: 11),
+          ),
         ],
       ),
     );
   }
 
   // --- Menu Item Widget ---
-  Widget _buildMenuItem(BuildContext context, IconData icon, String title, Color iconBg, {bool isLogout = false}) {
+  Widget _buildMenuItem(
+    BuildContext context,
+    IconData icon,
+    String title,
+    Color iconBg, {
+    bool isLogout = false,
+  }) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
@@ -170,12 +198,14 @@ class ProfileScreen extends StatelessWidget {
         onTap: () async {
           if (isLogout) {
             await authController.signOut();
-            
-            Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
+
+            Navigator.of(
+              context,
+            ).pushNamedAndRemoveUntil('/login', (route) => false);
           } else if (title == "Privacy & Security") {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) =>  PrivacySecurityScreen()),
+              MaterialPageRoute(builder: (context) => PrivacySecurityScreen()),
             );
           }
         },
@@ -191,12 +221,15 @@ class ProfileScreen extends StatelessWidget {
       selectedItemColor: Colors.blue[800],
       unselectedItemColor: Colors.grey,
       onTap: (index) {
-        if (index == 0) Navigator.pop(context);
+        NavigationController.switchPage(context, index);
       },
       items: const [
         BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: "Home"),
         BottomNavigationBarItem(icon: Icon(Icons.map_outlined), label: "Map"),
-        BottomNavigationBarItem(icon: Icon(Icons.notifications_outlined), label: "Alerts"),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.notifications_outlined),
+          label: "Alerts",
+        ),
         BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profile"),
       ],
     );

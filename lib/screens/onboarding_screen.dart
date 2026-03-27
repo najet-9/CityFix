@@ -14,17 +14,20 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   final List<Map<String, String>> onboardingData = [
     {
       "title": "Welcome to CITYFIX DZ",
-      "subtitle": "Report urban problems in seconds and help improve your city.",
+      "subtitle":
+          "Report urban problems in seconds and help improve your city.",
       "image": "assets/onboarding1.png", // Remplace par tes images
     },
     {
       "title": "Report Issues Instantly",
-      "subtitle": "Take a photo, add a description, and we automatically capture your location.",
+      "subtitle":
+          "Take a photo, add a description, and we automatically capture your location.",
       "image": "assets/onboarding2.png",
     },
     {
       "title": "Track & Get Notified",
-      "subtitle": "Follow your reports in real-time and get notified when problems are resolved.",
+      "subtitle":
+          "Follow your reports in real-time and get notified when problems are resolved.",
       "image": "assets/onboarding3.png",
     },
   ];
@@ -59,13 +62,19 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 const Spacer(),
                 // Boutons de navigation
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 30,
+                    vertical: 20,
+                  ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       TextButton(
                         onPressed: () => _pageController.jumpToPage(2),
-                        child: const Text("Skip", style: TextStyle(color: Colors.grey)),
+                        child: const Text(
+                          "Skip",
+                          style: TextStyle(color: Colors.grey),
+                        ),
                       ),
                       ElevatedButton(
                         onPressed: () {
@@ -80,11 +89,18 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF2B58E4),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-                          padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 30,
+                            vertical: 15,
+                          ),
                         ),
-                        child: Text(_currentPage == 2 ? "Get Started" : "Next", 
-                          style: const TextStyle(color: Colors.white)),
+                        child: Text(
+                          _currentPage == 2 ? "Get Started" : "Next",
+                          style: const TextStyle(color: Colors.white),
+                        ),
                       ),
                     ],
                   ),
@@ -104,7 +120,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           // Image illustrative
-          Image.network( // Utilise Image.asset une fois tes fichiers ajoutés
+          Image.network(
+            // Utilise Image.asset une fois tes fichiers ajoutés
             "https://cdni.iconscout.com/illustration/premium/thumb/city-maintenance-illustration-download-in-svg-png-gif-file-formats--construction-builder-road-pack-people-illustrations-5217145.png",
             height: 300,
           ),
@@ -112,7 +129,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           Text(
             onboardingData[index]["title"]!,
             textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFF2B58E4)),
+            style: const TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF2B58E4),
+            ),
           ),
           const SizedBox(height: 20),
           Text(
@@ -132,7 +153,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       height: 8,
       width: _currentPage == index ? 24 : 8,
       decoration: BoxDecoration(
-        color: _currentPage == index ? const Color(0xFF2B58E4) : Colors.grey.shade300,
+        color: _currentPage == index
+            ? const Color(0xFF2B58E4)
+            : Colors.grey.shade300,
         borderRadius: BorderRadius.circular(4),
       ),
     );
@@ -152,26 +175,49 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
-          borderRadius: BorderRadius.only(topLeft: Radius.circular(40), topRight: Radius.circular(40)),
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(40),
+            topRight: Radius.circular(40),
+          ),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Icon(Icons.location_on, size: 80, color: Colors.white),
             const SizedBox(height: 20),
-            const Text("CITYFIX DZ", style: TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold)),
-            const Text("See it. Report it. Fix it.", style: TextStyle(color: Colors.white70)),
+            const Text(
+              "CITYFIX DZ",
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 32,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const Text(
+              "See it. Report it. Fix it.",
+              style: TextStyle(color: Colors.white70),
+            ),
             const SizedBox(height: 60),
             _buildAuthButton("Sign Up", Colors.white, const Color(0xFF2B58E4)),
             const SizedBox(height: 20),
-            _buildAuthButton("Sign In", Colors.transparent, Colors.white, isOutline: true),
+            _buildAuthButton(
+              "Sign In",
+              Colors.transparent,
+              Colors.white,
+              isOutline: true,
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildAuthButton(String text, Color bg, Color textColor, {bool isOutline = false}) {
+  Widget _buildAuthButton(
+    String text,
+    Color bg,
+    Color textColor, {
+    bool isOutline = false,
+  }) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 40),
       child: SizedBox(
@@ -182,9 +228,18 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           style: ElevatedButton.styleFrom(
             backgroundColor: bg,
             side: isOutline ? const BorderSide(color: Colors.white) : null,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(15),
+            ),
           ),
-          child: Text(text, style: TextStyle(color: textColor, fontSize: 18, fontWeight: FontWeight.bold)),
+          child: Text(
+            text,
+            style: TextStyle(
+              color: textColor,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
         ),
       ),
     );

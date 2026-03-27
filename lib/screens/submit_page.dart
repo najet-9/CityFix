@@ -115,10 +115,7 @@ class _SubmitPageState extends State<SubmitPage> {
         const SizedBox(height: 6),
         Text(
           "Select the category that best describes the problem.",
-          style: GoogleFonts.sora(
-            fontSize: 13,
-            color: const Color(0xFF64748B),
-          ),
+          style: GoogleFonts.sora(fontSize: 13, color: const Color(0xFF64748B)),
         ),
         const SizedBox(height: 24),
         GridView.builder(
@@ -152,7 +149,7 @@ class _SubmitPageState extends State<SubmitPage> {
                       color: Colors.black.withOpacity(0.04),
                       blurRadius: 12,
                       offset: const Offset(0, 4),
-                    )
+                    ),
                   ],
                 ),
                 child: Column(
@@ -178,14 +175,16 @@ class _SubmitPageState extends State<SubmitPage> {
         SizedBox(
           width: double.infinity,
           child: ElevatedButton(
-            onPressed:
-                selectedCategory != null ? () => setState(() => step = 2) : null,
+            onPressed: selectedCategory != null
+                ? () => setState(() => step = 2)
+                : null,
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF2563EB),
               disabledBackgroundColor: const Color(0xFFCBD5E1),
               padding: const EdgeInsets.symmetric(vertical: 18),
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16)),
+                borderRadius: BorderRadius.circular(16),
+              ),
             ),
             child: Text(
               "Continue →",
@@ -264,7 +263,8 @@ class _SubmitPageState extends State<SubmitPage> {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: const Center(
-                    child: Text("📍", style: TextStyle(fontSize: 22))),
+                  child: Text("📍", style: TextStyle(fontSize: 22)),
+                ),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -297,10 +297,7 @@ class _SubmitPageState extends State<SubmitPage> {
         const SizedBox(height: 16),
         TextField(
           maxLines: 4,
-          style: GoogleFonts.sora(
-            fontSize: 14,
-            color: const Color(0xFF0F172A),
-          ),
+          style: GoogleFonts.sora(fontSize: 14, color: const Color(0xFF0F172A)),
           decoration: InputDecoration(
             hintText: "Describe the problem in detail...",
             hintStyle: GoogleFonts.sora(color: const Color(0xFF94A3B8)),
@@ -308,13 +305,17 @@ class _SubmitPageState extends State<SubmitPage> {
             fillColor: Colors.white,
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),
-              borderSide:
-                  const BorderSide(color: Color(0xFFE2E8F0), width: 1.5),
+              borderSide: const BorderSide(
+                color: Color(0xFFE2E8F0),
+                width: 1.5,
+              ),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),
-              borderSide:
-                  const BorderSide(color: Color(0xFF2563EB), width: 1.5),
+              borderSide: const BorderSide(
+                color: Color(0xFF2563EB),
+                width: 1.5,
+              ),
             ),
           ),
         ),
@@ -331,7 +332,8 @@ class _SubmitPageState extends State<SubmitPage> {
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: const Center(
-                    child: Icon(Icons.arrow_back, color: Color(0xFF64748B))),
+                  child: Icon(Icons.arrow_back, color: Color(0xFF64748B)),
+                ),
               ),
             ),
             const SizedBox(width: 12),
@@ -342,7 +344,8 @@ class _SubmitPageState extends State<SubmitPage> {
                   backgroundColor: const Color(0xFF2563EB),
                   padding: const EdgeInsets.symmetric(vertical: 18),
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16)),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
                 ),
                 child: Text(
                   "Submit Report",

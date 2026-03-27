@@ -13,7 +13,8 @@ class ReportDetailScreen extends StatelessWidget {
           Stack(
             children: [
               Container(
-                height: MediaQuery.of(context).size.height * 0.4, // 40% de l'écran
+                height:
+                    MediaQuery.of(context).size.height * 0.4, // 40% de l'écran
                 width: double.infinity,
                 decoration: const BoxDecoration(
                   image: DecorationImage(
@@ -29,14 +30,21 @@ class ReportDetailScreen extends StatelessWidget {
                 top: 50,
                 right: 20,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.blue.shade400.withOpacity(0.9),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: const Text(
                     "In Progress",
-                    style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),
@@ -76,7 +84,11 @@ class ReportDetailScreen extends StatelessWidget {
                 children: [
                   const Text(
                     "Pothole",
-                    style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Color(0xFF1A1D1E)),
+                    style: TextStyle(
+                      fontSize: 26,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF1A1D1E),
+                    ),
                   ),
                   const SizedBox(height: 5),
                   const Text(
@@ -100,7 +112,10 @@ class ReportDetailScreen extends StatelessWidget {
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          child: const Icon(Icons.location_on, color: Color(0xFF2B58E4)),
+                          child: const Icon(
+                            Icons.location_on,
+                            color: Color(0xFF2B58E4),
+                          ),
                         ),
                         const SizedBox(width: 15),
                         Column(
@@ -108,20 +123,26 @@ class ReportDetailScreen extends StatelessWidget {
                           children: [
                             const Text(
                               "LOCATION",
-                              style: TextStyle(color: Colors.grey, fontSize: 10, letterSpacing: 1.2),
+                              style: TextStyle(
+                                color: Colors.grey,
+                                fontSize: 10,
+                                letterSpacing: 1.2,
+                              ),
                             ),
                             const Text(
                               "Main Street, Downtown",
-                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15,
+                              ),
                             ),
                           ],
-                        )
+                        ),
                       ],
                     ),
                   ),
 
                   const Spacer(), // Pousse le bouton vers le bas
-
                   // --- BOUTON DE CONFIRMATION ---
                   GestureDetector(
                     onTap: () {

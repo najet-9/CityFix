@@ -1,6 +1,11 @@
 import 'package:cityfix/models/user_model.dart';
+import 'package:cityfix/screens/alerts_screen.dart';
+import 'package:cityfix/screens/home_screen.dart';
+import 'package:cityfix/screens/map_screen.dart';
+import 'package:cityfix/screens/profile_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthController {
@@ -95,5 +100,43 @@ class ProfileController {
   // Navigation vers une autre page
   void navigateTo(String route) {
     print("Navigation vers $route");
+  }
+}
+
+class NavigationController {
+  static void switchPage(BuildContext context, int index) {
+    // 1. Définition de la destination
+    Widget? nextStep;
+
+    switch (index) {
+      case 0:
+        // Vérifie bien que la classe s'appelle HomeScreen dans le fichier de ta camarade
+        nextStep = HomeScreen();
+        break;
+      case 1:
+        nextStep = MapScreen();
+        break;
+      case 2:
+        nextStep = AlertsScreen();
+        break;
+      case 3:
+        nextStep = ProfileScreen();
+        break;
+      default:
+        return; // Si l'index est inconnu, on ne fait rien
+    }
+
+    // 2. Exécution de la navigation sécurisée
+    if (nextStep != null) {
+      Navigator.pushReplacement(
+        context,
+        PageRouteBuilder(
+          pageBuilder: (context, animation1, animation2) => nextStep!,
+          // On supprime l'animation de glissement pour éviter les bugs avec la carte
+          transitionDuration: Duration.zero,
+          reverseTransitionDuration: Duration.zero,
+        ),
+      );
+    }
   }
 }

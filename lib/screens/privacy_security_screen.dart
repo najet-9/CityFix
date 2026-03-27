@@ -4,43 +4,32 @@ import '../controllers/privacy_security_controller.dart';
 class PrivacySecurityScreen extends StatelessWidget {
   PrivacySecurityScreen({super.key});
 
-  final PrivacySecurityController controller =
-      PrivacySecurityController();
+  final PrivacySecurityController controller = PrivacySecurityController();
 
-  final TextEditingController passwordController =
-      TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Privacy & Security"),
-      ),
+      appBar: AppBar(title: const Text("Privacy & Security")),
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
-
             //  Change password
             TextField(
               controller: passwordController,
-              decoration: const InputDecoration(
-                labelText: "New Password",
-              ),
+              decoration: const InputDecoration(labelText: "New Password"),
             ),
 
             const SizedBox(height: 15),
 
             ElevatedButton(
               onPressed: () async {
-                await controller.changePassword(
-                  passwordController.text,
-                );
+                await controller.changePassword(passwordController.text);
 
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text("Password updated"),
-                  ),
+                  const SnackBar(content: Text("Password updated")),
                 );
               },
               child: const Text("Change Password"),
@@ -54,9 +43,7 @@ class PrivacySecurityScreen extends StatelessWidget {
                 await controller.deleteAccount();
 
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text("Account deleted"),
-                  ),
+                  const SnackBar(content: Text("Account deleted")),
                 );
               },
               child: const Text("Delete Account"),

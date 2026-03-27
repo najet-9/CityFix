@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:cityfix/firebase_options.dart';
 import 'package:cityfix/screens/wrapper.dart'; // Import unique du Wrapper
 import 'package:cityfix/screens/profile_screen.dart';
+import 'package:cityfix/screens/map_screen.dart';
 
 void main() async {
   // 1. Initialisation des services Flutter et Firebase
@@ -37,7 +38,7 @@ class MyApp extends StatelessWidget {
       ),
 
       // Le Wrapper est le point d'entrée qui gère la logique de session
-      home: const Wrapper(),
+      home: MapScreen(),
     );
   }
 }
