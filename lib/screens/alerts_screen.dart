@@ -1,4 +1,3 @@
-import 'package:cityfix/controllers/auth_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:cityfix/screens/profile_screen.dart';
 import 'package:cityfix/screens/submit_page.dart';
@@ -187,11 +186,7 @@ class AlertsScreen extends StatelessWidget {
             "Home",
             onTap: () => Navigator.pop(context),
           ),
-          _navItem(
-            Icons.map_outlined,
-            "Maps",
-            onTap: () => NavigationController.switchPage(context, 1),
-          ),
+          _navItem(Icons.map_outlined, "Maps"),
 
           // BOUTON CENTRAL "+" FLOTTANT
           GestureDetector(

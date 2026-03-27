@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:cityfix/screens/wrapper.dart'; // IMPORTANT : Import du wrapper
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -16,21 +18,27 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       "title": "Welcome to CITYFIX DZ",
       "subtitle":
           "Report urban problems in seconds and help improve your city.",
-      "image": "assets/onboarding1.png", // Remplace par tes images
+      "image": "assets/images/onboarding1.png",
     },
     {
       "title": "Report Issues Instantly",
       "subtitle":
           "Take a photo, add a description, and we automatically capture your location.",
-      "image": "assets/onboarding2.png",
+      "image": "assets/images/onboarding2.png",
     },
     {
       "title": "Track & Get Notified",
       "subtitle":
           "Follow your reports in real-time and get notified when problems are resolved.",
-      "image": "assets/onboarding3.png",
+      "image": "assets/images/onboarding3.png",
     },
   ];
+
+  // Marque l'onboarding comme terminé
+  Future<void> _completeOnboarding() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('seen_onboarding', true);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +59,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             flex: 1,
             child: Column(
               children: [
-                // Indicateurs (Dots)
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: List.generate(
@@ -60,7 +67,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   ),
                 ),
                 const Spacer(),
-                // Boutons de navigation
                 Padding(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 30,
@@ -70,16 +76,34 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       TextButton(
-                        onPressed: () => _pageController.jumpToPage(2),
+                        onPressed: () async {
+                          await _completeOnboarding();
+                          if (!mounted) return;
+                          // On retourne au Wrapper pour qu'il affiche l'Auth
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const Wrapper(),
+                            ),
+                          );
+                        },
                         child: const Text(
                           "Skip",
                           style: TextStyle(color: Colors.grey),
                         ),
                       ),
                       ElevatedButton(
-                        onPressed: () {
+                        onPressed: () async {
                           if (_currentPage == 2) {
-                            _showLoginOptions(context);
+                            await _completeOnboarding();
+                            if (!mounted) return;
+                            // On retourne au Wrapper pour qu'il affiche l'Auth
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const Wrapper(),
+                              ),
+                            );
                           } else {
                             _pageController.nextPage(
                               duration: const Duration(milliseconds: 300),
@@ -119,11 +143,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // Image illustrative
-          Image.network(
-            // Utilise Image.asset une fois tes fichiers ajoutés
-            "https://cdni.iconscout.com/illustration/premium/thumb/city-maintenance-illustration-download-in-svg-png-gif-file-formats--construction-builder-road-pack-people-illustrations-5217145.png",
+          Image.asset(
+            onboardingData[index]["image"]!,
             height: 300,
+            fit: BoxFit.contain,
+            errorBuilder: (context, error, stackTrace) =>
+                const Icon(Icons.image, size: 100, color: Colors.grey),
           ),
           const SizedBox(height: 40),
           Text(
@@ -157,90 +182,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             ? const Color(0xFF2B58E4)
             : Colors.grey.shade300,
         borderRadius: BorderRadius.circular(4),
-      ),
-    );
-  }
-
-  // --- MODAL OU PAGE DE CHOIX LOGIN/SIGNUP (p1 sur ton image) ---
-  void _showLoginOptions(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => Container(
-        height: MediaQuery.of(context).size.height * 0.8,
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFF2B58E4), Color(0xFF4221C1)],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(40),
-            topRight: Radius.circular(40),
-          ),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.location_on, size: 80, color: Colors.white),
-            const SizedBox(height: 20),
-            const Text(
-              "CITYFIX DZ",
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 32,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const Text(
-              "See it. Report it. Fix it.",
-              style: TextStyle(color: Colors.white70),
-            ),
-            const SizedBox(height: 60),
-            _buildAuthButton("Sign Up", Colors.white, const Color(0xFF2B58E4)),
-            const SizedBox(height: 20),
-            _buildAuthButton(
-              "Sign In",
-              Colors.transparent,
-              Colors.white,
-              isOutline: true,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildAuthButton(
-    String text,
-    Color bg,
-    Color textColor, {
-    bool isOutline = false,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 40),
-      child: SizedBox(
-        width: double.infinity,
-        height: 60,
-        child: ElevatedButton(
-          onPressed: () {},
-          style: ElevatedButton.styleFrom(
-            backgroundColor: bg,
-            side: isOutline ? const BorderSide(color: Colors.white) : null,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(15),
-            ),
-          ),
-          child: Text(
-            text,
-            style: TextStyle(
-              color: textColor,
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
       ),
     );
   }

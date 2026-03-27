@@ -7,6 +7,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthController {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -26,12 +27,15 @@ class AuthController {
       throw Exception('Passwords do not match');
     }
 
-    // 1. Create user in Firebase Auth
+    // 1. Create user in Firebase Auth + Save to Firestore
     try {
-      await _auth.createUserWithEmailAndPassword(
+      UserCredential cred = await _auth.createUserWithEmailAndPassword(
         email: user.email,
         password: user.password,
       );
+
+      // Save user info to Firestore using UID as document ID
+      await _db.collection("users").doc(cred.user!.uid).set(user.toJson());
     } on FirebaseAuthException catch (e) {
       switch (e.code) {
         case 'email-already-in-use':
@@ -44,9 +48,6 @@ class AuthController {
           throw Exception('Something went wrong. Try again');
       }
     }
-
-    // 2. Save user info to Firestore
-    await _db.collection("users").add(user.toJson());
   }
 
   //log in -------------------------------------------------------------------------
@@ -73,7 +74,36 @@ class AuthController {
 
   //log out -------------------------------------------------------------------------
   Future signOut() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('userName');
+    cachedUserName = null;
     await _auth.signOut();
+  }
+
+  //get username -------------------------------------------------------------------------
+  static String? cachedUserName;
+
+  Future<String> getUserName() async {
+    // 1. return cached memory value if available
+    if (cachedUserName != null) return cachedUserName!;
+
+    // 2. try to get from local storage first (instant)
+    final prefs = await SharedPreferences.getInstance();
+    final localName = prefs.getString('userName');
+    if (localName != null) {
+      cachedUserName = localName;
+      return cachedUserName!;
+    }
+
+    // 3. only if not found locally, fetch from Firestore
+    final uid = _auth.currentUser!.uid;
+    final doc = await _db.collection('users').doc(uid).get();
+    cachedUserName = doc.data()?['fullName'] ?? 'User';
+
+    // 4. save to local storage for next time
+    await prefs.setString('userName', cachedUserName!);
+
+    return cachedUserName!;
   }
 
   // Google Sign-In ----------------------------------------------------------------
