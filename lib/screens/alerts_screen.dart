@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cityfix/screens/profile_screen.dart';
 import 'package:cityfix/screens/submit_page.dart';
+import 'package:cityfix/screens/incident_map_screen.dart';
 
 class AlertsScreen extends StatelessWidget {
   const AlertsScreen({super.key});
@@ -186,7 +187,16 @@ class AlertsScreen extends StatelessWidget {
             "Home",
             onTap: () => Navigator.pop(context),
           ),
-          _navItem(Icons.map_outlined, "Maps"),
+          _navItem(
+            Icons.map_outlined,
+            "Maps",
+            onTap: () => Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => IncidentMapScreen(),
+              ), // Utilise le nom EXACT de ta classe Map
+            ),
+          ),
 
           // BOUTON CENTRAL "+" FLOTTANT
           GestureDetector(

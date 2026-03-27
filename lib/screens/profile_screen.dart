@@ -5,6 +5,7 @@ import 'package:cityfix/screens/home_screen.dart';
 import 'package:cityfix/screens/alerts_screen.dart';
 import 'package:cityfix/screens/submit_page.dart';
 import 'package:cityfix/screens/privacy_security_screen.dart';
+import 'package:cityfix/screens/incident_map_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -263,7 +264,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
               );
             },
           ),
-          _navItem(Icons.map_outlined, "Maps"),
+          _navItem(
+            Icons.map_outlined,
+            "Maps",
+            onTap: () => Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => IncidentMapScreen(),
+              ), // Redirection vers la Map
+            ),
+          ),
           GestureDetector(
             onTap: () {
               Navigator.push(
