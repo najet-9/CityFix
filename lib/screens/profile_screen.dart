@@ -1,8 +1,10 @@
 import 'package:cityfix/controllers/auth_controller.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'privacy_security_screen.dart';
-
+import 'package:cityfix/screens/home_screen.dart';
+import 'package:cityfix/screens/alerts_screen.dart'; // Import pour la navigation Alerts
+import 'package:cityfix/screens/submit_page.dart'; // Import pour le bouton +
+import 'package:cityfix/screens/privacy_security_screen.dart';
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
@@ -86,13 +88,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ],
         ),
       ),
-      bottomNavigationBar: _buildBottomNav(context),
-      floatingActionButton: _buildFab(),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      // --- LA BARRE DE NAVIGATION STYLE ALERTS EST ICI ---
+      bottomNavigationBar: _buildCustomBottomBar(context),
     );
   }
 
-  // --- Header Widget ---
+  // --- Header Widget (Inchangé) ---
   Widget _buildHeader() {
     return Container(
       padding: const EdgeInsets.only(top: 60, bottom: 30),
@@ -116,9 +117,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           const SizedBox(height: 10),
           Text(
-            //do not touch this line, it is used to extract the username from the email
             userName,
-            style: TextStyle(
+            style: const TextStyle(
               color: Colors.white,
               fontSize: 20,
               fontWeight: FontWeight.bold,
@@ -154,7 +154,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  // --- Stat Card Widget ---
+  // --- Stat Card Widget (Inchangé) ---
   Widget _buildStatCard(String value, String label) {
     return Container(
       width: 80,
@@ -182,7 +182,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  // --- Menu Item Widget ---
+  // --- Menu Item Widget (Inchangé) ---
   Widget _buildMenuItem(
     BuildContext context,
     IconData icon,
@@ -219,10 +219,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         onTap: () async {
           if (isLogout) {
             await authController.signOut();
-
-            Navigator.of(
-              context,
-            ).pushNamedAndRemoveUntil('/login', (route) => false);
+            Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
           } else if (title == "Privacy & Security") {
             Navigator.push(
               context,
@@ -234,51 +231,83 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  // --- Bottom Navigation Bar ---
-  Widget _buildBottomNav(BuildContext context) {
-    return BottomNavigationBar(
-      type: BottomNavigationBarType.fixed,
-      currentIndex: 3,
-      selectedItemColor: Colors.blue[800],
-      unselectedItemColor: Colors.grey,
-      onTap: (index) {
-        if (index == 0) Navigator.pop(context);
-      },
-      items: const [
-        BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: "Home"),
-        BottomNavigationBarItem(icon: Icon(Icons.map_outlined), label: "Map"),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.notifications_outlined),
-          label: "Alerts",
-        ),
-        BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profile"),
+  // --- NOUVELLE BARRE DE NAVIGATION (STYLE ALERTS) ---
+  Widget _buildCustomBottomBar(BuildContext context) {
+  return Container(
+    height: 90,
+    padding: const EdgeInsets.only(bottom: 10),
+    decoration: BoxDecoration(
+      color: Colors.white,
+      boxShadow: [
+        BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, -5)),
       ],
-    );
-  }
+    ),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: [
+        // --- CORRECTION ICI : Navigation directe vers Home ---
+        _navItem(Icons.home_outlined, "Home", onTap: () {
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => const HomeScreen()),
+            (route) => false, // Cela efface tout l'historique pour revenir à zéro sur Home
+          );
+        }),
+        
+        _navItem(Icons.map_outlined, "Maps"),
 
-  // --- Floating Action Button ---
-  Widget _buildFab() {
-    return Container(
-      height: 60,
-      width: 60,
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Color(0xFF4267F2), Color(0xFF2B58E4)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.blue.withOpacity(0.4),
-            blurRadius: 10,
-            offset: const Offset(0, 5),
+        // BOUTON CENTRAL "+"
+        GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const SubmitPage()),
+            );
+          },
+          child: Transform.translate(
+            offset: const Offset(0, -15),
+            child: Container(
+              height: 55,
+              width: 55,
+              decoration: BoxDecoration(
+                color: const Color(0xFF2B58E4),
+                borderRadius: BorderRadius.circular(15),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF2B58E4).withOpacity(0.4),
+                    blurRadius: 10,
+                    offset: const Offset(0, 5),
+                  ),
+                ],
+              ),
+              child: const Icon(Icons.add, color: Colors.white, size: 30),
+            ),
           ),
+        ),
+        
+        _navItem(Icons.notifications_outlined, "Alerts", onTap: () {
+          // On utilise pushReplacement pour ne pas empiler les pages inutilement
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const AlertsScreen()),
+          );
+        }),
+
+        _navItem(Icons.person, "Profile", isSelected: true), // true seulement dans ProfileScreen
+      ],
+    ),
+  );
+}
+
+  Widget _navItem(IconData icon, String label, {bool isSelected = false, VoidCallback? onTap}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, color: isSelected ? const Color(0xFF2B58E4) : Colors.grey[400], size: 28),
+          Text(label, style: TextStyle(color: isSelected ? const Color(0xFF2B58E4) : Colors.grey[400], fontSize: 12)),
         ],
-      ),
-      child: IconButton(
-        icon: const Icon(Icons.add, color: Colors.white, size: 30),
-        onPressed: () => print("Bouton + cliqué"),
       ),
     );
   }
