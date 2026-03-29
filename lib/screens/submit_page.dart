@@ -1,5 +1,7 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:image_picker/image_picker.dart';
 
 class SubmitPage extends StatefulWidget {
   const SubmitPage({Key? key}) : super(key: key);
@@ -12,6 +14,10 @@ class _SubmitPageState extends State<SubmitPage> {
   int step = 1;
   String? selectedCategory;
 
+  //!!!!!!!!!!!!!11!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  File? _selectedImage;
+  final ImagePicker _picker = ImagePicker();
+
   final List<Map<String, dynamic>> categories = [
     {"id": "roads", "label": "Roads", "icon": "🕳️"},
     {"id": "lighting", "label": "Lighting", "icon": "💡"},
@@ -20,6 +26,40 @@ class _SubmitPageState extends State<SubmitPage> {
     {"id": "parks", "label": "Parks", "icon": "🌿"},
     {"id": "other", "label": "Other", "icon": "📋"},
   ];
+
+  //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!11111
+
+  void _showImageSourceSheet() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (_) => const _ImagePickerSheet(),
+    ).then((source) {
+      if (source != null) _pickImage(source);
+    });
+  }
+
+  Future<void> _pickImage(ImageSource source) async {
+    try {
+      final XFile? pickedFile = await _picker.pickImage(
+        source: source, //camera or gallery
+        imageQuality: 85,
+        maxWidth: 1080,
+      );
+      if (pickedFile != null) {
+        setState(() => _selectedImage = File(pickedFile.path));
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Could not access ${source == ImageSource.camera ? 'camera' : 'gallery'}.',
+          ),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -213,39 +253,75 @@ class _SubmitPageState extends State<SubmitPage> {
           ),
         ),
         const SizedBox(height: 20),
-        Container(
-          height: 180,
-          width: double.infinity,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: const Color(0xFFE2E8F0), width: 2),
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text("📷", style: TextStyle(fontSize: 40)),
-              const SizedBox(height: 8),
-              Text(
-                "Tap to take a photo",
-                style: GoogleFonts.sora(
-                  color: const Color(0xFF64748B),
-                  fontWeight: FontWeight.w700,
-                  fontSize: 14,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                "or upload from gallery",
-                style: GoogleFonts.sora(
-                  color: const Color(0xFF94A3B8),
-                  fontSize: 12,
-                ),
-              ),
-            ],
+
+        // ── Photo Card 1 ===========================================================
+        GestureDetector(
+          onTap: _showImageSourceSheet,
+          child: Container(
+            height: _selectedImage != null ? 220 : 180,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: const Color(0xFFE2E8F0), width: 2),
+            ),
+            clipBehavior: Clip.antiAlias,
+            child: _selectedImage != null
+                ? Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      Image.file(_selectedImage!, fit: BoxFit.cover),
+                      Positioned(
+                        top: 8,
+                        right:
+                            8, //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                        child: GestureDetector(
+                          onTap: () => setState(() => _selectedImage = null),
+                          child: Container(
+                            padding: const EdgeInsets.all(4),
+                            decoration: const BoxDecoration(
+                              color: Colors.black54,
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                              Icons.close,
+                              color: Colors.white,
+                              size: 18,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  )
+                : Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text("📷", style: TextStyle(fontSize: 40)),
+                      const SizedBox(height: 8),
+                      Text(
+                        "Tap to take a photo",
+                        style: GoogleFonts.sora(
+                          color: const Color(0xFF64748B),
+                          fontWeight: FontWeight.w700,
+                          fontSize: 14,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        "or upload from gallery",
+                        style: GoogleFonts.sora(
+                          color: const Color(0xFF94A3B8),
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
           ),
         ),
+
         const SizedBox(height: 16),
+
+        // ── Location Card ───────────────────────────────────────────────────
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
@@ -294,7 +370,10 @@ class _SubmitPageState extends State<SubmitPage> {
             ],
           ),
         ),
+
         const SizedBox(height: 16),
+
+        // ── Description Field ───────────────────────────────────────────────
         TextField(
           maxLines: 4,
           style: GoogleFonts.sora(fontSize: 14, color: const Color(0xFF0F172A)),
@@ -319,7 +398,10 @@ class _SubmitPageState extends State<SubmitPage> {
             ),
           ),
         ),
+
         const SizedBox(height: 24),
+
+        // ── Bottom Buttons ──────────────────────────────────────────────────
         Row(
           children: [
             InkWell(
@@ -360,6 +442,189 @@ class _SubmitPageState extends State<SubmitPage> {
           ],
         ),
       ],
+    );
+  }
+}
+
+// ─── Image Picker Bottom Sheet ───────────────────────────────────────────────
+
+class _ImagePickerSheet extends StatelessWidget {
+  const _ImagePickerSheet();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+      ),
+      padding: const EdgeInsets.fromLTRB(24, 12, 24, 32),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Drag handle
+          Container(
+            width: 40,
+            height: 4,
+            decoration: BoxDecoration(
+              color: const Color(0xFFE2E8F0),
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          const SizedBox(height: 24),
+
+          Text(
+            "Add a Photo",
+            style: GoogleFonts.sora(
+              fontSize: 18,
+              fontWeight: FontWeight.w800,
+              color: const Color(0xFF0F172A),
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            "Choose how you'd like to attach an image",
+            style: GoogleFonts.sora(
+              fontSize: 13,
+              color: const Color(0xFF94A3B8),
+            ),
+          ),
+          const SizedBox(height: 28),
+
+          Row(
+            children: [
+              // Camera
+              Expanded(
+                child: GestureDetector(
+                  onTap: () => Navigator.pop(context, ImageSource.camera),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 24),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFEFF6FF),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: const Color(0xFF2563EB).withOpacity(0.2),
+                        width: 1.5,
+                      ),
+                    ),
+                    child: Column(
+                      children: [
+                        Container(
+                          width: 56,
+                          height: 56,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF2563EB),
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: const Icon(
+                            Icons.camera_alt_rounded,
+                            color: Colors.white,
+                            size: 28,
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        Text(
+                          "Camera",
+                          style: GoogleFonts.sora(
+                            fontWeight: FontWeight.w700,
+                            fontSize: 14,
+                            color: const Color(0xFF0F172A),
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          "Take a new photo",
+                          style: GoogleFonts.sora(
+                            fontSize: 11,
+                            color: const Color(0xFF94A3B8),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+
+              const SizedBox(width: 16),
+
+              // Gallery
+              Expanded(
+                child: GestureDetector(
+                  onTap: () => Navigator.pop(context, ImageSource.gallery),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 24),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF8FAFC),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: const Color(0xFFE2E8F0),
+                        width: 1.5,
+                      ),
+                    ),
+                    child: Column(
+                      children: [
+                        Container(
+                          width: 56,
+                          height: 56,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF64748B),
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: const Icon(
+                            Icons.photo_library_rounded,
+                            color: Colors.white,
+                            size: 28,
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        Text(
+                          "Gallery",
+                          style: GoogleFonts.sora(
+                            fontWeight: FontWeight.w700,
+                            fontSize: 14,
+                            color: const Color(0xFF0F172A),
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          "Pick from library",
+                          style: GoogleFonts.sora(
+                            fontSize: 11,
+                            color: const Color(0xFF94A3B8),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 16),
+
+          SizedBox(
+            width: double.infinity,
+            child: TextButton(
+              onPressed: () => Navigator.pop(context),
+              style: TextButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+              ),
+              child: Text(
+                "Cancel",
+                style: GoogleFonts.sora(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: const Color(0xFF94A3B8),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
