@@ -100,7 +100,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
 
                   const Text(
-                    "CITIFIX DZ",
+                    "CITYFIX DZ",
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 28,
