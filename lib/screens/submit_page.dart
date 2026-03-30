@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:cityfix/controllers/report_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
@@ -13,10 +14,8 @@ class SubmitPage extends StatefulWidget {
 class _SubmitPageState extends State<SubmitPage> {
   int step = 1;
   String? selectedCategory;
-
-  //!!!!!!!!!!!!!11!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  File? _selectedImage;
-  final ImagePicker _picker = ImagePicker();
+  final TextEditingController descriptionController = TextEditingController();
+  final ReportController _reportController = ReportController();
 
   final List<Map<String, dynamic>> categories = [
     {"id": "roads", "label": "Roads", "icon": "🕳️"},
@@ -27,38 +26,38 @@ class _SubmitPageState extends State<SubmitPage> {
     {"id": "other", "label": "Other", "icon": "📋"},
   ];
 
-  //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!11111
-
-  void _showImageSourceSheet() {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      builder: (_) => const _ImagePickerSheet(),
-    ).then((source) {
-      if (source != null) _pickImage(source);
+  @override
+  void initState() {
+    super.initState();
+    _reportController.getLocation().then((_) {
+      setState(() {});
     });
   }
 
-  Future<void> _pickImage(ImageSource source) async {
-    try {
-      final XFile? pickedFile = await _picker.pickImage(
-        source: source, //camera or gallery
-        imageQuality: 85,
-        maxWidth: 1080,
-      );
-      if (pickedFile != null) {
-        setState(() => _selectedImage = File(pickedFile.path));
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Could not access ${source == ImageSource.camera ? 'camera' : 'gallery'}.',
-          ),
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
-    }
+  void _showImageSourceSheet() {
+    showModalBottomSheet(
+          context: context,
+          backgroundColor: Colors.transparent,
+          builder: (_) => const _ImagePickerSheet(),
+        )
+        .then((source) {
+          if (source != null) {
+            _reportController.pickImage(source).then((_) {
+              setState(() {}); // refresh UI to show picked image
+            });
+          }
+        })
+        .catchError((e) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                'Could not access camera or gallery.',
+                style: const TextStyle(color: Colors.white),
+              ),
+              backgroundColor: const Color(0xFF1D4ED8),
+            ),
+          );
+        });
   }
 
   @override
@@ -258,7 +257,7 @@ class _SubmitPageState extends State<SubmitPage> {
         GestureDetector(
           onTap: _showImageSourceSheet,
           child: Container(
-            height: _selectedImage != null ? 220 : 180,
+            height: _reportController.selectedImage != null ? 220 : 180,
             width: double.infinity,
             decoration: BoxDecoration(
               color: Colors.white,
@@ -266,17 +265,21 @@ class _SubmitPageState extends State<SubmitPage> {
               border: Border.all(color: const Color(0xFFE2E8F0), width: 2),
             ),
             clipBehavior: Clip.antiAlias,
-            child: _selectedImage != null
+            child: _reportController.selectedImage != null
                 ? Stack(
                     fit: StackFit.expand,
                     children: [
-                      Image.file(_selectedImage!, fit: BoxFit.cover),
+                      Image.file(
+                        _reportController.selectedImage!,
+                        fit: BoxFit.cover,
+                      ),
                       Positioned(
                         top: 8,
                         right:
                             8, //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                         child: GestureDetector(
-                          onTap: () => setState(() => _selectedImage = null),
+                          onTap: () =>
+                              setState(() => _reportController.clearImage()),
                           child: Container(
                             padding: const EdgeInsets.all(4),
                             decoration: const BoxDecoration(
@@ -356,9 +359,12 @@ class _SubmitPageState extends State<SubmitPage> {
                       ),
                     ),
                     Text(
-                      "Oran, Algeria",
+                      _reportController.currentAddress ??
+                          "Fetching location...",
                       style: GoogleFonts.sora(
-                        color: const Color(0xFF10B981),
+                        color: _reportController.currentAddress == null
+                            ? Colors.orange
+                            : const Color(0xFF10B981),
                         fontSize: 12,
                         fontWeight: FontWeight.w700,
                       ),
@@ -366,7 +372,8 @@ class _SubmitPageState extends State<SubmitPage> {
                   ],
                 ),
               ),
-              const Icon(Icons.check, color: Color(0xFF10B981), size: 24),
+              if (_reportController.currentAddress != null)
+                const Icon(Icons.check, color: Color(0xFF10B981), size: 24),
             ],
           ),
         ),
@@ -375,6 +382,7 @@ class _SubmitPageState extends State<SubmitPage> {
 
         // ── Description Field ───────────────────────────────────────────────
         TextField(
+          controller: descriptionController,
           maxLines: 4,
           style: GoogleFonts.sora(fontSize: 14, color: const Color(0xFF0F172A)),
           decoration: InputDecoration(
@@ -421,7 +429,37 @@ class _SubmitPageState extends State<SubmitPage> {
             const SizedBox(width: 12),
             Expanded(
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: () async {
+                  setState(() {});
+                  try {
+                    await _reportController.submitReport(
+                      selectedCategory!,
+                      descriptionController.text,
+                    );
+                    setState(() {});
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text(
+                          'Report submitted successfully!',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        backgroundColor: Color(0xFF16A34A),
+                      ),
+                    );
+                    Navigator.pop(context);
+                  } catch (e) {
+                    setState(() {});
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          'Failed to submit report: $e',
+                          style: const TextStyle(color: Colors.white),
+                        ),
+                        backgroundColor: const Color(0xFFDC2626),
+                      ),
+                    );
+                  }
+                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF2563EB),
                   padding: const EdgeInsets.symmetric(vertical: 18),
@@ -429,14 +467,16 @@ class _SubmitPageState extends State<SubmitPage> {
                     borderRadius: BorderRadius.circular(16),
                   ),
                 ),
-                child: Text(
-                  "Submit Report",
-                  style: GoogleFonts.sora(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 15,
-                    color: Colors.white,
-                  ),
-                ),
+                child: _reportController.isLoading
+                    ? const CircularProgressIndicator(color: Colors.white)
+                    : Text(
+                        "Submit Report",
+                        style: GoogleFonts.sora(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 15,
+                          color: Colors.white,
+                        ),
+                      ),
               ),
             ),
           ],
