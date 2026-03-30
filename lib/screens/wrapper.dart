@@ -23,13 +23,6 @@ class _WrapperState extends State<Wrapper> {
     super.initState();
     authController = AuthController();
     _checkOnboardingStatus();
-
-    // Écoute les changements de session Firebase
-    FirebaseAuth.instance.authStateChanges().listen((user) async {
-      if (user != null) {
-        await authController.getUserName();
-      }
-    });
   }
 
   // Vérifie SharedPreferences une seule fois au démarrage
@@ -55,7 +48,7 @@ class _WrapperState extends State<Wrapper> {
       return const OnboardingScreen();
     }
 
-    // 2. Sinon, on gère l'Auth Firebase normalement
+    // 2. Handle auth normally ===================================================================================================
     return StreamBuilder<User?>(
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (context, snapshot) {
@@ -65,10 +58,25 @@ class _WrapperState extends State<Wrapper> {
           );
         }
 
+        // 3. User is logged in — wait for name before showing HomeScreen
         if (snapshot.hasData && snapshot.data != null) {
-          return const HomeScreen();
+          return FutureBuilder<String>(
+            future: authController.getUserName(),
+            builder: (context, nameSnapshot) {
+              if (!nameSnapshot.hasData) {
+                return const Scaffold(
+                  backgroundColor: Colors.white,
+                  body: Center(
+                    child: CircularProgressIndicator(color: Color(0xFF1D4ED8)),
+                  ),
+                );
+              }
+              return const HomeScreen();
+            },
+          );
         }
 
+        // 4. User is not logged in
         return const AuthChoiceScreen();
       },
     );
