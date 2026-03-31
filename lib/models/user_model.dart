@@ -1,5 +1,6 @@
 class UserModel {
-  final String? id; // optional, Firebase generates this
+  final String?
+  id; // it can be null when creating a new user, but will be filled when fetching from Firestore
   final String fullName;
   final String email;
   final String password;

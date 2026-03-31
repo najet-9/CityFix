@@ -64,6 +64,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '141477545510',
     projectId: 'cityfix-c5565',
     storageBucket: 'cityfix-c5565.firebasestorage.app',
+    androidClientId: '141477545510-7i83i9cvs07agh6fsnlhlhppfs856ift.apps.googleusercontent.com',
+    iosClientId: '141477545510-a8p26l28arde87r0r93hmbvl4fbsjm3s.apps.googleusercontent.com',
     iosBundleId: 'com.example.cityfix',
   );
 
@@ -73,6 +75,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '141477545510',
     projectId: 'cityfix-c5565',
     storageBucket: 'cityfix-c5565.firebasestorage.app',
+    androidClientId: '141477545510-7i83i9cvs07agh6fsnlhlhppfs856ift.apps.googleusercontent.com',
+    iosClientId: '141477545510-a8p26l28arde87r0r93hmbvl4fbsjm3s.apps.googleusercontent.com',
     iosBundleId: 'com.example.cityfix',
   );
 
@@ -85,4 +89,5 @@ class DefaultFirebaseOptions {
     storageBucket: 'cityfix-c5565.firebasestorage.app',
     measurementId: 'G-TSTDLH2GCM',
   );
+
 }
