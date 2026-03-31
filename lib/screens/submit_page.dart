@@ -452,10 +452,10 @@ class _SubmitPageState extends State<SubmitPage> {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text(
-                          'Failed to submit report: $e',
+                          'Failed to submit report: ${e.toString().replaceAll('Exception: ', '')}',
                           style: const TextStyle(color: Colors.white),
                         ),
-                        backgroundColor: const Color(0xFFDC2626),
+                        backgroundColor: const Color(0xFF1D4ED8),
                       ),
                     );
                   }

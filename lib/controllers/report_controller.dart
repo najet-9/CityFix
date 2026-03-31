@@ -113,9 +113,17 @@ class ReportController extends ChangeNotifier {
 
   //[4]=========Submit Report=========
   Future<void> submitReport(String category, String description) async {
-    isLoading = true;
-    notifyListeners();
     try {
+      if (selectedImage == null || description.isEmpty) {
+        throw Exception('please fill in all fields and select an image');
+      }
+      if (currentPosition == null) {
+        throw Exception(
+          'Unable to get location. Please allow location access and try again.',
+        );
+      }
+      isLoading = true;
+      notifyListeners();
       String imageUrl = await uploadImageToCloudinary();
       ReportModel report = ReportModel(
         userId: FirebaseAuth.instance.currentUser!.uid,
