@@ -2,11 +2,11 @@ import 'package:cityfix/controllers/auth_controller.dart';
 import 'package:cityfix/screens/incident_map_screen.dart';
 import 'package:cityfix/screens/report_detail_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:cityfix/screens/profile_screen.dart';
 import 'package:cityfix/screens/submit_page.dart';
 import 'package:cityfix/screens/alerts_screen.dart';
-import 'package:cityfix/models/user_model.dart'; // Si c'est là que se trouve UserModel
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -36,28 +36,20 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FE),
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // --- HEADER BLEU GRADIENT ---
+            // --- HEADER SECTION ---
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.only(
-                top: 60,
-                left: 25,
-                right: 25,
-                bottom: 30,
-              ),
+              padding: const EdgeInsets.only(top: 60, left: 25, right: 25, bottom: 30),
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [
-                    Color(0xFF1D4ED8),
-                    Color(0xFF2563EB),
-                    Color(0xFF3B82F6),
-                  ],
+                  colors: [Color(0xFF1D4ED8), Color(0xFF2563EB), Color(0xFF3B82F6)],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
@@ -69,47 +61,22 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Hello + logout button on same row
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        "Hello, $userName",
-                        style: const TextStyle(
-                          color: Colors.white70,
-                          fontSize: 16,
-                        ),
-                      ),
+                      Text("Hello, $userName", style: const TextStyle(color: Colors.white70, fontSize: 16)),
                       GestureDetector(
                         onTap: () => _signOut(),
                         child: Container(
-                          width: 38,
-                          height: 38,
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.15),
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(
-                            Icons.logout,
-                            color: Colors.white,
-                            size: 18,
-                          ),
+                          width: 38, height: 38,
+                          decoration: BoxDecoration(color: Colors.white.withOpacity(0.15), shape: BoxShape.circle),
+                          child: const Icon(Icons.logout, color: Colors.white, size: 18),
                         ),
                       ),
                     ],
                   ),
-
-                  const Text(
-                    "CITYFIX DZ",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                  const Text("CITYFIX DZ", style: TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 25),
-
-                  // Cartes de statistiques
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -122,202 +89,130 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
 
-            // --- FILTRES CATÉGORIES ---
+            // --- CATEGORIES SECTION ---
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 20),
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 padding: const EdgeInsets.only(left: 20),
                 child: Row(
-                  children: ["All", "Roads", "Lighting", "Water", "Waste"].map((
-                    cat,
-                  ) {
+                  children: ["All", "Roads", "Lighting", "Water", "Waste"].map((cat) {
                     bool isSelected = cat == "All";
                     return Container(
                       margin: const EdgeInsets.only(right: 12),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 22,
-                        vertical: 10,
-                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 10),
                       decoration: BoxDecoration(
-                        color: isSelected
-                            ? const Color(0xFF2B58E4)
-                            : Colors.white,
+                        color: isSelected ? const Color(0xFF2B58E4) : Colors.white,
                         borderRadius: BorderRadius.circular(25),
-                        boxShadow: [
-                          if (!isSelected)
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.05),
-                              blurRadius: 5,
-                            ),
-                        ],
+                        boxShadow: [if (!isSelected) BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 5)],
                       ),
-                      child: Text(
-                        cat,
-                        style: TextStyle(
-                          color: isSelected ? Colors.white : Colors.black54,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
+                      child: Text(cat, style: TextStyle(color: isSelected ? Colors.white : Colors.black54, fontWeight: FontWeight.w600)),
                     );
                   }).toList(),
                 ),
               ),
             ),
 
-            // --- TITRE RÉCENT ---
+            // --- RECENT REPORTS TITLE ---
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 25),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
-                    "Recent Reports",
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF1A1D1E),
-                    ),
-                  ),
+                  const Text("Recent Reports", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF1A1D1E))),
                   TextButton(onPressed: () {}, child: const Text("View all →")),
                 ],
               ),
             ),
 
-            // --- CARTE DE SIGNALEMENT AVEC NAVIGATION ---
-            _buildReportCard(),
-
+            // --- DYNAMIC REPORTS LIST ---
+            StreamBuilder<QuerySnapshot>(
+              stream: FirebaseFirestore.instance.collection('reports').snapshots(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                  return const Center(child: Padding(
+                    padding: EdgeInsets.all(20.0),
+                    child: Text("No reports found."),
+                  ));
+                }
+                return Column(
+                  children: snapshot.data!.docs.map((doc) {
+                    return _buildReportCard(doc);
+                  }).toList(),
+                );
+              },
+            ),
             const SizedBox(height: 20),
           ],
         ),
       ),
 
-      // --- BARRE DE NAVIGATION (Comme ton image) ---
+      // --- BOTTOM NAVIGATION BAR ---
       bottomNavigationBar: Container(
         height: 100,
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(35),
-            topRight: Radius.circular(35),
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.08),
-              blurRadius: 20,
-              offset: const Offset(0, -5),
-            ),
-          ],
+          borderRadius: const BorderRadius.only(topLeft: Radius.circular(35), topRight: Radius.circular(35)),
+          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.08), blurRadius: 20, offset: const Offset(0, -5))],
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             _navItem(Icons.home_filled, "Home", isSelected: true),
-            _navItem(
-              Icons.map_outlined,
-              "Map",
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => IncidentMapScreen()),
-                );
-              },
-            ),
-
-            // BOUTON CENTRAL "+" CARRÉ ARRONDI
+            _navItem(Icons.map_outlined, "Map", onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => IncidentMapScreen()))),
             GestureDetector(
-              onTap: () {
-                // Ici tu pourras naviguer vers la page Submit plus tard
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const SubmitPage()),
-                );
-              },
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const SubmitPage())),
               child: Container(
-                height: 55,
-                width: 55,
+                height: 55, width: 55,
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFF4267F2), Color(0xFF2B58E4)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
+                  gradient: const LinearGradient(colors: [Color(0xFF4267F2), Color(0xFF2B58E4)], begin: Alignment.topLeft, end: Alignment.bottomRight),
                   borderRadius: BorderRadius.circular(18),
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color(0xFF2B58E4).withOpacity(0.4),
-                      blurRadius: 15,
-                      offset: const Offset(0, 8),
-                    ),
-                  ],
+                  boxShadow: [BoxShadow(color: const Color(0xFF2B58E4).withOpacity(0.4), blurRadius: 15, offset: const Offset(0, 8))],
                 ),
                 child: const Icon(Icons.add, color: Colors.white, size: 32),
               ),
             ),
-
-            _navItem(
-              Icons.notifications_none_outlined,
-              "Alerts",
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const AlertsScreen()),
-                );
-              },
-            ),
-            _navItem(
-              Icons.person_outline,
-              "Profile",
-              onTap: () {
-                // Cette commande dit à l'application d'afficher TON interface
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => ProfileScreen()),
-                );
-              },
-            ),
+            _navItem(Icons.notifications_none_outlined, "Alerts", onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const AlertsScreen()))),
+            _navItem(Icons.person_outline, "Profile", onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => ProfileScreen()))),
           ],
         ),
       ),
     );
   }
-
-  // --- WIDGETS DE COMPOSANTS ---
-
+  // --- STAT CARD WIDGET ---
   Widget _buildStatCard(String value, String label) {
     return Container(
       width: 100,
       padding: const EdgeInsets.symmetric(vertical: 15),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.15),
-        borderRadius: BorderRadius.circular(20),
-      ),
+      decoration: BoxDecoration(color: Colors.white.withOpacity(0.15), borderRadius: BorderRadius.circular(20)),
       child: Column(
         children: [
-          Text(
-            value,
-            style: const TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-              fontSize: 18,
-            ),
-          ),
-          Text(
-            label,
-            style: const TextStyle(color: Colors.white70, fontSize: 12),
-          ),
+          Text(value, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18)),
+          Text(label, style: const TextStyle(color: Colors.white70, fontSize: 12)),
         ],
       ),
     );
   }
 
-  // LA FONCTION QUE TU AS DEMANDÉE AVEC LA NAVIGATION
-  Widget _buildReportCard() {
+  // --- DYNAMIC REPORT CARD WIDGET ---
+  Widget _buildReportCard(QueryDocumentSnapshot doc) {
+    final data = doc.data() as Map<String, dynamic>;
+    
+    // Mapping real data from Firestore
+    final String category = data['category'] ?? 'General';
+    final String location = data['description'] ?? 'No Address'; 
+    final String imageUrl = data['imageUrl'] ?? 'https://via.placeholder.com/150';
+    final int confirmations = data['confirmationCount'] ?? 0;
+    final String status = data['status'] ?? 'pending';
+
     return GestureDetector(
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => const ReportDetailScreen()),
+          MaterialPageRoute(builder: (context) => ReportDetailScreen(reportId: doc.id)),
         );
       },
       child: Container(
@@ -325,13 +220,7 @@ class _HomeScreenState extends State<HomeScreen> {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(25),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 15,
-              offset: const Offset(0, 5),
-            ),
-          ],
+          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 15, offset: const Offset(0, 5))],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -339,36 +228,19 @@ class _HomeScreenState extends State<HomeScreen> {
             Stack(
               children: [
                 ClipRRect(
-                  borderRadius: const BorderRadius.vertical(
-                    top: Radius.circular(25),
-                  ),
+                  borderRadius: const BorderRadius.vertical(top: Radius.circular(25)),
                   child: Image.network(
-                    'https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?q=80&w=1000',
-                    height: 160,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
+                    imageUrl,
+                    height: 160, width: double.infinity, fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) => Container(height: 160, color: Colors.grey[200], child: const Icon(Icons.broken_image)),
                   ),
                 ),
                 Positioned(
-                  top: 12,
-                  right: 12,
+                  top: 12, right: 12,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 6,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.9),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: const Text(
-                      "In Progress",
-                      style: TextStyle(
-                        color: Colors.blue,
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(color: Colors.white.withOpacity(0.9), borderRadius: BorderRadius.circular(10)),
+                    child: Text(status.toUpperCase(), style: const TextStyle(color: Colors.blue, fontSize: 10, fontWeight: FontWeight.bold)),
                   ),
                 ),
               ],
@@ -381,37 +253,18 @@ class _HomeScreenState extends State<HomeScreen> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        "⚫ Pothole",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
+                      Text("⚫ ${category[0].toUpperCase()}${category.substring(1)}", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                       const SizedBox(height: 4),
-                      const Text(
-                        "Main Street, Downtown",
-                        style: TextStyle(color: Colors.grey, fontSize: 12),
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.4,
+                        child: Text(location, style: const TextStyle(color: Colors.grey, fontSize: 12), overflow: TextOverflow.ellipsis),
                       ),
                     ],
                   ),
                   Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 8,
-                    ),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.blue.shade100),
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    child: const Text(
-                      "👍 12 confirm",
-                      style: TextStyle(
-                        color: Color(0xFF2B58E4),
-                        fontWeight: FontWeight.bold,
-                        fontSize: 12,
-                      ),
-                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    decoration: BoxDecoration(border: Border.all(color: Colors.blue.shade100), borderRadius: BorderRadius.circular(15)),
+                    child: Text("👍 $confirmations confirm", style: const TextStyle(color: Color(0xFF2B58E4), fontWeight: FontWeight.bold, fontSize: 12)),
                   ),
                 ],
               ),
@@ -422,30 +275,15 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _navItem(
-    IconData icon,
-    String label, {
-    bool isSelected = false,
-    VoidCallback? onTap,
-  }) {
+  // --- NAV ITEM WIDGET ---
+  Widget _navItem(IconData icon, String label, {bool isSelected = false, VoidCallback? onTap}) {
     return GestureDetector(
-      onTap: onTap, // C'est ici qu'on autorise le clic
+      onTap: onTap,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
-            icon,
-            color: isSelected ? const Color(0xFF2B58E4) : Colors.grey[400],
-            size: 28,
-          ),
-          Text(
-            label,
-            style: TextStyle(
-              color: isSelected ? const Color(0xFF2B58E4) : Colors.grey[400],
-              fontSize: 12,
-              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-            ),
-          ),
+          Icon(icon, color: isSelected ? const Color(0xFF2B58E4) : Colors.grey[400], size: 28),
+          Text(label, style: TextStyle(color: isSelected ? const Color(0xFF2B58E4) : Colors.grey[400], fontSize: 12, fontWeight: isSelected ? FontWeight.bold : FontWeight.normal)),
         ],
       ),
     );
