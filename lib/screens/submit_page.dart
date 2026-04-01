@@ -253,7 +253,7 @@ class _SubmitPageState extends State<SubmitPage> {
         ),
         const SizedBox(height: 20),
 
-        // ── Photo Card 1 ===========================================================
+        // ── Photo Card ─────────────────────────────────────────────────────
         GestureDetector(
           onTap: _showImageSourceSheet,
           child: Container(
@@ -275,8 +275,7 @@ class _SubmitPageState extends State<SubmitPage> {
                       ),
                       Positioned(
                         top: 8,
-                        right:
-                            8, //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                        right: 8,
                         child: GestureDetector(
                           onTap: () =>
                               setState(() => _reportController.clearImage()),
@@ -437,16 +436,12 @@ class _SubmitPageState extends State<SubmitPage> {
                       descriptionController.text,
                     );
                     setState(() {});
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text(
-                          'Report submitted successfully!',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                        backgroundColor: Color(0xFF16A34A),
+                    // Navigate to the success page after a successful submission
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => const ReportSuccessPage(),
                       ),
                     );
-                    Navigator.pop(context);
                   } catch (e) {
                     setState(() {});
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -482,6 +477,123 @@ class _SubmitPageState extends State<SubmitPage> {
           ],
         ),
       ],
+    );
+  }
+}
+
+// ─── Report Success Page ──────────────────────────────────────────────────────
+
+class ReportSuccessPage extends StatelessWidget {
+  const ReportSuccessPage({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFFF8FAFC),
+      body: SafeArea(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 32),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // ── Green check icon ──────────────────────────────────────
+                Container(
+                  width: 88,
+                  height: 88,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFDCFCE7),
+                    borderRadius: BorderRadius.circular(28),
+                  ),
+                  child: const Center(
+                    child: Icon(
+                      Icons.check_rounded,
+                      color: Color(0xFF16A34A),
+                      size: 48,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 28),
+
+                // ── Title ─────────────────────────────────────────────────
+                Text(
+                  "Report Submitted!",
+                  style: GoogleFonts.sora(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w800,
+                    color: const Color(0xFF0F172A),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  "Your report has been received.",
+                  style: GoogleFonts.sora(
+                    fontSize: 14,
+                    color: const Color(0xFF64748B),
+                  ),
+                ),
+                const SizedBox(height: 32),
+
+                // ── Reference number card ─────────────────────────────────
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(
+                      vertical: 18, horizontal: 24),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFEFF6FF),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Text(
+                    "Reference #: CF-2024-0892",
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.sora(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                      color: const Color(0xFF2563EB),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+
+                // ── Submit Another button ─────────────────────────────────
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      // Pop back to SubmitPage and reset it
+                      Navigator.of(context).popUntil(
+                        (route) =>
+                            route.isFirst ||
+                            route.settings.name == '/submit',
+                      );
+                      Navigator.of(context).pushReplacement(
+                        MaterialPageRoute(
+                          builder: (_) => const SubmitPage(),
+                        ),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF2563EB),
+                      padding: const EdgeInsets.symmetric(vertical: 18),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                    ),
+                    child: Text(
+                      "Submit Another",
+                      style: GoogleFonts.sora(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 15,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

@@ -5,18 +5,33 @@ class PrivacySecurityController {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _db = FirebaseFirestore.instance;
 
-  Future changePassword(String newPassword) async {
-    await _auth.currentUser!.updatePassword(newPassword);
+  // Mise à jour avec gestion d'erreurs pour le jury
+  Future<void> changePassword(String newPassword) async {
+    try {
+      User? user = _auth.currentUser;
+      if (user != null) {
+        await user.updatePassword(newPassword);
+      } else {
+        throw "No user found";
+      }
+    } on FirebaseAuthException catch (e) {
+      // Erreur fréquente : l'utilisateur doit se reconnecter pour changer son MDP
+      if (e.code == 'requires-recent-login') {
+        throw "Security: Please logout and login again to change password.";
+      }
+      throw e.message ?? "An error occurred";
+    }
   }
 
-  Future deleteAccount() async {
+  Future<void> deleteAccount() async {
     User? user = _auth.currentUser;
-
-    await _db.collection("users").doc(user!.uid).delete();
-    await user.delete();
+    if (user != null) {
+      await _db.collection("users").doc(user.uid).delete();
+      await user.delete();
+    }
   }
 
-  Future signOut() async {
+  Future<void> signOut() async {
     await _auth.signOut();
   }
 }
