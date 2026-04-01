@@ -1,19 +1,28 @@
 class UserModel {
-  final String?
-  id; // it can be null when creating a new user, but will be filled when fetching from Firestore
+  final String? id; 
   final String fullName;
   final String email;
   final String password;
+  final String phoneNumber; 
+  final String wilaya;     
 
   UserModel({
     this.id,
     required this.fullName,
     required this.email,
     required this.password,
+    required this.phoneNumber, 
+    required this.wilaya,      
   });
 
-  // converts UserModel object into a map for Firestore
+  // Convertit l'objet UserModel en Map pour Firestore
   Map<String, dynamic> toJson() {
-    return {'fullName': fullName, 'email': email, 'password': password};
+    return {
+      'fullName': fullName,
+      'email': email,
+      'password': password,
+      'phoneNumber': phoneNumber, 
+      'wilaya': wilaya,           
+    };
   }
 }
