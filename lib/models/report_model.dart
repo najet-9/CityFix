@@ -7,7 +7,7 @@ class ReportModel {
   final String imageUrl;
   final String description;
   final GeoPoint location;
-  final String status; //  "pending", "in_progress", "resolved"
+  final String status;
   final int confirmationCount;
 
   ReportModel({
@@ -20,6 +20,24 @@ class ReportModel {
     this.status = "pending",
     this.confirmationCount = 0,
   });
+
+  //  Convert Firestore → Object
+  factory ReportModel.fromFirestore(DocumentSnapshot doc) {
+    final data = doc.data() as Map<String, dynamic>;
+
+    return ReportModel(
+      reportId: doc.id,
+      userId: data['userId'] ?? '',
+      category: data['category'] ?? '',
+      imageUrl: data['imageUrl'] ?? '',
+      description: data['description'] ?? '',
+      location: data['location'] ?? GeoPoint(0, 0),
+      status: data['status'] ?? 'pending',
+      confirmationCount: data['confirmationCount'] ?? 0,
+    );
+  }
+
+  //  Convert Object → Firestore
   Map<String, dynamic> toMap() {
     return {
       'userId': userId,
@@ -32,4 +50,8 @@ class ReportModel {
       'createdAt': FieldValue.serverTimestamp(),
     };
   }
+
+  //  Helpers pour MAP
+  double get latitude => location.latitude;
+  double get longitude => location.longitude;
 }

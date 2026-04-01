@@ -1,49 +1,70 @@
-import 'package:cityfix/controllers/map_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:cityfix/screens/home_screen.dart';
 import 'package:cityfix/screens/alerts_screen.dart';
 import 'package:cityfix/screens/profile_screen.dart';
-import 'package:cityfix/screens/submit_page.dart'; // Vérifie le chemin exact
+import 'package:cityfix/screens/submit_page.dart';
+import 'package:cityfix/services/report_service.dart';
+import 'package:cityfix/models/report_model.dart';
 
-// Importe tes autres interfaces ici pour que la navigation fonctionne
-// import 'package:cityfix/screens/home_screen.dart';
-// import 'package:cityfix/screens/profile_screen.dart';
+class IncidentMapScreen extends StatefulWidget {
+  const IncidentMapScreen({super.key});
 
-class IncidentMapScreen extends StatelessWidget {
-  final MapIncidentController controller = MapIncidentController();
+  @override
+  State<IncidentMapScreen> createState() => _IncidentMapScreenState();
+}
+
+class _IncidentMapScreenState extends State<IncidentMapScreen> {
+  final ReportService _reportService = ReportService();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
         children: [
-          // 1. La Carte
-          FlutterMap(
-            options: MapOptions(
-              initialCenter: LatLng(34.8817, -1.3167),
-              initialZoom: 13.0,
-            ),
-            children: [
-              TileLayer(
-                urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                userAgentPackageName: 'com.example.cityfix',
-              ),
-              MarkerLayer(
-                markers: controller.getIncidents().map((incident) {
-                  return Marker(
-                    point: LatLng(incident.latitude, incident.longitude),
-                    width: 40,
-                    height: 40,
-                    child: _buildMarkerIcon(incident.type),
-                  );
-                }).toList(),
-              ),
-            ],
+          //  MAP WITH FIREBASE DATA
+          StreamBuilder<List<ReportModel>>(
+            stream: _reportService.getReports(),
+            builder: (context, snapshot) {
+              if (!snapshot.hasData) {
+                return const Center(child: CircularProgressIndicator());
+              }
+
+              final reports = snapshot.data!;
+
+              return FlutterMap(
+                options: MapOptions(
+                  initialCenter: LatLng(34.8817, -1.3167), // Tlemcen
+                  initialZoom: 13.0,
+                ),
+                children: [
+                  TileLayer(
+                    urlTemplate:
+                        'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                    userAgentPackageName: 'com.example.cityfix',
+                  ),
+
+                  //  MARKERS FROM FIREBASE
+                  MarkerLayer(
+                    markers: reports.map((report) {
+                      return Marker(
+                        point: LatLng(
+                          report.location.latitude,
+                          report.location.longitude,
+                        ),
+                        width: 40,
+                        height: 40,
+                        child: _buildMarkerIcon(report.category),
+                      );
+                    }).toList(),
+                  ),
+                ],
+              );
+            },
           ),
 
-          // 2. Barre de recherche flottante
+          //  SEARCH UI (inchangé)
           Positioned(
             top: 50,
             left: 20,
@@ -51,13 +72,13 @@ class IncidentMapScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                const Text(
                   "Incident Map",
                   style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 15),
+                  padding: const EdgeInsets.symmetric(horizontal: 15),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(30),
@@ -65,7 +86,7 @@ class IncidentMapScreen extends StatelessWidget {
                       BoxShadow(color: Colors.black12, blurRadius: 10),
                     ],
                   ),
-                  child: TextField(
+                  child: const TextField(
                     decoration: InputDecoration(
                       icon: Icon(Icons.search, color: Colors.grey),
                       hintText: "Search a neighborhood...",
@@ -79,23 +100,18 @@ class IncidentMapScreen extends StatelessWidget {
         ],
       ),
 
-      // --- AJOUT DE LA BARRE DE NAVIGATION ICI ---
+      //  NAV BAR
       bottomNavigationBar: BottomAppBar(
-        shape: CircularNotchedRectangle(),
+        shape: const CircularNotchedRectangle(),
         notchMargin: 8.0,
-        child: Container(
+        child: SizedBox(
           height: 60,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               _navItem(context, Icons.home_outlined, "Home"),
-              _navItem(
-                context,
-                Icons.map,
-                "Map",
-                isSelected: true,
-              ), // Sélectionné ici
-              SizedBox(width: 40), // Espace pour le bouton central "+"
+              _navItem(context, Icons.map, "Map", isSelected: true),
+              const SizedBox(width: 40),
               _navItem(context, Icons.notifications_outlined, "Alerts"),
               _navItem(context, Icons.person_outline, "Profile"),
             ],
@@ -103,17 +119,13 @@ class IncidentMapScreen extends StatelessWidget {
         ),
       ),
 
-      // Bouton central "+"
+      //  BUTTON
       floatingActionButton: FloatingActionButton(
-        backgroundColor: const Color(0xFF2B58E4), // Ton bleu spécifique
+        backgroundColor: const Color(0xFF2B58E4),
         onPressed: () {
-          // On ajoute la navigation ici :
           Navigator.push(
             context,
-            MaterialPageRoute(
-              builder: (context) =>
-                  const SubmitPage(), // Assure-toi que SubmitPage est bien importée en haut
-            ),
+            MaterialPageRoute(builder: (_) => const SubmitPage()),
           );
         },
         child: const Icon(Icons.add, color: Colors.white),
@@ -122,8 +134,7 @@ class IncidentMapScreen extends StatelessWidget {
     );
   }
 
-  // Fonction de navigation personnalisée
-
+  //  NAVIGATION
   Widget _navItem(
     BuildContext context,
     IconData icon,
@@ -132,25 +143,23 @@ class IncidentMapScreen extends StatelessWidget {
   }) {
     return GestureDetector(
       onTap: () {
-        // Si on clique sur un bouton qui n'est pas déjà sélectionné
         if (!isSelected) {
           if (label == "Home") {
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) => HomeScreen()),
+              MaterialPageRoute(builder: (_) => const HomeScreen()),
             );
           } else if (label == "Alerts") {
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) => AlertsScreen()),
+              MaterialPageRoute(builder: (_) => const AlertsScreen()),
             );
           } else if (label == "Profile") {
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) => ProfileScreen()),
+              MaterialPageRoute(builder: (_) => ProfileScreen()),
             );
           }
-          // Pas besoin de condition pour Map car on y est déjà (isSelected est true)
         }
       },
       child: Column(
@@ -169,18 +178,31 @@ class IncidentMapScreen extends StatelessWidget {
     );
   }
 
+  //  MARKER STYLE
   Widget _buildMarkerIcon(String type) {
+    IconData icon;
+
+    switch (type.toLowerCase()) {
+      case "water":
+        icon = Icons.water_drop;
+        break;
+      case "lighting":
+        icon = Icons.lightbulb;
+        break;
+      case "roads":
+        icon = Icons.warning;
+        break;
+      default:
+        icon = Icons.location_on;
+    }
+
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
         shape: BoxShape.circle,
         boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 5)],
       ),
-      child: Icon(
-        type == 'water' ? Icons.water_drop : Icons.local_activity,
-        color: Colors.blue,
-        size: 20,
-      ),
+      child: Icon(icon, color: Colors.blue, size: 20),
     );
   }
 }
