@@ -5,7 +5,6 @@ class PrivacySecurityController {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _db = FirebaseFirestore.instance;
 
-  // Mise à jour avec gestion d'erreurs pour le jury
   Future<void> changePassword(String newPassword) async {
     try {
       User? user = _auth.currentUser;

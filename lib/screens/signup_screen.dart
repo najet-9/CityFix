@@ -32,7 +32,10 @@ class _SignupScreenState extends State<SignupScreen> {
         "33 Illizi", "34 Bordj Bou Arreridj", "35 Boumerdès", "36 El Tarf", "37 Tindouf", "38 Tissemsilt", "39 El Oued",
          "40 Khenchela", "41 Souk Ahras", "42 Tipaza", "43 Mila", "44 Aïn Defla", "45 Naâma", "46 Aïn Témouchent",
           "47 Ghardaïa", "48 Relizane", "49 El M'Ghair", "50 El Meniaa", "51 Ouled Djellal", "52 Bordj Baji Mokhtar", 
-          "53 Béni Abbès", "54 Timimoun", "55 Touggourt", "56 Djanet", "57 In Salah", "58 In Guezzam"
+          "53 Béni Abbès", "54 Timimoun", "55 Touggourt", "56 Djanet", "57 In Salah", "58 In Guezzam", "59 Aflou",
+           "60 El Abiodh Sidi Cheikh","61 El Aricha""62 Kantara","63 Barika","64 Bou Saâda","65 Bir El Ater","66 Ksar El Boukhari",
+           "67 Ksar Chellala","68 Aïn Oussara","69 Messaad"
+
   ];
 
   bool showPass = false;
