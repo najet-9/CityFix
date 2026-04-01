@@ -19,6 +19,8 @@ class AuthController {
     if (user.fullName.isEmpty ||
         user.email.isEmpty ||
         user.password.isEmpty ||
+        user.phoneNumber.isEmpty || 
+        user.wilaya.isEmpty ||
         confirmPassword.isEmpty) {
       throw Exception('Please fill in all fields');
     }
