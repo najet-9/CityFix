@@ -3,14 +3,31 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cityfix/firebase_options.dart';
 import 'package:cityfix/screens/wrapper.dart';
+// 1. Importation du package de traduction
+import 'package:easy_localization/easy_localization.dart';
 
 void main() async {
-  // 1. Initialisation des services Flutter et Firebase
+  // Initialisation des services Flutter
   WidgetsFlutterBinding.ensureInitialized();
+  
+  // 2. Initialisation de Easy Localization
+  await EasyLocalization.ensureInitialized();
+  
+  // Initialisation Firebase
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  // 2. Lancement de l'application
-  runApp(const MyApp());
+  // 3. Enveloppement de l'application avec EasyLocalization
+  runApp(
+    EasyLocalization(
+      // Liste des langues supportées (Anglais, Français, Arabe)
+      supportedLocales: const [Locale('en'), Locale('fr'), Locale('ar')],
+      // Chemin vers tes fichiers JSON
+      path: 'assets/translations', 
+      // Langue par défaut si la traduction est manquante
+      fallbackLocale: const Locale('en'),
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -22,16 +39,19 @@ class MyApp extends StatelessWidget {
       title: 'CityFix DZ',
       debugShowCheckedModeBanner: false,
 
+      // 4. Configuration des délégués de localisation
+      localizationsDelegates: context.localizationDelegates,
+      supportedLocales: context.supportedLocales,
+      locale: context.locale,
+
       theme: ThemeData(
         textTheme: GoogleFonts.soraTextTheme(),
-
         scaffoldBackgroundColor: const Color(0xFFF8F9FE),
-
         primaryColor: const Color(0xFF2B58E4),
         useMaterial3: true,
       ),
 
-      // Le Wrapper est le point d'entrée qui gère la logique de session
+      // Le Wrapper gère toujours ta session utilisateur
       home: const Wrapper(),
     );
   }
