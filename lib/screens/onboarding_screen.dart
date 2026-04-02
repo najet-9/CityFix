@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:cityfix/screens/wrapper.dart'; // IMPORTANT : Import du wrapper
+import 'package:cityfix/screens/wrapper.dart'; 
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
