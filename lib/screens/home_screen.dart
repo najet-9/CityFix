@@ -9,6 +9,7 @@ import 'package:cityfix/screens/submit_page.dart';
 import 'package:cityfix/screens/alerts_screen.dart';
 import 'package:cityfix/services/report_service.dart';
 import 'package:cityfix/models/report_model.dart';
+import 'all_reports_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -177,7 +178,17 @@ class _HomeScreenState extends State<HomeScreen> {
                       color: Color(0xFF1A1D1E),
                     ),
                   ),
-                  TextButton(onPressed: () {}, child: const Text("View all →")),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const AllReportsScreen(),
+                        ),
+                      );
+                    },
+                    child: Text("View all →"),
+                  ),
                 ],
               ),
             ),
@@ -199,7 +210,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   );
                 }
 
-                final reports = snapshot.data!;
+                final reports = snapshot.data!.take(1).toList();
 
                 return Column(
                   children: reports.map((report) {
