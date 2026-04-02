@@ -78,7 +78,6 @@ class AuthController {
     cachedUserName = null;
     await _auth.signOut();
   }
-
   //get username -------------------------------------------------------------------------
   static String? cachedUserName;
 

@@ -10,6 +10,7 @@ import 'package:cityfix/screens/alerts_screen.dart';
 import 'package:cityfix/services/report_service.dart';
 import 'package:cityfix/models/report_model.dart';
 import 'all_reports_screen.dart';
+import 'category_reports_screen.dart'; // Assure-toi d'importer la nouvelle page
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -121,41 +122,47 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ],
               ),
-            ), // --- CATEGORIES SECTION ---
+            ), 
+
+            // --- CATEGORIES SECTION (MODIFIED) ---
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 20),
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 padding: const EdgeInsets.only(left: 20),
                 child: Row(
-                  children: ["All", "Roads", "Lighting", "Water", "Waste"].map((
-                    cat,
-                  ) {
+                  children: ["All", "Roads", "Lighting", "Water", "Waste", "Parks", "Other"].map((cat) {
                     bool isSelected = cat == "All";
-                    return Container(
-                      margin: const EdgeInsets.only(right: 12),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 22,
-                        vertical: 10,
-                      ),
-                      decoration: BoxDecoration(
-                        color: isSelected
-                            ? const Color(0xFF2B58E4)
-                            : Colors.white,
-                        borderRadius: BorderRadius.circular(25),
-                        boxShadow: [
-                          if (!isSelected)
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.05),
-                              blurRadius: 5,
-                            ),
-                        ],
-                      ),
-                      child: Text(
-                        cat,
-                        style: TextStyle(
-                          color: isSelected ? Colors.white : Colors.black54,
-                          fontWeight: FontWeight.w600,
+                    return GestureDetector(
+                      onTap: () {
+                        // NAVIGATION VERS LA PAGE DE CATÉGORIE
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => CategoryReportsScreen(category: cat),
+                          ),
+                        );
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.only(right: 12),
+                        padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 10),
+                        decoration: BoxDecoration(
+                          color: isSelected ? const Color(0xFF2B58E4) : Colors.white,
+                          borderRadius: BorderRadius.circular(25),
+                          boxShadow: [
+                            if (!isSelected)
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.05),
+                                blurRadius: 5,
+                              ),
+                          ],
+                        ),
+                        child: Text(
+                          cat,
+                          style: TextStyle(
+                            color: isSelected ? Colors.white : Colors.black54,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ),
                     );
@@ -187,7 +194,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       );
                     },
-                    child: Text("View all →"),
+                    child: const Text("View all →"),
                   ),
                 ],
               ),
@@ -222,7 +229,8 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(height: 20),
           ],
         ),
-      ), // --- BOTTOM NAVIGATION BAR ---
+      ), 
+      // --- BOTTOM NAVIGATION BAR ---
       bottomNavigationBar: Container(
         height: 100,
         decoration: BoxDecoration(
@@ -290,7 +298,7 @@ class _HomeScreenState extends State<HomeScreen> {
               "Profile",
               onTap: () => Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => ProfileScreen()),
+                MaterialPageRoute(builder: (context) => const ProfileScreen()),
               ),
             ),
           ],
