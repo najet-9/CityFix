@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:cityfix/widgets/input_field.dart';
 import 'package:cityfix/widgets/primary_gradient_button.dart';
 import 'package:cityfix/screens/home_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -20,7 +21,45 @@ class _LoginScreenState extends State<LoginScreen> {
 
   bool showPass = false;
   bool loading = false;
+
   //==============================================BACKEND==============================
+  
+  // 2. Added Reset Password Logic
+  _resetPassword() async {
+    String email = _emailController.text.trim();
+
+    if (email.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Please enter your email address first."),
+          backgroundColor: Color(0xFF1D4ED8),
+        ),
+      );
+      return;
+    }
+
+    try {
+      // Send reset email via Firebase
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+      
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Password reset link sent! Check your inbox."),
+          backgroundColor: Colors.green,
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString().replaceAll('Exception: ', '')),
+          backgroundColor: Colors.orange,
+        ),
+      );
+    }
+  }
+
   _signIn() async {
     //try to sign in
     try {
@@ -185,14 +224,18 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                     const SizedBox(height: 12),
-                    const Align(
+                    // 3. Wrapped "Forgot password?" text with GestureDetector
+                    Align(
                       alignment: Alignment.centerRight,
-                      child: Text(
-                        'Forgot password?',
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: Color(0xFF1D4ED8),
-                          fontWeight: FontWeight.w600,
+                      child: GestureDetector(
+                        onTap: _resetPassword,
+                        child: const Text(
+                          'Forgot password?',
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: Color(0xFF1D4ED8),
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ),
                     ),
@@ -309,8 +352,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ],
                     ),
-                  ],
-                ),
+                  ],),
               ),
             ],
           ),
