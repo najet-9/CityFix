@@ -447,10 +447,10 @@ class _SubmitPageState extends State<SubmitPage> {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text(
-                          'Failed to submit report: $e',
+                          'Failed to submit report: ${e.toString().replaceAll('Exception: ', '')}',
                           style: const TextStyle(color: Colors.white),
                         ),
-                        backgroundColor: const Color(0xFFDC2626),
+                        backgroundColor: const Color(0xFF1D4ED8),
                       ),
                     );
                   }
@@ -538,7 +538,9 @@ class ReportSuccessPage extends StatelessWidget {
                 Container(
                   width: double.infinity,
                   padding: const EdgeInsets.symmetric(
-                      vertical: 18, horizontal: 24),
+                    vertical: 18,
+                    horizontal: 24,
+                  ),
                   decoration: BoxDecoration(
                     color: const Color(0xFFEFF6FF),
                     borderRadius: BorderRadius.circular(16),
@@ -563,13 +565,10 @@ class ReportSuccessPage extends StatelessWidget {
                       // Pop back to SubmitPage and reset it
                       Navigator.of(context).popUntil(
                         (route) =>
-                            route.isFirst ||
-                            route.settings.name == '/submit',
+                            route.isFirst || route.settings.name == '/submit',
                       );
                       Navigator.of(context).pushReplacement(
-                        MaterialPageRoute(
-                          builder: (_) => const SubmitPage(),
-                        ),
+                        MaterialPageRoute(builder: (_) => const SubmitPage()),
                       );
                     },
                     style: ElevatedButton.styleFrom(

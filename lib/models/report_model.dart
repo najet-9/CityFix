@@ -9,6 +9,8 @@ class ReportModel {
   final GeoPoint location;
   final String status;
   final int confirmationCount;
+  final Timestamp? createdAt;
+  final String? address;
 
   ReportModel({
     this.reportId,
@@ -19,6 +21,8 @@ class ReportModel {
     required this.location,
     this.status = "pending",
     this.confirmationCount = 0,
+    this.createdAt,
+    this.address,
   });
 
   //  Convert Firestore → Object
@@ -34,10 +38,12 @@ class ReportModel {
       location: data['location'] ?? GeoPoint(0, 0),
       status: data['status'] ?? 'pending',
       confirmationCount: data['confirmationCount'] ?? 0,
+      createdAt: data['createdAt'] as Timestamp?,
+      address: data['address'] ?? '',
     );
   }
 
-  //  Convert Object → Firestore
+  //  Convert Object → Firestore (R)
   Map<String, dynamic> toMap() {
     return {
       'userId': userId,
@@ -48,6 +54,7 @@ class ReportModel {
       'status': status,
       'confirmationCount': confirmationCount,
       'createdAt': FieldValue.serverTimestamp(),
+      'address': address,
     };
   }
 

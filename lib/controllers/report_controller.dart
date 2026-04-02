@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:cityfix/controllers/auth_controller.dart';
 import 'package:cityfix/models/report_model.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -130,6 +129,7 @@ class ReportController extends ChangeNotifier {
         category: category,
         imageUrl: imageUrl,
         description: description,
+        address: currentAddress,
         location: GeoPoint(
           currentPosition!.latitude,
           currentPosition!.longitude,
@@ -142,5 +142,18 @@ class ReportController extends ChangeNotifier {
       isLoading = false;
       notifyListeners();
     }
+  }
+
+  //[5]=========Reports display=========
+  Stream<List<ReportModel>> fetchReports() {
+    return _db
+        .collection("reports")
+        .where("userId", isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+        .snapshots()
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => ReportModel.fromFirestore(doc))
+              .toList(),
+        );
   }
 }
