@@ -7,6 +7,7 @@ import 'package:cityfix/screens/profile_screen.dart';
 import 'package:cityfix/screens/submit_page.dart';
 import 'package:cityfix/services/report_service.dart';
 import 'package:cityfix/models/report_model.dart';
+import 'package:geocoding/geocoding.dart';
 
 class IncidentMapScreen extends StatefulWidget {
   const IncidentMapScreen({super.key});
@@ -17,6 +18,7 @@ class IncidentMapScreen extends StatefulWidget {
 
 class _IncidentMapScreenState extends State<IncidentMapScreen> {
   final ReportService _reportService = ReportService();
+  final MapController _mapController = MapController();
 
   @override
   Widget build(BuildContext context) {
@@ -34,10 +36,7 @@ class _IncidentMapScreenState extends State<IncidentMapScreen> {
               final reports = snapshot.data!;
 
               return FlutterMap(
-                options: MapOptions(
-                  initialCenter: LatLng(34.8817, -1.3167), // Tlemcen
-                  initialZoom: 13.0,
-                ),
+                mapController: _mapController,
                 children: [
                   TileLayer(
                     urlTemplate:
@@ -86,12 +85,28 @@ class _IncidentMapScreenState extends State<IncidentMapScreen> {
                       BoxShadow(color: Colors.black12, blurRadius: 10),
                     ],
                   ),
-                  child: const TextField(
-                    decoration: InputDecoration(
+                  child: TextField(
+                    decoration: const InputDecoration(
                       icon: Icon(Icons.search, color: Colors.grey),
                       hintText: "Search a neighborhood...",
                       border: InputBorder.none,
                     ),
+                    onSubmitted: (value) async {
+                      try {
+                        List<Location> locations = await locationFromAddress(
+                          value,
+                        );
+
+                        if (locations.isNotEmpty) {
+                          final lat = locations.first.latitude;
+                          final lng = locations.first.longitude;
+
+                          _mapController.move(LatLng(lat, lng), 15);
+                        }
+                      } catch (e) {
+                        print("Erreur: $e");
+                      }
+                    },
                   ),
                 ),
               ],
