@@ -8,6 +8,9 @@ import 'package:cityfix/screens/privacy_security_screen.dart';
 import 'package:cityfix/screens/incident_map_screen.dart';
 import 'package:cityfix/screens/my_reports_screen.dart';
 import 'package:cityfix/screens/help_support_screen.dart';
+// AJOUT DE L'IMPORT POUR LA TRADUCTION
+import 'package:easy_localization/easy_localization.dart';
+import 'package:cityfix/screens/language_screen.dart'; // Assure-toi que ce fichier existe
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -49,7 +52,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "Account",
+                    "account".tr(), // Traduction de Account
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -60,31 +63,31 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   _buildMenuItem(
                     context,
                     Icons.assignment_outlined,
-                    "My Reports",
+                    "my_reports".tr(), // Utilisation de .tr()
                     Colors.brown[300]!,
                   ),
                   _buildMenuItem(
                     context,
                     Icons.language,
-                    "Language",
+                    "language".tr(), // Utilisation de .tr()
                     Colors.blue[300]!,
                   ),
                   _buildMenuItem(
                     context,
                     Icons.lock_outline,
-                    "Privacy & Security",
+                    "privacy_security".tr(), // Utilisation de .tr()
                     Colors.green[300]!,
                   ),
                   _buildMenuItem(
                     context,
                     Icons.help_outline,
-                    "Help & Support",
+                    "help_support".tr(), // Utilisation de .tr()
                     Colors.red[300]!,
                   ),
                   _buildMenuItem(
                     context,
                     Icons.door_front_door_outlined,
-                    "Sign Out",
+                    "sign_out".tr(), // Utilisation de .tr()
                     Colors.red[200]!,
                     isLogout: true,
                   ),
@@ -148,9 +151,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              _buildStatCard("12", "Reports"),
-              _buildStatCard("8", "Resolved"),
-              _buildStatCard("145", "Points"),
+              _buildStatCard("12", "reports".tr()),
+              _buildStatCard("8", "resolved".tr()),
+              _buildStatCard("145", "points".tr()),
             ],
           ),
         ],
@@ -226,17 +229,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 context,
               ).pushNamedAndRemoveUntil('/login', (route) => false);
             }
-          } else if (title == "Privacy & Security") {
+          } else if (title == "language".tr()) { // Logique de navigation pour la langue
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => LanguageScreen()),
+            );
+          } else if (title == "privacy_security".tr()) {
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => PrivacySecurityScreen()),
             );
-          } else if (title == "My Reports") {
+          } else if (title == "my_reports".tr()) {
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => const MyReportsScreen()),
             );
-          } else if (title == "Help & Support") {
+          } else if (title == "help_support".tr()) {
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => const HelpSupportScreen()),
@@ -267,7 +275,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         children: [
           _navItem(
             Icons.home_outlined,
-            "Home",
+            "home".tr(),
             onTap: () {
               Navigator.pushAndRemoveUntil(
                 context,
@@ -278,12 +286,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           _navItem(
             Icons.map_outlined,
-            "Maps",
+            "maps".tr(),
             onTap: () => Navigator.pushReplacement(
               context,
               MaterialPageRoute(
                 builder: (context) => IncidentMapScreen(),
-              ), // Redirection vers la Map
+              ),
             ),
           ),
           GestureDetector(
@@ -315,7 +323,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           _navItem(
             Icons.notifications_outlined,
-            "Alerts",
+            "alerts".tr(),
             onTap: () {
               Navigator.pushReplacement(
                 context,
@@ -323,7 +331,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               );
             },
           ),
-          _navItem(Icons.person, "Profile", isSelected: true),
+          _navItem(Icons.person, "profile".tr(), isSelected: true),
         ],
       ),
     );
