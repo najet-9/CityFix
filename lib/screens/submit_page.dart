@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:cityfix/controllers/report_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -350,7 +349,7 @@ class _SubmitPageState extends State<SubmitPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "GPS Location Detected",
+                      "GPS Location ",
                       style: GoogleFonts.sora(
                         fontWeight: FontWeight.w700,
                         color: const Color(0xFF0F172A),

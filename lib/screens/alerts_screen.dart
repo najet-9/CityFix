@@ -1,10 +1,64 @@
+import 'package:cityfix/controllers/report_controller.dart';
+import 'package:cityfix/models/notification_model.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:cityfix/screens/profile_screen.dart';
 import 'package:cityfix/screens/submit_page.dart';
 import 'package:cityfix/screens/incident_map_screen.dart';
 
-class AlertsScreen extends StatelessWidget {
+class AlertsScreen extends StatefulWidget {
   const AlertsScreen({super.key});
+
+  @override
+  State<AlertsScreen> createState() => _AlertsScreenState();
+}
+
+class _AlertsScreenState extends State<AlertsScreen> {
+  ReportController _reportController = ReportController();
+  IconData _getNotificationIcon(String type) {
+    switch (type) {
+      case 'resolved':
+        return Icons.check_circle;
+      case 'assigned':
+        return Icons.refresh;
+      case 'urgent':
+        return Icons.warning_amber_rounded;
+      case 'confirmation':
+        return Icons.thumb_up;
+      default:
+        return Icons.notifications;
+    }
+  }
+
+  Color _getNotificationColor(String type) {
+    switch (type) {
+      case 'resolved':
+        return Colors.green;
+      case 'assigned':
+        return Colors.blue;
+      case 'urgent':
+        return Colors.orange;
+      case 'confirmation':
+        return Colors.amber;
+      default:
+        return Colors.grey;
+    }
+  }
+
+  Color _getNotificationBg(String type) {
+    switch (type) {
+      case 'resolved':
+        return Colors.green.shade100;
+      case 'assigned':
+        return Colors.blue.shade50;
+      case 'urgent':
+        return Colors.orange.shade50;
+      case 'confirmation':
+        return Colors.amber.shade50;
+      default:
+        return Colors.grey.shade100;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,120 +104,99 @@ class AlertsScreen extends StatelessWidget {
           ),
           const SizedBox(height: 20),
           // LISTE DES NOTIFICATIONS
+          const SizedBox(height: 20),
+          // Replace everything below with just this:
           Expanded(
-            child: ListView(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              children: [
-                const Padding(
-                  padding: EdgeInsets.only(bottom: 10, left: 5),
-                  child: Text(
-                    "TODAY",
-                    style: TextStyle(
-                      color: Colors.grey,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 12,
-                    ),
-                  ),
-                ),
-
-                _buildNotificationCard(
-                  Icons.check_circle,
-                  Colors.green.shade100,
-                  Colors.green,
-                  "Your report #031 has been resolved",
-                  showDot: true,
-                  dotColor: Colors.teal,
-                ),
-                _buildNotificationCard(
-                  Icons.refresh,
-                  Colors.blue.shade50,
-                  Colors.blue,
-                  "Report #020 assigned to field team",
-                  showDot: true,
-                  dotColor: Colors.blue,
-                ),
-                _buildNotificationCard(
-                  Icons.warning_amber_rounded,
-                  Colors.orange.shade50,
-                  Colors.orange,
-                  "Urgent incident detected near you",
-                ),
-                _buildNotificationCard(
-                  Icons.thumb_up,
-                  Colors.amber.shade50,
-                  Colors.amber,
-                  "2 people confirmed your report",
-                ),
-              ],
+            child: StreamBuilder<List<NotificationModel>>(
+              stream: _reportController.fetchNotifications(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                }
+                final notifications = snapshot.data ?? [];
+                if (notifications.isEmpty) {
+                  return const Center(child: Text('No notifications yet'));
+                }
+                return ListView.builder(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  itemCount: notifications.length,
+                  itemBuilder: (context, index) =>
+                      _buildNotificationCard(notifications[index]),
+                );
+              },
             ),
           ),
-        ],
-      ),
-
-      // LA BARRE DE NAVIGATION EST ICI, HORS DU BODY
+        ], // closes Column children
+      ), // closes Column
       bottomNavigationBar: _buildCustomBottomBar(context),
-    );
+    ); // closes Scaffold
   }
 
   // MÉTHODE POUR UNE CARTE DE NOTIFICATION
-
-  Widget _buildNotificationCard(
-    IconData icon,
-    Color bgIcon,
-    Color iconColor,
-    String title, {
-    bool showDot = false,
-    Color dotColor = Colors.transparent,
-  }) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 15),
-      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 10,
-            offset: const Offset(0, 5),
-          ),
-        ],
-      ),
-
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: bgIcon,
-              borderRadius: BorderRadius.circular(12),
+  Widget _buildNotificationCard(NotificationModel notification) {
+    return GestureDetector(
+      onTap: () {
+        _reportController.markNotificationAsRead(notification.notificationId!);
+      },
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 15),
+        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.04),
+              blurRadius: 10,
+              offset: const Offset(0, 5),
             ),
-            child: Icon(icon, color: iconColor, size: 24),
-          ),
+          ],
+        ),
 
-          const SizedBox(width: 15),
-          Expanded(
-            child: Text(
-              title,
-              style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
-            ),
-          ),
-          if (showDot)
+        child: Row(
+          children: [
             Container(
-              width: 8,
-              height: 8,
+              padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: dotColor,
-                shape: BoxShape.circle,
+                color: _getNotificationBg(notification.type),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(
+                _getNotificationIcon(notification.type),
+                color: _getNotificationColor(notification.type),
+                size: 24,
               ),
             ),
-        ],
+
+            const SizedBox(width: 15),
+            Expanded(
+              child: Text(
+                notification.message,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 14,
+                ),
+              ),
+            ),
+            if (!notification.isRead)
+              Container(
+                width: 8,
+                height: 8,
+                decoration: BoxDecoration(
+                  color: _getNotificationColor(notification.type),
+                  shape: BoxShape.circle,
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }
 
   // LA BARRE DE NAVIGATION PERSONNALISÉE
-
   Widget _buildCustomBottomBar(BuildContext context) {
     return Container(
       height: 90,

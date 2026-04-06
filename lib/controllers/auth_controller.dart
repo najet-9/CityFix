@@ -3,7 +3,9 @@ import 'package:cityfix/screens/alerts_screen.dart';
 import 'package:cityfix/screens/home_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthController {
@@ -78,6 +80,7 @@ class AuthController {
     cachedUserName = null;
     await _auth.signOut();
   }
+
   //get username -------------------------------------------------------------------------
   static String? cachedUserName;
 

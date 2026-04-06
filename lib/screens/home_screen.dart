@@ -1,8 +1,6 @@
 import 'package:cityfix/controllers/auth_controller.dart';
 import 'package:cityfix/screens/incident_map_screen.dart';
 import 'package:cityfix/screens/report_detail_screen.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:cityfix/screens/profile_screen.dart';
 import 'package:cityfix/screens/submit_page.dart';
@@ -122,7 +120,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ],
               ),
-            ), 
+            ),
 
             // --- CATEGORIES SECTION (MODIFIED) ---
             Padding(
@@ -131,42 +129,59 @@ class _HomeScreenState extends State<HomeScreen> {
                 scrollDirection: Axis.horizontal,
                 padding: const EdgeInsets.only(left: 20),
                 child: Row(
-                  children: ["All", "Roads", "Lighting", "Water", "Waste", "Parks", "Other"].map((cat) {
-                    bool isSelected = cat == "All";
-                    return GestureDetector(
-                      onTap: () {
-                        // NAVIGATION VERS LA PAGE DE CATÉGORIE
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => CategoryReportsScreen(category: cat),
+                  children:
+                      [
+                        "All",
+                        "Roads",
+                        "Lighting",
+                        "Water",
+                        "Waste",
+                        "Parks",
+                        "Other",
+                      ].map((cat) {
+                        bool isSelected = cat == "All";
+                        return GestureDetector(
+                          onTap: () {
+                            // NAVIGATION VERS LA PAGE DE CATÉGORIE
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    CategoryReportsScreen(category: cat),
+                              ),
+                            );
+                          },
+                          child: Container(
+                            margin: const EdgeInsets.only(right: 12),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 22,
+                              vertical: 10,
+                            ),
+                            decoration: BoxDecoration(
+                              color: isSelected
+                                  ? const Color(0xFF2B58E4)
+                                  : Colors.white,
+                              borderRadius: BorderRadius.circular(25),
+                              boxShadow: [
+                                if (!isSelected)
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.05),
+                                    blurRadius: 5,
+                                  ),
+                              ],
+                            ),
+                            child: Text(
+                              cat,
+                              style: TextStyle(
+                                color: isSelected
+                                    ? Colors.white
+                                    : Colors.black54,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
                           ),
                         );
-                      },
-                      child: Container(
-                        margin: const EdgeInsets.only(right: 12),
-                        padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 10),
-                        decoration: BoxDecoration(
-                          color: isSelected ? const Color(0xFF2B58E4) : Colors.white,
-                          borderRadius: BorderRadius.circular(25),
-                          boxShadow: [
-                            if (!isSelected)
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.05),
-                                blurRadius: 5,
-                              ),
-                          ],
-                        ),
-                        child: Text(
-                          cat,
-                          style: TextStyle(
-                            color: isSelected ? Colors.white : Colors.black54,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    );
-                  }).toList(),
+                      }).toList(),
                 ),
               ),
             ),
@@ -229,7 +244,7 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(height: 20),
           ],
         ),
-      ), 
+      ),
       // --- BOTTOM NAVIGATION BAR ---
       bottomNavigationBar: Container(
         height: 100,

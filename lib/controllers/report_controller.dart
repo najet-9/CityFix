@@ -1,12 +1,15 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:cityfix/controllers/auth_controller.dart';
+import 'package:cityfix/models/notification_model.dart';
 import 'package:cityfix/models/report_model.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
@@ -121,6 +124,14 @@ class ReportController extends ChangeNotifier {
           'Unable to get location. Please allow location access and try again.',
         );
       }
+      //here we extract the wilaya from the address of the report
+      String wilaya = currentAddress!
+          .split(',')[1]
+          .trim()
+          .replaceAll(' Province', '');
+
+      print('currentAddress: $currentAddress');
+      print('wilaya: $wilaya');
       isLoading = true;
       notifyListeners();
       String imageUrl = await uploadImageToCloudinary();
@@ -136,6 +147,26 @@ class ReportController extends ChangeNotifier {
         ),
       );
       await _db.collection("reports").add(report.toMap());
+
+      //send notif (nearby users in the same wilaya)=========================================================
+      // fetch nearby users
+
+      QuerySnapshot users = await _db
+          .collection('users')
+          .where('wilaya', isEqualTo: wilaya)
+          .get();
+      // notify each nearby user except the one who submitted
+      for (var user in users.docs) {
+        if (user.id != FirebaseAuth.instance.currentUser!.uid) {
+          await _db.collection('notifications').add({
+            'userId': user.id,
+            'type': 'urgent',
+            'message': 'Urgent incident detected near you!',
+            'isRead': false,
+            'createdAt': FieldValue.serverTimestamp(),
+          });
+        }
+      }
     } catch (e) {
       rethrow;
     } finally {
@@ -144,7 +175,7 @@ class ReportController extends ChangeNotifier {
     }
   }
 
-  //[5]=========Reports display=========
+  //[5]=========MyReports (in profile ) display=========
   Stream<List<ReportModel>> fetchReports() {
     return _db
         .collection("reports")
@@ -156,4 +187,27 @@ class ReportController extends ChangeNotifier {
               .toList(),
         );
   }
+
+  //[7]=========Notifs=========
+  Stream<List<NotificationModel>> fetchNotifications() {
+    return _db
+        .collection("notifications")
+        .where("userId", isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+        .orderBy('createdAt', descending: true)
+        .snapshots()
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => NotificationModel.fromFirestore(doc))
+              .toList(),
+        );
+  }
+
+  //[8]=========Mark notification as read=========
+  Future<void> markNotificationAsRead(String notificationId) async {
+    await _db.collection('notifications').doc(notificationId).update({
+      'isRead': true,
+    });
+  }
 }
+
+//wrapper , main , auth controller , report controller , report detail screen
