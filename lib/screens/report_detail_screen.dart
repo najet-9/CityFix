@@ -103,6 +103,32 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
           'isRead': false,
           'type': 'confirmation',
         });
+
+        // fetch report owner's oneSignalId
+        final userDoc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(data['userId'])
+            .get();
+        String? oneSignalId = userDoc.data()?['oneSignalId'];
+
+        // send push notification directly
+        if (oneSignalId != null) {
+          final response = await http.post(
+            Uri.parse('https://onesignal.com/api/v1/notifications'),
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Basic ${dotenv.env['ONESIGNAL_API_KEY']}',
+            },
+            body: jsonEncode({
+              'app_id': 'a20c368d-e7a7-420b-8cdf-e6266b6e82ed',
+              'include_aliases': {
+                'onesignal_id': [oneSignalId],
+              },
+              'target_channel': 'push',
+              'contents': {'en': 'Someone confirmed your report!'},
+            }),
+          );
+        }
         //========================================================================
         if (mounted) {
           Navigator.pop(context);

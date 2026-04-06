@@ -78,6 +78,9 @@ class AuthController {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('userName');
     cachedUserName = null;
+    await _db.collection('users').doc(_auth.currentUser!.uid).update({
+      'oneSignalId': null,
+    });
     await _auth.signOut();
   }
 
@@ -105,6 +108,16 @@ class AuthController {
     await prefs.setString('userName', cachedUserName!);
 
     return cachedUserName!;
+  }
+
+  //save OneSignal Player ID -------------------------------------------------------------------------
+  Future<void> saveOneSignalPlayerId() async {
+    final playerId = await OneSignal.User.getOnesignalId();
+    if (playerId != null && _auth.currentUser != null) {
+      await _db.collection('users').doc(_auth.currentUser!.uid).update({
+        'oneSignalId': playerId,
+      });
+    }
   }
 
   // Google Sign-In ----------------------------------------------------------------

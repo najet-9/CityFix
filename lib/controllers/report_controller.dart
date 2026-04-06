@@ -150,7 +150,7 @@ class ReportController extends ChangeNotifier {
 
       //send notif (nearby users in the same wilaya)=========================================================
       // fetch nearby users
-
+      // notify each nearby user except the one who submitted
       QuerySnapshot users = await _db
           .collection('users')
           .where('wilaya', isEqualTo: wilaya)
@@ -165,6 +165,15 @@ class ReportController extends ChangeNotifier {
             'isRead': false,
             'createdAt': FieldValue.serverTimestamp(),
           });
+          // send push notification
+          String? oneSignalId =
+              (user.data() as Map<String, dynamic>)['oneSignalId'];
+          if (oneSignalId != null) {
+            await sendPushNotification(
+              oneSignalId,
+              'Urgent incident detected near you!',
+            );
+          }
         }
       }
     } catch (e) {
@@ -207,6 +216,25 @@ class ReportController extends ChangeNotifier {
     await _db.collection('notifications').doc(notificationId).update({
       'isRead': true,
     });
+  }
+
+  //[9]=========Send push notification (OneSignal)=========
+  Future<void> sendPushNotification(String oneSignalId, String message) async {
+    final response = await http.post(
+      Uri.parse('https://onesignal.com/api/v1/notifications'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Basic ${dotenv.env['ONESIGNAL_API_KEY']}',
+      },
+      body: jsonEncode({
+        'app_id': 'a20c368d-e7a7-420b-8cdf-e6266b6e82ed',
+        'include_aliases': {
+          'onesignal_id': [oneSignalId],
+        },
+        'target_channel': 'push',
+        'contents': {'en': message},
+      }),
+    );
   }
 }
 

@@ -18,6 +18,17 @@ void main() async {
   // Initialisation Firebase
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
+  await dotenv.load(fileName: ".env");
+  OneSignal.Debug.setLogLevel(OSLogLevel.verbose);
+
+  OneSignal.initialize("a20c368d-e7a7-420b-8cdf-e6266b6e82ed");
+
+  OneSignal.Notifications.addForegroundWillDisplayListener((event) {
+    event.notification.display(); // force showing notification
+  });
+
+  OneSignal.Notifications.requestPermission(true);
+
   // 3. Enveloppement de l'application avec EasyLocalization
   runApp(
     EasyLocalization(
