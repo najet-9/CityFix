@@ -2,6 +2,8 @@ import 'package:cityfix/controllers/report_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:cityfix/screens/language_screen.dart';
 
 class SubmitPage extends StatefulWidget {
   const SubmitPage({Key? key}) : super(key: key);
@@ -17,12 +19,12 @@ class _SubmitPageState extends State<SubmitPage> {
   final ReportController _reportController = ReportController();
 
   final List<Map<String, dynamic>> categories = [
-    {"id": "roads", "label": "Roads", "icon": "🕳️"},
-    {"id": "lighting", "label": "Lighting", "icon": "💡"},
-    {"id": "water", "label": "Water", "icon": "💧"},
-    {"id": "waste", "label": "Waste", "icon": "🗑️"},
-    {"id": "parks", "label": "Parks", "icon": "🌿"},
-    {"id": "other", "label": "Other", "icon": "📋"},
+    {"id": "roads", "label": "Roads".tr(), "icon": "🕳️"},
+    {"id": "lighting", "label": "Lighting".tr(), "icon": "💡"},
+    {"id": "water", "label": "Water".tr(), "icon": "💧"},
+    {"id": "waste", "label": "Waste".tr(), "icon": "🗑️"},
+    {"id": "parks", "label": "Parks".tr(), "icon": "🌿"},
+    {"id": "other", "label": "Other".tr(), "icon": "📋"},
   ];
 
   @override
@@ -50,7 +52,7 @@ class _SubmitPageState extends State<SubmitPage> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
-                'Could not access camera or gallery.',
+                'Could not access camera or gallery.'.tr(),
                 style: const TextStyle(color: Colors.white),
               ),
               backgroundColor: const Color(0xFF1D4ED8),
@@ -73,7 +75,7 @@ class _SubmitPageState extends State<SubmitPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "New",
+                    "New".tr(),
                     style: GoogleFonts.sora(
                       color: Colors.white70,
                       fontSize: 12,
@@ -82,7 +84,7 @@ class _SubmitPageState extends State<SubmitPage> {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    "Submit a Report",
+                    "Submit a Report".tr(),
                     style: GoogleFonts.sora(
                       color: Colors.white,
                       fontSize: 24,
@@ -92,9 +94,9 @@ class _SubmitPageState extends State<SubmitPage> {
                   const SizedBox(height: 20),
                   Row(
                     children: [
-                      _buildProgressIndicator("Category", step >= 1),
+                      _buildProgressIndicator("Category".tr(), step >= 1),
                       const SizedBox(width: 12),
-                      _buildProgressIndicator("Details", step >= 2),
+                      _buildProgressIndicator("Details".tr(), step >= 2),
                     ],
                   ),
                 ],
@@ -143,7 +145,7 @@ class _SubmitPageState extends State<SubmitPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "What's the issue?",
+          "What's the issue?".tr(),
           style: GoogleFonts.sora(
             fontWeight: FontWeight.w800,
             fontSize: 18,
@@ -152,7 +154,7 @@ class _SubmitPageState extends State<SubmitPage> {
         ),
         const SizedBox(height: 6),
         Text(
-          "Select the category that best describes the problem.",
+          "Select the category that best describes the problem.".tr(),
           style: GoogleFonts.sora(fontSize: 13, color: const Color(0xFF64748B)),
         ),
         const SizedBox(height: 24),
@@ -225,7 +227,7 @@ class _SubmitPageState extends State<SubmitPage> {
               ),
             ),
             child: Text(
-              "Continue →",
+              "Continue →".tr(),
               style: GoogleFonts.sora(
                 fontWeight: FontWeight.w700,
                 fontSize: 15,
@@ -243,7 +245,7 @@ class _SubmitPageState extends State<SubmitPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "Add Photo & Location",
+          "Add Photo & Location".tr(),
           style: GoogleFonts.sora(
             fontWeight: FontWeight.w800,
             fontSize: 18,
@@ -300,7 +302,7 @@ class _SubmitPageState extends State<SubmitPage> {
                       const Text("📷", style: TextStyle(fontSize: 40)),
                       const SizedBox(height: 8),
                       Text(
-                        "Tap to take a photo",
+                        "Tap to take a photo".tr(),
                         style: GoogleFonts.sora(
                           color: const Color(0xFF64748B),
                           fontWeight: FontWeight.w700,
@@ -309,7 +311,7 @@ class _SubmitPageState extends State<SubmitPage> {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        "or upload from gallery",
+                        "or upload from gallery".tr(),
                         style: GoogleFonts.sora(
                           color: const Color(0xFF94A3B8),
                           fontSize: 12,
@@ -349,7 +351,7 @@ class _SubmitPageState extends State<SubmitPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "GPS Location ",
+                      "GPS Location ".tr(),
                       style: GoogleFonts.sora(
                         fontWeight: FontWeight.w700,
                         color: const Color(0xFF0F172A),
@@ -358,7 +360,7 @@ class _SubmitPageState extends State<SubmitPage> {
                     ),
                     Text(
                       _reportController.currentAddress ??
-                          "Fetching location...",
+                          "Fetching location...".tr(),
                       style: GoogleFonts.sora(
                         color: _reportController.currentAddress == null
                             ? Colors.orange
@@ -384,7 +386,7 @@ class _SubmitPageState extends State<SubmitPage> {
           maxLines: 4,
           style: GoogleFonts.sora(fontSize: 14, color: const Color(0xFF0F172A)),
           decoration: InputDecoration(
-            hintText: "Describe the problem in detail...",
+            hintText: "Describe the problem in detail...".tr(),
             hintStyle: GoogleFonts.sora(color: const Color(0xFF94A3B8)),
             filled: true,
             fillColor: Colors.white,
@@ -464,7 +466,7 @@ class _SubmitPageState extends State<SubmitPage> {
                 child: _reportController.isLoading
                     ? const CircularProgressIndicator(color: Colors.white)
                     : Text(
-                        "Submit Report",
+                        "Submit Report".tr(),
                         style: GoogleFonts.sora(
                           fontWeight: FontWeight.w700,
                           fontSize: 15,
@@ -516,7 +518,7 @@ class ReportSuccessPage extends StatelessWidget {
 
                 // ── Title ─────────────────────────────────────────────────
                 Text(
-                  "Report Submitted!",
+                  "Report Submitted!".tr(),
                   style: GoogleFonts.sora(
                     fontSize: 24,
                     fontWeight: FontWeight.w800,
@@ -525,7 +527,7 @@ class ReportSuccessPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  "Your report has been received.",
+                  "Your report has been received.".tr(),
                   style: GoogleFonts.sora(
                     fontSize: 14,
                     color: const Color(0xFF64748B),
@@ -578,7 +580,7 @@ class ReportSuccessPage extends StatelessWidget {
                       ),
                     ),
                     child: Text(
-                      "Submit Another",
+                      "Submit Another".tr(),
                       style: GoogleFonts.sora(
                         fontWeight: FontWeight.w700,
                         fontSize: 15,
@@ -624,7 +626,7 @@ class _ImagePickerSheet extends StatelessWidget {
           const SizedBox(height: 24),
 
           Text(
-            "Add a Photo",
+            "Add a Photo".tr(),
             style: GoogleFonts.sora(
               fontSize: 18,
               fontWeight: FontWeight.w800,
@@ -633,7 +635,7 @@ class _ImagePickerSheet extends StatelessWidget {
           ),
           const SizedBox(height: 6),
           Text(
-            "Choose how you'd like to attach an image",
+            "Choose how you'd like to attach an image".tr(),
             style: GoogleFonts.sora(
               fontSize: 13,
               color: const Color(0xFF94A3B8),
@@ -674,7 +676,7 @@ class _ImagePickerSheet extends StatelessWidget {
                         ),
                         const SizedBox(height: 12),
                         Text(
-                          "Camera",
+                          "Camera".tr(),
                           style: GoogleFonts.sora(
                             fontWeight: FontWeight.w700,
                             fontSize: 14,
@@ -683,7 +685,7 @@ class _ImagePickerSheet extends StatelessWidget {
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          "Take a new photo",
+                          "Take a new photo".tr(),
                           style: GoogleFonts.sora(
                             fontSize: 11,
                             color: const Color(0xFF94A3B8),
@@ -728,7 +730,7 @@ class _ImagePickerSheet extends StatelessWidget {
                         ),
                         const SizedBox(height: 12),
                         Text(
-                          "Gallery",
+                          "Gallery".tr(),
                           style: GoogleFonts.sora(
                             fontWeight: FontWeight.w700,
                             fontSize: 14,
@@ -737,7 +739,7 @@ class _ImagePickerSheet extends StatelessWidget {
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          "Pick from library",
+                          "Pick from library".tr(),
                           style: GoogleFonts.sora(
                             fontSize: 11,
                             color: const Color(0xFF94A3B8),
@@ -764,7 +766,7 @@ class _ImagePickerSheet extends StatelessWidget {
                 ),
               ),
               child: Text(
-                "Cancel",
+                "Cancel".tr(),
                 style: GoogleFonts.sora(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,

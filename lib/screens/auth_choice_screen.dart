@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cityfix/screens/login_screen.dart';
 import 'package:cityfix/screens/signup_screen.dart';
+import 'package:cityfix/screens/language_screen.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 // WelcomeScreen: the first screen users see.
 // Full-screen blue gradient with an animated floating logo, app title, tagline,
@@ -167,7 +169,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                             duration: const Duration(milliseconds: 600),
                             curve: Curves.easeOut,
                             child: Text(
-                              'See It. Report It. Fix It.',
+                              'See It. Report It. Fix It.'.tr(),
                               style: GoogleFonts.sora(
                                 fontWeight: FontWeight.w400,
                                 fontSize: 14.5,
@@ -193,7 +195,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                         children: [
                           // Primary button: filled white → navigates to Sign Up
                           _WelcomeButton(
-                            text: 'Sign Up',
+                            text: 'Sign Up'.tr(), 
                             filled: true,
                             onPressed: widget.onGetStarted,
                           ),
@@ -202,7 +204,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
 
                           // Secondary button: outlined → navigates to Sign In
                           _WelcomeButton(
-                            text: 'Sign In',
+                            text: 'Sign In'.tr(), 
                             filled: false,
                             onPressed: widget.onLogin,
                           ),

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:cityfix/models/report_model.dart';
 import 'package:cityfix/services/report_service.dart';
 import 'package:cityfix/screens/report_detail_screen.dart';
+import 'package:cityfix/screens/language_screen.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class CategoryReportsScreen extends StatelessWidget {
   final String category;
@@ -14,7 +16,8 @@ class CategoryReportsScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FE),
       appBar: AppBar(
-        title: Text("$category Reports"),
+        title: Text(
+          "$category Reports.tr()"),
         backgroundColor: const Color(0xFF2B58E4),
         foregroundColor: Colors.white,
         elevation: 0,
@@ -29,11 +32,11 @@ class CategoryReportsScreen extends StatelessWidget {
 
           // Filtrage local des rapports par catégorie
           final reports = snapshot.data?.where((r) => 
-            category == "All" ? true : r.category.toLowerCase() == category.toLowerCase()
+            category == "All".tr() ? true : r.category.toLowerCase() == category.toLowerCase()
           ).toList() ?? [];
 
           if (reports.isEmpty) {
-            return const Center(child: Text("No reports found for this category."));
+            return Center(child: Text("No reports found for this category.".tr()));
           }
 
           return ListView.builder(
@@ -67,7 +70,7 @@ class CategoryReportsScreen extends StatelessWidget {
               child: Image.network(report.imageUrl, height: 150, width: double.infinity, fit: BoxFit.cover),
             ),
             ListTile(
-              title: Text(report.category, style: const TextStyle(fontWeight: FontWeight.bold)),
+              title: Text(report.category.tr(), style: const TextStyle(fontWeight: FontWeight.bold)),
               subtitle: Text(report.description, maxLines: 1, overflow: TextOverflow.ellipsis),
               trailing: Text("👍 ${report.confirmationCount}"),
             ),

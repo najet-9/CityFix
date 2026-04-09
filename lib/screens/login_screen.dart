@@ -6,6 +6,8 @@ import 'package:cityfix/widgets/input_field.dart';
 import 'package:cityfix/widgets/primary_gradient_button.dart';
 import 'package:cityfix/screens/home_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:easy_localization/easy_localization.dart' as ez; 
+import 'package:cityfix/screens/language_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -30,9 +32,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (email.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Please enter your email address first."),
-          backgroundColor: Color(0xFF1D4ED8),
+        SnackBar(
+          content: Text(ez.tr("Please enter your email address first.")), // Changé en ez.tr()
+          backgroundColor: const Color(0xFF1D4ED8),
         ),
       );
       return;
@@ -44,8 +46,8 @@ class _LoginScreenState extends State<LoginScreen> {
       
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Password reset link sent! Check your inbox."),
+        SnackBar(
+          content: Text(ez.tr("Password reset link sent! Check your inbox.")), // Changé en ez.tr()
           backgroundColor: Colors.green,
         ),
       );
@@ -167,9 +169,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
                         const SizedBox(height: 28),
-                        const Text(
-                          'Welcome back ',
-                          style: TextStyle(
+                        Text(
+                          ez.tr('Welcome back '), // Changé en ez.tr()
+                          style: const TextStyle(
                             fontWeight: FontWeight.w700,
                             fontSize: 26,
                             color: Colors.white,
@@ -177,9 +179,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
                         const SizedBox(height: 6),
-                        const Text(
-                          'Sign in to continue improving your city',
-                          style: TextStyle(
+                        Text(
+                          ez.tr('Sign in to continue improving your city'), 
+                          style: const TextStyle(
                             fontSize: 14,
                             color: Color(0xBFFFFFFF),
                           ),
@@ -202,7 +204,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     InputField(
                       controller: _emailController,
                       icon: Icons.email_outlined,
-                      placeholder: 'Email address',
+                      placeholder: ez.tr('Email address'),
                       keyboardType: TextInputType.emailAddress,
                     ),
                     const SizedBox(height: 14),
@@ -210,7 +212,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     InputField(
                       controller: _passwordController,
                       icon: Icons.lock_outline,
-                      placeholder: 'Password',
+                      placeholder: ez.tr('Password'), 
                       obscureText: !showPass,
                       rightEl: IconButton(
                         icon: Icon(
@@ -229,9 +231,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       alignment: Alignment.centerRight,
                       child: GestureDetector(
                         onTap: _resetPassword,
-                        child: const Text(
-                          'Forgot password?',
-                          style: TextStyle(
+                        child: Text(
+                          ez.tr('Forgot password?'),
+                          style: const TextStyle(
                             fontSize: 13,
                             color: Color(0xFF1D4ED8),
                             fontWeight: FontWeight.w600,
@@ -249,7 +251,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           )
                         : PrimaryGradientButton(
-                            text: 'Sign In →',
+                            text: ez.tr('Sign In →'), 
                             onPressed: _signIn,
                           ),
                     const SizedBox(height: 28),
@@ -257,20 +259,20 @@ class _LoginScreenState extends State<LoginScreen> {
                     Row(
                       children: [
                         Expanded(
-                          child: Container(height: 1, color: Color(0xFFE2E8F0)),
+                          child: Container(height: 1, color: const Color(0xFFE2E8F0)),
                         ),
-                        const Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 12),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 12),
                           child: Text(
-                            'or continue with',
-                            style: TextStyle(
+                            ez.tr('or continue with'), 
+                            style: const TextStyle(
                               fontSize: 12,
                               color: Color(0xFF94A3B8),
                             ),
                           ),
                         ),
                         Expanded(
-                          child: Container(height: 1, color: Color(0xFFE2E8F0)),
+                          child: Container(height: 1, color: const Color(0xFFE2E8F0)),
                         ),
                       ],
                     ),
@@ -279,6 +281,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     OutlinedButton(
                       onPressed: () async {
                         await AuthController().signInWithGoogle();
+                        if (!mounted) return;
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
@@ -309,9 +312,9 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ),
                           const SizedBox(width: 10),
-                          const Text(
-                            'Continue with Google',
-                            style: TextStyle(
+                          Text(
+                            ez.tr('Continue with Google'), 
+                            style: const TextStyle(
                               fontWeight: FontWeight.w600,
                               fontSize: 14,
                               color: Color(0xFF0F172A),
@@ -325,9 +328,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Text(
-                          "Don't have an account? ",
-                          style: TextStyle(
+                        Text(
+                          ez.tr("Don't have an account? "), 
+                          style: const TextStyle(
                             fontSize: 14,
                             color: Color(0xFF64748B),
                           ),
@@ -341,9 +344,9 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             );
                           },
-                          child: const Text(
-                            'Sign Up',
-                            style: TextStyle(
+                          child: Text(
+                            ez.tr('Sign Up'), 
+                            style: const TextStyle(
                               fontSize: 14,
                               color: Color(0xFF1D4ED8),
                               fontWeight: FontWeight.w700,
@@ -352,7 +355,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ],
                     ),
-                  ],),
+                  ],
+                ),
               ),
             ],
           ),

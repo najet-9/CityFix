@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:cityfix/screens/language_screen.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class HelpSupportScreen extends StatefulWidget {
   const HelpSupportScreen({super.key});
@@ -12,19 +14,19 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
 
   final List<Map<String, dynamic>> _faqs = [
     {
-      'question': 'How do I submit a report?',
+      'question': 'How do I submit a report?'.tr(),
       'answer':
-          'Tap the "+" button in the bottom navigation bar. Fill in the issue category, description, and location. You can also attach a photo. Once submitted, your report will be visible to other citizens and the city team.',
+          'Tap the "+" button in the bottom navigation bar. Fill in the issue category, description, and location. You can also attach a photo. Once submitted, your report will be visible to other citizens and the city team.'.tr(),
     },
     {
-      'question': 'How long does it take to resolve an issue?',
+      'question': 'How long does it take to resolve an issue?'.tr(),
       'answer':
-          'Resolution time depends on the severity and type of issue. Most reports are reviewed within 48 hours. You\'ll receive a notification when the status of your report changes to "In Progress" or "Resolved".',
+          'Resolution time depends on the severity and type of issue. Most reports are reviewed within 48 hours. You\'ll receive a notification when the status of your report changes to "In Progress" or "Resolved".'.tr(),
     },
     {
-      'question': 'Can I edit or delete my report after submitting?',
+      'question': 'Can I edit or delete my report after submitting?'.tr(),
       'answer':
-          'Currently, reports cannot be edited after submission. If you need to remove a report, please contact our support team and provide your report ID.',
+          'Currently, reports cannot be edited after submission. If you need to remove a report, please contact our support team and provide your report ID.'.tr(),
     },
   ];
 
@@ -41,7 +43,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildSectionTitle('Frequently Asked Questions'),
+                  _buildSectionTitle('Frequently Asked Questions'.tr()),
                   const SizedBox(height: 14),
                   ..._faqs
                       .asMap()
@@ -88,14 +90,14 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
             ),
           ),
           const SizedBox(height: 16),
-          const Text(
-            'We\'re here for you',
-            style: TextStyle(color: Colors.white70, fontSize: 13),
+          Text(
+            'We\'re here for you'.tr(),
+            style: const TextStyle(color: Colors.white70, fontSize: 13),
           ),
           const SizedBox(height: 4),
-          const Text(
-            'Help & Support',
-            style: TextStyle(
+          Text(
+            'Help & Support'.tr(),
+            style: const TextStyle(
               color: Colors.white,
               fontSize: 26,
               fontWeight: FontWeight.bold,

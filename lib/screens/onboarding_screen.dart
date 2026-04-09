@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:cityfix/screens/wrapper.dart'; 
-
+import 'package:cityfix/screens/wrapper.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:cityfix/screens/language_screen.dart';
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
 
@@ -87,9 +88,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             ),
                           );
                         },
-                        child: const Text(
-                          "Skip",
-                          style: TextStyle(color: Colors.grey),
+                        child: Text(
+                          "Skip".tr(),
+                          style: const TextStyle(color: Colors.grey),
                         ),
                       ),
                       ElevatedButton(
@@ -122,7 +123,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           ),
                         ),
                         child: Text(
-                          _currentPage == 2 ? "Get Started" : "Next",
+                          _currentPage == 2 ? "Get Started".tr() : "Next".tr(),
                           style: const TextStyle(color: Colors.white),
                         ),
                       ),
@@ -152,7 +153,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           ),
           const SizedBox(height: 40),
           Text(
-            onboardingData[index]["title"]!,
+            onboardingData[index]["title"]!.tr(),
             textAlign: TextAlign.center,
             style: const TextStyle(
               fontSize: 24,
@@ -162,7 +163,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           ),
           const SizedBox(height: 20),
           Text(
-            onboardingData[index]["subtitle"]!,
+            onboardingData[index]["subtitle"]!.tr(),
             textAlign: TextAlign.center,
             style: const TextStyle(fontSize: 16, color: Colors.grey),
           ),

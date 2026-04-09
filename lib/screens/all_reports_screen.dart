@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../widgets/report_card.dart';
+import 'package:cityfix/screens/language_screen.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class AllReportsScreen extends StatelessWidget {
   const AllReportsScreen({super.key});
@@ -9,7 +11,7 @@ class AllReportsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("All Reports"),
+        title: Text("All Reports".tr()),
       ),
       body: StreamBuilder(
         stream: FirebaseFirestore.instance
@@ -28,10 +30,10 @@ class AllReportsScreen extends StatelessWidget {
               final data = reports[index];
 
               return ReportCard(
-                title: data['category'] ?? "",
+                title: (data['category'] as String).tr(),
                 description: data['description'] ?? "",
                 imageUrl: data['imageUrl'] ?? "",
-                status: data['status'] ?? "",
+                status: (data['status'] as String).tr(),
               );
             },
           );
