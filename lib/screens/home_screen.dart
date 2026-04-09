@@ -115,12 +115,15 @@ class _HomeScreenState extends State<HomeScreen> {
                   StreamBuilder<Map<String, int>>(
                     stream: context.read<ReportController>().fetchGlobalStats(),
                     builder: (context, snapshot) {
-                      final total = snapshot.data?['total']?.toString() ?? '—';
+                      final inProgress =
+                          snapshot.data?['inProgress']?.toString() ?? '—';
                       final resolved =
                           snapshot.data?['resolved']?.toString() ?? '—';
                       return Row(
                         children: [
-                          Expanded(child: _buildStatCard(total, "Reports")),
+                          Expanded(
+                            child: _buildStatCard(inProgress, "Reports"),
+                          ),
                           const SizedBox(width: 12),
                           Expanded(child: _buildStatCard(resolved, "Resolved")),
                         ],

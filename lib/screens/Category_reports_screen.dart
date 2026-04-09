@@ -21,25 +21,34 @@ class CategoryReportsScreen extends StatelessWidget {
       ),
       body: StreamBuilder<List<ReportModel>>(
         // On récupère tous les rapports et on filtre par catégorie
-        stream: _reportService.getReports(), 
+        stream: _reportService.getReports(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
 
           // Filtrage local des rapports par catégorie
-          final reports = snapshot.data?.where((r) => 
-            category == "All" ? true : r.category.toLowerCase() == category.toLowerCase()
-          ).toList() ?? [];
+          final reports =
+              snapshot.data
+                  ?.where(
+                    (r) => category == "All"
+                        ? true
+                        : r.category.toLowerCase() == category.toLowerCase(),
+                  )
+                  .toList() ??
+              [];
 
           if (reports.isEmpty) {
-            return const Center(child: Text("No reports found for this category."));
+            return const Center(
+              child: Text("No reports found for this category."),
+            );
           }
 
           return ListView.builder(
             padding: const EdgeInsets.only(top: 10, bottom: 20),
             itemCount: reports.length,
-            itemBuilder: (context, index) => _buildReportCard(context, reports[index]),
+            itemBuilder: (context, index) =>
+                _buildReportCard(context, reports[index]),
           );
         },
       ),
@@ -51,24 +60,42 @@ class CategoryReportsScreen extends StatelessWidget {
     return GestureDetector(
       onTap: () => Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => ReportDetailScreen(reportId: report.reportId!)),
+        MaterialPageRoute(
+          builder: (context) => ReportDetailScreen(reportId: report.reportId!),
+        ),
       ),
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(20),
-          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10)],
+          boxShadow: [
+            BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10),
+          ],
         ),
         child: Column(
           children: [
             ClipRRect(
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-              child: Image.network(report.imageUrl, height: 150, width: double.infinity, fit: BoxFit.cover),
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(20),
+              ),
+              child: Image.network(
+                report.imageUrl,
+                height: 150,
+                width: double.infinity,
+                fit: BoxFit.cover,
+              ),
             ),
             ListTile(
-              title: Text(report.category, style: const TextStyle(fontWeight: FontWeight.bold)),
-              subtitle: Text(report.description, maxLines: 1, overflow: TextOverflow.ellipsis),
+              title: Text(
+                report.category,
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              subtitle: Text(
+                report.description,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
               trailing: Text("👍 ${report.confirmationCount}"),
             ),
           ],
