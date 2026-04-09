@@ -149,6 +149,17 @@ class ReportController extends ChangeNotifier {
       await _db.collection("reports").add(report.toMap());
 
       //send notif (nearby users in the same wilaya)=========================================================
+      //for admin alert
+      // Inside submitReport after the report is added to Firestore:
+      await _db.collection('admin_alerts').add({
+        'title': 'New Report Submitted',
+        'desc':
+            'A new ${report.category} issue was reported in ${report.address}.',
+        'time': FieldValue.serverTimestamp(),
+        'icon': 'report',
+        'bgColor': 'amber',
+        'isRead': false,
+      });
       // fetch nearby users
       // notify each nearby user except the one who submitted
       QuerySnapshot users = await _db
@@ -243,11 +254,11 @@ class ReportController extends ChangeNotifier {
   // in_progress count + resolved count across ALL users.
   Stream<Map<String, int>> fetchGlobalStats() {
     return _db.collection('reports').snapshots().map((snapshot) {
-      //in progress
+      //in progress (all reports that are still in progress regardless of user)
       final inProgress = snapshot.docs.where((doc) {
         return (doc.data() as Map<String, dynamic>)['status'] == 'in_progress';
       }).length;
-      //resolved
+      //resolved (all reports that are resolved regardless of user)
       final resolved = snapshot.docs.where((doc) {
         return (doc.data() as Map<String, dynamic>)['status'] == 'resolved';
       }).length;
@@ -275,5 +286,3 @@ class ReportController extends ChangeNotifier {
         });
   }
 }
-
-//wrapper , main , auth controller , report controller , report detail screen

@@ -79,23 +79,36 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
       try {
         String currentReportId = widget.reportId;
 
-        await FirebaseFirestore.instance
+        // Calculate the count locally so we can check it
+        int newCount = (data['confirmationCount'] ?? 0) + 1;
+
+        // Initialize the batch here so it can handle everything
+        WriteBatch batch = FirebaseFirestore.instance.batch();
+
+        // Reference for the new confirmation sub-document
+        DocumentReference confRef = FirebaseFirestore.instance
             .collection('reports')
             .doc(currentReportId)
             .collection('confirmations')
-            .add({
-              'confirmationImg': imageUrl,
-              'description': _descriptionController.text,
-              'createdAt': FieldValue.serverTimestamp(),
-            });
+            .doc();
 
-        await FirebaseFirestore.instance
-            .collection('reports')
-            .doc(currentReportId)
-            .update({'confirmationCount': FieldValue.increment(1)});
+        batch.set(confRef, {
+          'confirmationImg': imageUrl,
+          'description': _descriptionController.text,
+          'createdAt': FieldValue.serverTimestamp(),
+        });
+
+        // Update the main report count
+        batch.update(
+          FirebaseFirestore.instance.collection('reports').doc(currentReportId),
+          {'confirmationCount': FieldValue.increment(1)},
+        );
 
         //notifs :(R)===========================================================
-        await FirebaseFirestore.instance.collection('notifications').add({
+        DocumentReference notifRef = FirebaseFirestore.instance
+            .collection('notifications')
+            .doc();
+        batch.set(notifRef, {
           'userId': data['userId'],
           'reportId': currentReportId,
           'message': 'Someone confirmed your report!',
@@ -103,6 +116,28 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
           'isRead': false,
           'type': 'confirmation',
         });
+
+        //admin alert :(R)========================================================
+        // This checks if the new confirmation hits the threshold of 20
+        if (newCount == 20) {
+          DocumentReference adminAlertRef = FirebaseFirestore.instance
+              .collection('admin_alerts')
+              .doc();
+          batch.set(adminAlertRef, {
+            'title': 'URGENT: High Priority Issue',
+            'desc':
+                'Report #${currentReportId.substring(0, 5)} has reached 20 confirmations! Immediate action recommended.',
+            'time': FieldValue.serverTimestamp(),
+            'icon': 'priority_high',
+            'bgColor': 'red',
+            'isRead': false,
+            'reportId': currentReportId,
+          });
+        }
+
+        // Commit all Firestore operations (Confirm, Count, Notif, and Admin Alert)
+        await batch.commit();
+        //========================================================================
 
         // fetch report owner's oneSignalId
         final userDoc = await FirebaseFirestore.instance
@@ -113,7 +148,7 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
 
         // send push notification directly
         if (oneSignalId != null) {
-          final response = await http.post(
+          await http.post(
             Uri.parse('https://onesignal.com/api/v1/notifications'),
             headers: {
               'Content-Type': 'application/json',
@@ -129,7 +164,7 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
             }),
           );
         }
-        //========================================================================
+
         if (mounted) {
           Navigator.pop(context);
           ScaffoldMessenger.of(context).showSnackBar(
