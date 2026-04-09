@@ -26,6 +26,8 @@ class _AlertsScreenState extends State<AlertsScreen> {
         return Icons.refresh;
       case 'urgent':
         return Icons.warning_amber_rounded;
+      case 'in_progress':
+        return Icons.refresh;
       case 'confirmation':
         return Icons.thumb_up;
       default:
@@ -43,6 +45,8 @@ class _AlertsScreenState extends State<AlertsScreen> {
         return Colors.orange;
       case 'confirmation':
         return Colors.amber;
+      case 'in_progress':
+        return Colors.blue;
       default:
         return Colors.grey;
     }
@@ -58,6 +62,8 @@ class _AlertsScreenState extends State<AlertsScreen> {
         return Colors.orange.shade50;
       case 'confirmation':
         return Colors.amber.shade50;
+      case 'in_progress':
+        return Colors.blue.shade50;
       default:
         return Colors.grey.shade100;
     }

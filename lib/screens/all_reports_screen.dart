@@ -11,12 +11,10 @@ class AllReportsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("All Reports".tr()),
+        title:  Text("All Reports".tr()),
       ),
       body: StreamBuilder(
-        stream: FirebaseFirestore.instance
-            .collection('reports')
-            .snapshots(),
+        stream: FirebaseFirestore.instance.collection('reports').snapshots(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
             return const Center(child: CircularProgressIndicator());
