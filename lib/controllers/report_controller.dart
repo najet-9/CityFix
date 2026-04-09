@@ -237,21 +237,26 @@ class ReportController extends ChangeNotifier {
     );
   }
 
-  //[10]=========Global stats for HomeScreen=========
+  //calculations===============================
 
-  // Live total & resolved count across ALL users.
+  //=========for HomeScreen=========
+  // in_progress count + resolved count across ALL users.
   Stream<Map<String, int>> fetchGlobalStats() {
     return _db.collection('reports').snapshots().map((snapshot) {
-      final total = snapshot.docs.length;
+      //in progress
+      final inProgress = snapshot.docs.where((doc) {
+        return (doc.data() as Map<String, dynamic>)['status'] == 'in_progress';
+      }).length;
+      //resolved
       final resolved = snapshot.docs.where((doc) {
         return (doc.data() as Map<String, dynamic>)['status'] == 'resolved';
       }).length;
-      return {'total': total, 'resolved': resolved};
+      return {'inProgress': inProgress, 'resolved': resolved};
     });
   }
 
-  //[11]=========User stats for ProfileScreen=========
-  // Live report count & resolved count for the current user only.
+  //=========User stats for ProfileScreen=========
+  // resolved: my resolved reports , reports count: my reports count
   Stream<Map<String, int>> fetchUserStats() {
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid == null) return Stream.value({'total': 0, 'resolved': 0});
@@ -260,7 +265,9 @@ class ReportController extends ChangeNotifier {
         .where('userId', isEqualTo: uid)
         .snapshots()
         .map((snapshot) {
+          //total my reports count (regardless of status)
           final total = snapshot.docs.length;
+          //my resolved reports count
           final resolved = snapshot.docs.where((doc) {
             return (doc.data() as Map<String, dynamic>)['status'] == 'resolved';
           }).length;
