@@ -16,8 +16,7 @@ class CategoryReportsScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FE),
       appBar: AppBar(
-        title: Text(
-          "$category Reports.tr()"),
+        title: Text("${category.tr()} ${'Reports'.tr()}"),
         backgroundColor: const Color(0xFF2B58E4),
         foregroundColor: Colors.white,
         elevation: 0,
@@ -32,12 +31,11 @@ class CategoryReportsScreen extends StatelessWidget {
 
           // Filtrage local des rapports par catégorie
           final reports = snapshot.data?.where((r) => 
-            category == "All" ? true : r.category.toLowerCase() == category.toLowerCase()
+            category == "All" .tr()? true : r.category.toLowerCase() == category.toLowerCase()
           ).toList() ?? [];
 
           if (reports.isEmpty) {
-            return const Center(child: Text("No reports found for this category."));
-          }
+return Center(child: Text("No reports found for this category.".tr()));          }
 
           return ListView.builder(
             padding: const EdgeInsets.only(top: 10, bottom: 20),
