@@ -37,6 +37,16 @@ class AuthController {
 
       // Save user info to Firestore using UID as document ID
       await _db.collection("users").doc(cred.user!.uid).set(user.toJson());
+      //send notif to admin about new user registration
+      await _db.collection('admin_alerts').add({
+        'title': 'New User Joined',
+        'desc':
+            '${user.fullName} has just created an account from ${user.wilaya}.',
+        'time': FieldValue.serverTimestamp(),
+        'icon': 'person_add',
+        'bgColor': 'blue',
+        'isRead': false,
+      });
     } on FirebaseAuthException catch (e) {
       switch (e.code) {
         case 'email-already-in-use':
