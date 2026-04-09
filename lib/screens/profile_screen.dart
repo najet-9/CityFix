@@ -1,4 +1,5 @@
 import 'package:cityfix/controllers/auth_controller.dart';
+import 'package:cityfix/controllers/report_controller.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cityfix/screens/home_screen.dart';
@@ -8,9 +9,9 @@ import 'package:cityfix/screens/privacy_security_screen.dart';
 import 'package:cityfix/screens/incident_map_screen.dart';
 import 'package:cityfix/screens/my_reports_screen.dart';
 import 'package:cityfix/screens/help_support_screen.dart';
-// AJOUT DE L'IMPORT POUR LA TRADUCTION
 import 'package:easy_localization/easy_localization.dart';
-import 'package:cityfix/screens/language_screen.dart'; // Assure-toi que ce fichier existe
+import 'package:cityfix/screens/language_screen.dart';
+import 'package:provider/provider.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -22,6 +23,7 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   final AuthController authController = AuthController();
   String userName = '';
+  String wilaya = '';
 
   @override
   void initState() {
@@ -31,9 +33,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Future<void> _loadUserName() async {
     final name = await authController.getUserName();
+    final userWilaya = await authController.getWilaya();
     if (mounted) {
       setState(() {
         userName = name;
+        wilaya = userWilaya;
       });
     }
   }
@@ -45,14 +49,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            _buildHeader(),
+            _buildHeader(context),
             Padding(
               padding: const EdgeInsets.all(20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "account".tr(), // Traduction de Account
+                    "account".tr(),
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -63,31 +67,31 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   _buildMenuItem(
                     context,
                     Icons.assignment_outlined,
-                    "my_reports".tr(), // Utilisation de .tr()
+                    "my_reports".tr(),
                     Colors.brown[300]!,
                   ),
                   _buildMenuItem(
                     context,
                     Icons.language,
-                    "language".tr(), // Utilisation de .tr()
+                    "language".tr(),
                     Colors.blue[300]!,
                   ),
                   _buildMenuItem(
                     context,
                     Icons.lock_outline,
-                    "privacy_security".tr(), // Utilisation de .tr()
+                    "privacy_security".tr(),
                     Colors.green[300]!,
                   ),
                   _buildMenuItem(
                     context,
                     Icons.help_outline,
-                    "help_support".tr(), // Utilisation de .tr()
+                    "help_support".tr(),
                     Colors.red[300]!,
                   ),
                   _buildMenuItem(
                     context,
                     Icons.door_front_door_outlined,
-                    "sign_out".tr(), // Utilisation de .tr()
+                    "sign_out".tr(),
                     Colors.red[200]!,
                     isLogout: true,
                   ),
@@ -101,7 +105,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildHeader(BuildContext context) {
+    final reportController = context.read<ReportController>();
+
     return Container(
       padding: const EdgeInsets.only(top: 60, bottom: 30),
       decoration: const BoxDecoration(
@@ -131,9 +137,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
               fontWeight: FontWeight.bold,
             ),
           ),
-          const Text(
-            "Active Citizen . Algiers",
-            style: TextStyle(color: Colors.white70),
+          Text(
+            "Active Citizen · $wilaya",
+            style: const TextStyle(color: Colors.white70),
           ),
           const SizedBox(height: 10),
           Container(
@@ -148,14 +154,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
           ),
           const SizedBox(height: 20),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              _buildStatCard("12", "reports".tr()),
-              _buildStatCard("8", "resolved".tr()),
-              _buildStatCard("145", "points".tr()),
-            ],
+          // ── REAL USER STATS ──────────────────────────────────────────
+          StreamBuilder<Map<String, int>>(
+            stream: reportController.fetchUserStats(),
+            builder: (context, snapshot) {
+              final total = snapshot.data?['total']?.toString() ?? '—';
+              final resolved = snapshot.data?['resolved']?.toString() ?? '—';
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  _buildStatCard(total, "reports".tr()),
+                  _buildStatCard(resolved, "resolved".tr()),
+                ],
+              );
+            },
           ),
+          // ─────────────────────────────────────────────────────────────
         ],
       ),
     );
@@ -229,7 +243,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 context,
               ).pushNamedAndRemoveUntil('/login', (route) => false);
             }
-          } else if (title == "language".tr()) { // Logique de navigation pour la langue
+          } else if (title == "language".tr()) {
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => LanguageScreen()),
@@ -247,7 +261,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
           } else if (title == "help_support".tr()) {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => const HelpSupportScreen()),
+              MaterialPageRoute(
+                builder: (context) => const HelpSupportScreen(),
+              ),
             );
           }
         },
@@ -289,9 +305,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             "maps".tr(),
             onTap: () => Navigator.pushReplacement(
               context,
-              MaterialPageRoute(
-                builder: (context) => IncidentMapScreen(),
-              ),
+              MaterialPageRoute(builder: (context) => IncidentMapScreen()),
             ),
           ),
           GestureDetector(

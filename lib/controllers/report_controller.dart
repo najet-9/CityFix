@@ -236,6 +236,37 @@ class ReportController extends ChangeNotifier {
       }),
     );
   }
+
+  //[10]=========Global stats for HomeScreen=========
+
+  // Live total & resolved count across ALL users.
+  Stream<Map<String, int>> fetchGlobalStats() {
+    return _db.collection('reports').snapshots().map((snapshot) {
+      final total = snapshot.docs.length;
+      final resolved = snapshot.docs.where((doc) {
+        return (doc.data() as Map<String, dynamic>)['status'] == 'resolved';
+      }).length;
+      return {'total': total, 'resolved': resolved};
+    });
+  }
+
+  //[11]=========User stats for ProfileScreen=========
+  // Live report count & resolved count for the current user only.
+  Stream<Map<String, int>> fetchUserStats() {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) return Stream.value({'total': 0, 'resolved': 0});
+    return _db
+        .collection('reports')
+        .where('userId', isEqualTo: uid)
+        .snapshots()
+        .map((snapshot) {
+          final total = snapshot.docs.length;
+          final resolved = snapshot.docs.where((doc) {
+            return (doc.data() as Map<String, dynamic>)['status'] == 'resolved';
+          }).length;
+          return {'total': total, 'resolved': resolved};
+        });
+  }
 }
 
 //wrapper , main , auth controller , report controller , report detail screen

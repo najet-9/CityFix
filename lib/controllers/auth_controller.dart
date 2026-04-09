@@ -75,9 +75,15 @@ class AuthController {
 
   //log out -------------------------------------------------------------------------
   Future signOut() async {
+    //get shared prefrences
     final prefs = await SharedPreferences.getInstance();
+    //1 remove name
     await prefs.remove('userName');
     cachedUserName = null;
+    //2 remove wilaya
+    await prefs.remove('userWilaya');
+    cachedWilaya = null;
+    //3 remove OneSignal Player ID from Firestore
     await _db.collection('users').doc(_auth.currentUser!.uid).update({
       'oneSignalId': null,
     });
@@ -108,6 +114,32 @@ class AuthController {
     await prefs.setString('userName', cachedUserName!);
 
     return cachedUserName!;
+  }
+
+  //get user wilaya -------------------------------------------------------------------------
+  static String? cachedWilaya; // ← add next to cachedUserName
+
+  Future<String> getWilaya() async {
+    // 1. memory cache
+    if (cachedWilaya != null) return cachedWilaya!;
+
+    // 2. local storage
+    final prefs = await SharedPreferences.getInstance();
+    final localWilaya = prefs.getString('userWilaya');
+    if (localWilaya != null) {
+      cachedWilaya = localWilaya;
+      return cachedWilaya!;
+    }
+
+    // 3. Firestore fallback
+    final uid = _auth.currentUser!.uid;
+    final doc = await _db.collection('users').doc(uid).get();
+    cachedWilaya = doc.data()?['wilaya'] ?? '';
+
+    // 4. save locally for next time
+    await prefs.setString('userWilaya', cachedWilaya!);
+
+    return cachedWilaya!;
   }
 
   //save OneSignal Player ID -------------------------------------------------------------------------

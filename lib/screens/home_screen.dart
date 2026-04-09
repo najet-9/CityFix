@@ -1,5 +1,7 @@
 import 'package:cityfix/controllers/auth_controller.dart';
+import 'package:cityfix/controllers/report_controller.dart';
 import 'package:cityfix/screens/incident_map_screen.dart';
+import 'package:provider/provider.dart';
 import 'package:cityfix/screens/report_detail_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:cityfix/screens/profile_screen.dart';
@@ -110,13 +112,20 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                   const SizedBox(height: 25),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      _buildStatCard("128", "Reports"),
-                      _buildStatCard("74", "Resolved"),
-                      _buildStatCard("58%", "Resolution"),
-                    ],
+                  StreamBuilder<Map<String, int>>(
+                    stream: context.read<ReportController>().fetchGlobalStats(),
+                    builder: (context, snapshot) {
+                      final total = snapshot.data?['total']?.toString() ?? '—';
+                      final resolved =
+                          snapshot.data?['resolved']?.toString() ?? '—';
+                      return Row(
+                        children: [
+                          Expanded(child: _buildStatCard(total, "Reports")),
+                          const SizedBox(width: 12),
+                          Expanded(child: _buildStatCard(resolved, "Resolved")),
+                        ],
+                      );
+                    },
                   ),
                 ],
               ),
