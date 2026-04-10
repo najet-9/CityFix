@@ -12,6 +12,7 @@ import 'package:cityfix/screens/help_support_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:cityfix/screens/language_screen.dart';
 import 'package:provider/provider.dart';
+import 'package:cityfix/screens/wrapper.dart'; // Import ajouté pour la redirection
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -32,6 +33,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _loadUserName() async {
+    // Sécurité : Vérifier si l'utilisateur est toujours connecté
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
     final name = await authController.getUserName();
     final userWilaya = await authController.getWilaya();
     if (mounted) {
@@ -237,10 +242,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
           if (isLogout) {
             await authController.signOut();
             if (context.mounted) {
-              Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
+              // Retourner au Wrapper qui redirigera vers l'Auth Choice
+              Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(builder: (context) => const Wrapper()),
+                (route) => false,
+              );
             }
           } else {
-            // NAVIGATION CORRIGÉE : On utilise l'icône comme identifiant unique
             if (icon == Icons.assignment_outlined) {
               Navigator.push(
                 context,

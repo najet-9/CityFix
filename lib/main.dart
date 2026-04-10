@@ -52,6 +52,7 @@ class MyApp extends StatelessWidget {
         primaryColor: const Color(0xFF2B58E4),
         useMaterial3: true,
       ),
+      // Le Wrapper s'occupe de vérifier si l'user est connecté ou non
       home: const Wrapper(),
     );
   }
