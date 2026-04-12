@@ -149,8 +149,19 @@ class ReportController extends ChangeNotifier {
       await _db.collection("reports").add(report.toMap());
 
       //send notif (nearby users in the same wilaya)=========================================================
+      //for admin alert
+      // Inside submitReport after the report is added to Firestore:
+      await _db.collection('admin_alerts').add({
+        'title': 'New Report Submitted',
+        'desc':
+            'A new ${report.category} issue was reported in ${report.address}.',
+        'time': FieldValue.serverTimestamp(),
+        'icon': 'report',
+        'bgColor': 'amber',
+        'isRead': false,
+      });
       // fetch nearby users
-
+      // notify each nearby user except the one who submitted
       QuerySnapshot users = await _db
           .collection('users')
           .where('wilaya', isEqualTo: wilaya)
@@ -165,6 +176,15 @@ class ReportController extends ChangeNotifier {
             'isRead': false,
             'createdAt': FieldValue.serverTimestamp(),
           });
+          // send push notification
+          String? oneSignalId =
+              (user.data() as Map<String, dynamic>)['oneSignalId'];
+          if (oneSignalId != null) {
+            await sendPushNotification(
+              oneSignalId,
+              'Urgent incident detected near you!',
+            );
+          }
         }
       }
     } catch (e) {
@@ -175,11 +195,12 @@ class ReportController extends ChangeNotifier {
     }
   }
 
-  //[5]=========MyReports (in profile ) display=========
+  // [5]=========MyReports display (Fix)=========
   Stream<List<ReportModel>> fetchReports() {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
     return _db
         .collection("reports")
-        .where("userId", isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+        .where("userId", isEqualTo: uid)
         .snapshots()
         .map(
           (snapshot) => snapshot.docs
@@ -188,11 +209,12 @@ class ReportController extends ChangeNotifier {
         );
   }
 
-  //[7]=========Notifs=========
+  // [7]=========Notifs (Fix)=========
   Stream<List<NotificationModel>> fetchNotifications() {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
     return _db
         .collection("notifications")
-        .where("userId", isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+        .where("userId", isEqualTo: uid)
         .orderBy('createdAt', descending: true)
         .snapshots()
         .map(
@@ -208,6 +230,64 @@ class ReportController extends ChangeNotifier {
       'isRead': true,
     });
   }
-}
 
-//wrapper , main , auth controller , report controller , report detail screen
+  //[9]=========Send push notification (OneSignal)=========
+  Future<void> sendPushNotification(String oneSignalId, String message) async {
+    final response = await http.post(
+      Uri.parse('https://onesignal.com/api/v1/notifications'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Basic ${dotenv.env['ONESIGNAL_API_KEY']}',
+      },
+      body: jsonEncode({
+        'app_id': 'a20c368d-e7a7-420b-8cdf-e6266b6e82ed',
+        'include_aliases': {
+          'onesignal_id': [oneSignalId],
+        },
+        'target_channel': 'push',
+        'contents': {'en': message},
+      }),
+    );
+  }
+
+  //calculations===============================
+
+  //=========for HomeScreen=========
+  // in_progress count + resolved count across ALL users.
+  Stream<Map<String, int>> fetchGlobalStats() {
+    return _db.collection('reports').snapshots().map((snapshot) {
+      //in progress (all reports that are still in progress regardless of user)
+      final inProgress = snapshot.docs.where((doc) {
+        return (doc.data() as Map<String, dynamic>)['status'] == 'in_progress';
+      }).length;
+      //resolved (all reports that are resolved regardless of user)
+      final resolved = snapshot.docs.where((doc) {
+        return (doc.data() as Map<String, dynamic>)['status'] == 'resolved';
+      }).length;
+      return {'inProgress': inProgress, 'resolved': resolved};
+    });
+  }
+
+  //=========User stats for ProfileScreen=========
+  // resolved: my resolved reports , reports count: my reports count
+  Stream<Map<String, int>> fetchUserStats() {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) return Stream.value({'total': 0, 'resolved': 0});
+    return _db
+        .collection('reports')
+        .where('userId', isEqualTo: uid)
+        .snapshots()
+        .map((snapshot) {
+          //total my reports count (regardless of status)
+          final total = snapshot.docs.length;
+          //my resolved reports count
+          final resolved = snapshot.docs.where((doc) {
+            return (doc.data() as Map<String, dynamic>)['status'] == 'resolved';
+          }).length;
+          return {'total': total, 'resolved': resolved};
+        });
+  }
+  
+
+ 
+}

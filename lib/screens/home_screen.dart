@@ -1,5 +1,7 @@
 import 'package:cityfix/controllers/auth_controller.dart';
+import 'package:cityfix/controllers/report_controller.dart';
 import 'package:cityfix/screens/incident_map_screen.dart';
+import 'package:provider/provider.dart';
 import 'package:cityfix/screens/report_detail_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:cityfix/screens/profile_screen.dart';
@@ -7,7 +9,10 @@ import 'package:cityfix/screens/submit_page.dart';
 import 'package:cityfix/screens/alerts_screen.dart';
 import 'package:cityfix/services/report_service.dart';
 import 'package:cityfix/models/report_model.dart';
-import 'category_reports_screen.dart'; // Assure-toi d'importer la nouvelle page
+import 'all_reports_screen.dart';
+import 'category_reports_screen.dart';
+import 'package:cityfix/screens/language_screen.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -76,7 +81,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        "Hello, $userName",
+                        "Hello, $userName".tr(),
                         style: const TextStyle(
                           color: Colors.white70,
                           fontSize: 16,
@@ -109,19 +114,31 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                   const SizedBox(height: 25),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      _buildStatCard("128", "Reports"),
-                      _buildStatCard("74", "Resolved"),
-                      _buildStatCard("58%", "Resolution"),
-                    ],
+                  StreamBuilder<Map<String, int>>(
+                    stream: context.read<ReportController>().fetchGlobalStats(),
+                    builder: (context, snapshot) {
+                      final inProgress =
+                          snapshot.data?['inProgress'.tr()]?.toString() ?? '—';
+                      final resolved =
+                          snapshot.data?['resolved'.tr()]?.toString() ?? '—';
+                      return Row(
+                        children: [
+                          Expanded(
+                            child: _buildStatCard(inProgress, "Reports".tr()),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: _buildStatCard(resolved, "Resolved".tr()),
+                          ),
+                        ],
+                      );
+                    },
                   ),
                 ],
               ),
             ),
 
-            // --- CATEGORIES SECTION (MODIFIED) ---
+            // --- CATEGORIES SECTION ---
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 20),
               child: SingleChildScrollView(
@@ -141,7 +158,6 @@ class _HomeScreenState extends State<HomeScreen> {
                         bool isSelected = cat == "All";
                         return GestureDetector(
                           onTap: () {
-                            // NAVIGATION VERS LA PAGE DE CATÉGORIE
                             Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -170,7 +186,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               ],
                             ),
                             child: Text(
-                              cat,
+                              cat.tr(),
                               style: TextStyle(
                                 color: isSelected
                                     ? Colors.white
@@ -191,13 +207,24 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
-                    "Recent Reports",
-                    style: TextStyle(
+                  Text(
+                    "Recent Reports".tr(),
+                    style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                       color: Color(0xFF1A1D1E),
                     ),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const AllReportsScreen(),
+                        ),
+                      );
+                    },
+                    child: Text("View all →".tr()),
                   ),
                 ],
               ),
@@ -212,10 +239,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 }
 
                 if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return const Center(
+                  return Center(
                     child: Padding(
-                      padding: EdgeInsets.all(20.0),
-                      child: Text("No reports found."),
+                      padding: const EdgeInsets.all(20.0),
+                      child: Text("No reports found.".tr()),
                     ),
                   );
                 }
@@ -253,10 +280,10 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            _navItem(Icons.home_filled, "Home", isSelected: true),
+            _navItem(Icons.home_filled, "Home".tr(), isSelected: true),
             _navItem(
               Icons.map_outlined,
-              "Map",
+              "Maps".tr(),
               onTap: () => Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => IncidentMapScreen()),
@@ -290,7 +317,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             _navItem(
               Icons.notifications_none_outlined,
-              "Alerts",
+              "Alerts".tr(),
               onTap: () => Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => const AlertsScreen()),
@@ -298,7 +325,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             _navItem(
               Icons.person_outline,
-              "Profile",
+              "Profile".tr(),
               onTap: () => Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => const ProfileScreen()),
@@ -405,7 +432,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Text(
-                      status.toUpperCase(),
+                      status.tr().toUpperCase(),
                       style: const TextStyle(
                         color: Colors.blue,
                         fontSize: 10,
@@ -425,7 +452,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "⚫️ ${category[0].toUpperCase()}${category.substring(1)}",
+                        "⚫️ ${category.tr()}",
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
@@ -455,7 +482,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       borderRadius: BorderRadius.circular(15),
                     ),
                     child: Text(
-                      "👍 $confirmations confirm",
+                      "👍 $confirmations " + "confirm".tr(),
                       style: const TextStyle(
                         color: Color(0xFF2B58E4),
                         fontWeight: FontWeight.bold,

@@ -1,4 +1,5 @@
 import 'package:cityfix/controllers/auth_controller.dart';
+import 'package:cityfix/controllers/report_controller.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cityfix/screens/home_screen.dart';
@@ -8,9 +9,10 @@ import 'package:cityfix/screens/privacy_security_screen.dart';
 import 'package:cityfix/screens/incident_map_screen.dart';
 import 'package:cityfix/screens/my_reports_screen.dart';
 import 'package:cityfix/screens/help_support_screen.dart';
-// AJOUT DE L'IMPORT POUR LA TRADUCTION
 import 'package:easy_localization/easy_localization.dart';
-import 'package:cityfix/screens/language_screen.dart'; // Assure-toi que ce fichier existe
+import 'package:cityfix/screens/language_screen.dart';
+import 'package:provider/provider.dart';
+import 'package:cityfix/screens/wrapper.dart'; // Import ajouté pour la redirection
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -22,6 +24,7 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   final AuthController authController = AuthController();
   String userName = '';
+  String wilaya = '';
 
   @override
   void initState() {
@@ -30,10 +33,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _loadUserName() async {
+    // Sécurité : Vérifier si l'utilisateur est toujours connecté
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
     final name = await authController.getUserName();
+    final userWilaya = await authController.getWilaya();
     if (mounted) {
       setState(() {
         userName = name;
+        wilaya = userWilaya;
       });
     }
   }
@@ -45,14 +54,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            _buildHeader(),
+            _buildHeader(context),
             Padding(
               padding: const EdgeInsets.all(20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "account".tr(), // Traduction de Account
+                    "account".tr(),
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -63,31 +72,31 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   _buildMenuItem(
                     context,
                     Icons.assignment_outlined,
-                    "my_reports".tr(), // Utilisation de .tr()
+                    "My Reports".tr(),
                     Colors.brown[300]!,
                   ),
                   _buildMenuItem(
                     context,
                     Icons.language,
-                    "language".tr(), // Utilisation de .tr()
+                    "language".tr(),
                     Colors.blue[300]!,
                   ),
                   _buildMenuItem(
                     context,
                     Icons.lock_outline,
-                    "privacy_security".tr(), // Utilisation de .tr()
+                    "Privacy & Security".tr(),
                     Colors.green[300]!,
                   ),
                   _buildMenuItem(
                     context,
                     Icons.help_outline,
-                    "help_support".tr(), // Utilisation de .tr()
+                    "Help & Support".tr(),
                     Colors.red[300]!,
                   ),
                   _buildMenuItem(
                     context,
                     Icons.door_front_door_outlined,
-                    "sign_out".tr(), // Utilisation de .tr()
+                    "Sign out".tr(),
                     Colors.red[200]!,
                     isLogout: true,
                   ),
@@ -101,7 +110,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildHeader(BuildContext context) {
+    final reportController = context.read<ReportController>();
+
     return Container(
       padding: const EdgeInsets.only(top: 60, bottom: 30),
       decoration: const BoxDecoration(
@@ -131,9 +142,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
               fontWeight: FontWeight.bold,
             ),
           ),
-          const Text(
-            "Active Citizen . Algiers",
-            style: TextStyle(color: Colors.white70),
+          Text(
+            "Active Citizen · $wilaya",
+            style: const TextStyle(color: Colors.white70),
           ),
           const SizedBox(height: 10),
           Container(
@@ -148,13 +159,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
           ),
           const SizedBox(height: 20),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              _buildStatCard("12", "reports".tr()),
-              _buildStatCard("8", "resolved".tr()),
-              _buildStatCard("145", "points".tr()),
-            ],
+          StreamBuilder<Map<String, int>>(
+            stream: reportController.fetchUserStats(),
+            builder: (context, snapshot) {
+              final total = snapshot.data?['total']?.toString() ?? '—';
+              final resolved = snapshot.data?['resolved']?.toString() ?? '—';
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  _buildStatCard(total, "reports".tr()),
+                  _buildStatCard(resolved, "resolved".tr()),
+                ],
+              );
+            },
           ),
         ],
       ),
@@ -225,30 +242,34 @@ class _ProfileScreenState extends State<ProfileScreen> {
           if (isLogout) {
             await authController.signOut();
             if (context.mounted) {
-              Navigator.of(
-                context,
-              ).pushNamedAndRemoveUntil('/login', (route) => false);
+              // Retourner au Wrapper qui redirigera vers l'Auth Choice
+              Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(builder: (context) => const Wrapper()),
+                (route) => false,
+              );
             }
-          } else if (title == "language".tr()) { // Logique de navigation pour la langue
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => LanguageScreen()),
-            );
-          } else if (title == "privacy_security".tr()) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => PrivacySecurityScreen()),
-            );
-          } else if (title == "my_reports".tr()) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const MyReportsScreen()),
-            );
-          } else if (title == "help_support".tr()) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const HelpSupportScreen()),
-            );
+          } else {
+            if (icon == Icons.assignment_outlined) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const MyReportsScreen()),
+              );
+            } else if (icon == Icons.language) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const LanguageScreen()),
+              );
+            } else if (icon == Icons.lock_outline) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const PrivacySecurityScreen()),
+              );
+            } else if (icon == Icons.help_outline) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const HelpSupportScreen()),
+              );
+            }
           }
         },
       ),
@@ -263,7 +284,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-            // ignore: deprecated_member_use
             color: Colors.black.withOpacity(0.05),
             blurRadius: 10,
             offset: const Offset(0, -5),
@@ -275,7 +295,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         children: [
           _navItem(
             Icons.home_outlined,
-            "home".tr(),
+            "Home".tr(),
             onTap: () {
               Navigator.pushAndRemoveUntil(
                 context,
@@ -286,12 +306,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           _navItem(
             Icons.map_outlined,
-            "maps".tr(),
+            "Maps".tr(),
             onTap: () => Navigator.pushReplacement(
               context,
-              MaterialPageRoute(
-                builder: (context) => IncidentMapScreen(),
-              ),
+              MaterialPageRoute(builder: (context) => const IncidentMapScreen()),
             ),
           ),
           GestureDetector(
@@ -323,7 +341,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           _navItem(
             Icons.notifications_outlined,
-            "alerts".tr(),
+            "Alerts".tr(),
             onTap: () {
               Navigator.pushReplacement(
                 context,
@@ -331,7 +349,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               );
             },
           ),
-          _navItem(Icons.person, "profile".tr(), isSelected: true),
+          _navItem(Icons.person, "Profile".tr(), isSelected: true),
         ],
       ),
     );

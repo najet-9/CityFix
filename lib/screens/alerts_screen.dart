@@ -5,6 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:cityfix/screens/profile_screen.dart';
 import 'package:cityfix/screens/submit_page.dart';
 import 'package:cityfix/screens/incident_map_screen.dart';
+import 'package:cityfix/screens/language_screen.dart';
+import 'package:easy_localization/easy_localization.dart';
+
 
 class AlertsScreen extends StatefulWidget {
   const AlertsScreen({super.key});
@@ -23,6 +26,8 @@ class _AlertsScreenState extends State<AlertsScreen> {
         return Icons.refresh;
       case 'urgent':
         return Icons.warning_amber_rounded;
+      case 'in_progress':
+        return Icons.refresh;
       case 'confirmation':
         return Icons.thumb_up;
       default:
@@ -40,6 +45,8 @@ class _AlertsScreenState extends State<AlertsScreen> {
         return Colors.orange;
       case 'confirmation':
         return Colors.amber;
+      case 'in_progress':
+        return Colors.blue;
       default:
         return Colors.grey;
     }
@@ -55,6 +62,8 @@ class _AlertsScreenState extends State<AlertsScreen> {
         return Colors.orange.shade50;
       case 'confirmation':
         return Colors.amber.shade50;
+      case 'in_progress':
+        return Colors.blue.shade50;
       default:
         return Colors.grey.shade100;
     }
@@ -83,17 +92,17 @@ class _AlertsScreenState extends State<AlertsScreen> {
                 bottomRight: Radius.circular(30),
               ),
             ),
-            child: const Column(
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Stay Updated",
-                  style: TextStyle(color: Colors.white70, fontSize: 12),
+                  "Stay updated".tr(),
+                  style: const TextStyle(color: Colors.white70, fontSize: 12),
                 ),
-                SizedBox(height: 5),
+                const SizedBox(height: 5),
                 Text(
-                  "Notifications",
-                  style: TextStyle(
+                  "Notifications".tr(),
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 26,
                     fontWeight: FontWeight.bold,
@@ -114,11 +123,11 @@ class _AlertsScreenState extends State<AlertsScreen> {
                   return const Center(child: CircularProgressIndicator());
                 }
                 if (snapshot.hasError) {
-                  return Center(child: Text('Error: ${snapshot.error}'));
+                  return Center(child: Text('Error'.tr() + ': ${snapshot.error}'));
                 }
                 final notifications = snapshot.data ?? [];
                 if (notifications.isEmpty) {
-                  return const Center(child: Text('No notifications yet'));
+                  return Center(child: Text('No notifications yet'.tr()));
                 }
                 return ListView.builder(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -174,7 +183,7 @@ class _AlertsScreenState extends State<AlertsScreen> {
             const SizedBox(width: 15),
             Expanded(
               child: Text(
-                notification.message,
+                notification.message.tr(),
                 style: const TextStyle(
                   fontWeight: FontWeight.w600,
                   fontSize: 14,
@@ -217,12 +226,12 @@ class _AlertsScreenState extends State<AlertsScreen> {
         children: [
           _navItem(
             Icons.home_outlined,
-            "Home",
+            "Home".tr(),
             onTap: () => Navigator.pop(context),
           ),
           _navItem(
             Icons.map_outlined,
-            "Maps",
+            "Maps".tr(),
             onTap: () => Navigator.pushReplacement(
               context,
               MaterialPageRoute(
@@ -261,11 +270,11 @@ class _AlertsScreenState extends State<AlertsScreen> {
               ),
             ),
           ),
-          _navItem(Icons.notifications, "Alerts", isSelected: true),
+          _navItem(Icons.notifications, "Alerts".tr(), isSelected: true),
 
           _navItem(
             Icons.person_outline,
-            "Profile",
+            "Profile".tr(),
             onTap: () {
               Navigator.push(
                 context,
