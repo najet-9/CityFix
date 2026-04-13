@@ -11,11 +11,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 class AuthController {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _db = FirebaseFirestore.instance;
-final GoogleSignIn _googleSignIn = GoogleSignIn(); // Instance pour Google
+  final GoogleSignIn _googleSignIn = GoogleSignIn(); // Instance pour Google
 
   //sign up -------------------------------------------------------------------------
   Future signUp(UserModel user, String confirmPassword) async {
-    // validation
     if (user.fullName.isEmpty ||
         user.email.isEmpty ||
         user.password.isEmpty ||
@@ -41,8 +40,7 @@ final GoogleSignIn _googleSignIn = GoogleSignIn(); // Instance pour Google
       //send notif to admin about new user registration
       await _db.collection('admin_alerts').add({
         'title': 'New User Joined',
-        'desc':
-            '${user.fullName} has just created an account from ${user.wilaya}.',
+        'desc': '${user.fullName} has just created an account from ${user.wilaya}.',
         'time': FieldValue.serverTimestamp(),
         'icon': 'person_add',
         'bgColor': 'blue',
@@ -71,7 +69,6 @@ final GoogleSignIn _googleSignIn = GoogleSignIn(); // Instance pour Google
       await _auth.signInWithEmailAndPassword(email: email, password: password);
     } on FirebaseAuthException catch (e) {
       switch (e.code) {
-        //all the three has the same message, so we can group them together
         case 'invalid-credential':
         case 'user-not-found':
         case 'wrong-password':
@@ -87,13 +84,12 @@ final GoogleSignIn _googleSignIn = GoogleSignIn(); // Instance pour Google
   // LOG OUT 
   Future signOut() async {
     try {
-      // 1. Nettoyage de OneSignal dans Firestore avant de perdre les droits
+     // 1. Nettoyage de OneSignal dans Firestore avant de perdre les droits
       if (_auth.currentUser != null) {
         await _db.collection('users').doc(_auth.currentUser!.uid).update({
           'oneSignalId': null,
         });
       }
-
       // 2. Nettoyage des préférences locales
       final prefs = await SharedPreferences.getInstance();
       await prefs.remove('userName');
@@ -104,9 +100,8 @@ final GoogleSignIn _googleSignIn = GoogleSignIn(); // Instance pour Google
       // 3. DÉCONNEXION DE GOOGLE (C'est la partie manquante)
       if (await _googleSignIn.isSignedIn()) {
         await _googleSignIn.signOut();
-        await _googleSignIn.disconnect(); // Pour forcer le choix du compte au prochain login
+        await _googleSignIn.disconnect();
       }
-
       // 4. Déconnexion de Firebase
       await _auth.signOut();
       
@@ -139,15 +134,14 @@ final GoogleSignIn _googleSignIn = GoogleSignIn(); // Instance pour Google
 
     // 4. save to local storage for next time
     await prefs.setString('userName', cachedUserName!);
-
     return cachedUserName!;
   }
 
   //get user wilaya -------------------------------------------------------------------------
-  static String? cachedWilaya; // ← add next to cachedUserName
+  static String? cachedWilaya; 
 
   Future<String> getWilaya() async {
-    // 1. memory cache
+     // 1. memory cache
     if (cachedWilaya != null) return cachedWilaya!;
 
     // 2. local storage
@@ -165,7 +159,6 @@ final GoogleSignIn _googleSignIn = GoogleSignIn(); // Instance pour Google
 
     // 4. save locally for next time
     await prefs.setString('userWilaya', cachedWilaya!);
-
     return cachedWilaya!;
   }
 
@@ -179,23 +172,44 @@ final GoogleSignIn _googleSignIn = GoogleSignIn(); // Instance pour Google
     }
   }
 
-  // Google Sign-In ----------------------------------------------------------------
-  Future signInWithGoogle() async {
-    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-    final GoogleSignInAuthentication? googleAuth =
-        await googleUser?.authentication;
+  // Google Sign-In (Mdf)
+  Future<UserCredential?> signInWithGoogle() async {
+    // 1. Déclencher le flux d'authentification Google
+    final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+    final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
 
     final credential = GoogleAuthProvider.credential(
       accessToken: googleAuth?.accessToken,
       idToken: googleAuth?.idToken,
     );
 
-    return await _auth.signInWithCredential(credential);
+    // 2. Se connecter à Firebase
+    UserCredential userCredential = await _auth.signInWithCredential(credential);
+    User? user = userCredential.user;
+
+    if (user != null) {
+      // 3. Récupérer le nom (soit le displayName, soit le début de l'email)
+      String nameToSave = user.displayName ?? user.email?.split('@').first ?? "User";
+
+      // 4. Mettre à jour Firestore
+      await _db.collection("users").doc(user.uid).set({
+        'fullName': nameToSave,
+        'email': user.email,
+        'wilaya': 'Algiers', // Valeur par défaut
+      }, SetOptions(merge: true));
+
+      // 5. Mettre à jour le cache local pour un affichage instantané
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('userName', nameToSave);
+      cachedUserName = nameToSave;
+    }
+
+    return userCredential;
   }
 }
 
 class ProfileController {
-  // Simuler une déconnexion
+    // Simuler une déconnexion
   void signOut() {
     print("Déconnexion de l'utilisateur...");
   }
