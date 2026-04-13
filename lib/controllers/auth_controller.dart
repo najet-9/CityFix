@@ -11,6 +11,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class AuthController {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _db = FirebaseFirestore.instance;
+final GoogleSignIn _googleSignIn = GoogleSignIn(); // Instance pour Google
 
   //sign up -------------------------------------------------------------------------
   Future signUp(UserModel user, String confirmPassword) async {
@@ -83,21 +84,37 @@ class AuthController {
     }
   }
 
-  //log out -------------------------------------------------------------------------
+  // LOG OUT 
   Future signOut() async {
-    //get shared prefrences
-    final prefs = await SharedPreferences.getInstance();
-    //1 remove name
-    await prefs.remove('userName');
-    cachedUserName = null;
-    //2 remove wilaya
-    await prefs.remove('userWilaya');
-    cachedWilaya = null;
-    //3 remove OneSignal Player ID from Firestore
-    await _db.collection('users').doc(_auth.currentUser!.uid).update({
-      'oneSignalId': null,
-    });
-    await _auth.signOut();
+    try {
+      // 1. Nettoyage de OneSignal dans Firestore avant de perdre les droits
+      if (_auth.currentUser != null) {
+        await _db.collection('users').doc(_auth.currentUser!.uid).update({
+          'oneSignalId': null,
+        });
+      }
+
+      // 2. Nettoyage des préférences locales
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove('userName');
+      await prefs.remove('userWilaya');
+      cachedUserName = null;
+      cachedWilaya = null;
+
+      // 3. DÉCONNEXION DE GOOGLE (C'est la partie manquante)
+      if (await _googleSignIn.isSignedIn()) {
+        await _googleSignIn.signOut();
+        await _googleSignIn.disconnect(); // Pour forcer le choix du compte au prochain login
+      }
+
+      // 4. Déconnexion de Firebase
+      await _auth.signOut();
+      
+    } catch (e) {
+      print("Error during signOut: $e");
+      // On force quand même la déconnexion Firebase au cas où
+      await _auth.signOut();
+    }
   }
 
   //get username -------------------------------------------------------------------------

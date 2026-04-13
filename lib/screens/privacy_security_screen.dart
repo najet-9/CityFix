@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../controllers/privacy_security_controller.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:cityfix/screens/language_screen.dart';
+import 'package:cityfix/screens/wrapper.dart';
 
 class PrivacySecurityScreen extends StatefulWidget {
   const PrivacySecurityScreen({super.key});
@@ -35,7 +36,7 @@ class _PrivacySecurityScreenState extends State<PrivacySecurityScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // HEADER BLEU (Style Help & Support)
+            // HEADER BLEU
             Container(
               width: double.infinity,
               padding: const EdgeInsets.only(top: 60, left: 20, right: 20, bottom: 40),
@@ -98,7 +99,6 @@ class _PrivacySecurityScreenState extends State<PrivacySecurityScreen> {
                           ),
                         ),
                         const SizedBox(height: 20),
-                        // BOUTON UPDATE
                         GestureDetector(
                           onTap: () async {
                             if (passwordController.text.length < 6) {
@@ -135,9 +135,15 @@ class _PrivacySecurityScreenState extends State<PrivacySecurityScreen> {
                   Text("Account Actions".tr(), style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey)),
                   const SizedBox(height: 15),
 
+                  // M:Sign Out 
                   _buildActionTile(icon: Icons.logout, title: "Sign Out".tr(), color: Colors.orange, onTap: () async {
                     await controller.signOut();
-                    if (mounted) Navigator.pop(context);
+                    if (mounted) {
+                      Navigator.of(context).pushAndRemoveUntil(
+                        MaterialPageRoute(builder: (context) => const Wrapper()), 
+                        (route) => false,
+                      );
+                    }
                   }),
                   const SizedBox(height: 12),
                   _buildActionTile(icon: Icons.delete_forever, title: "Delete Account".tr(), color: Colors.red, onTap: () => _showDeleteDialog(context)),
@@ -166,18 +172,40 @@ class _PrivacySecurityScreenState extends State<PrivacySecurityScreen> {
     );
   }
 
+  // M : Logique de suppression 
   void _showDeleteDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text("Confirm Delete".tr()),
         content: Text("Are you sure? This cannot be undone.".tr()),
         actions: [
           TextButton(onPressed: () => Navigator.pop(context), child: Text("Cancel".tr())),
-          TextButton(onPressed: () async {
-            await controller.deleteAccount();
-            if (mounted) Navigator.pop(context);
-          }, child: Text("Delete".tr(), style: const TextStyle(color: Colors.red))),
+          TextButton(
+            onPressed: () async {
+              try {
+                await controller.deleteAccount();
+                if (mounted) {
+                  Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (context) => const Wrapper()), 
+                    (route) => false,
+                  );
+                }
+              } catch (e) {
+                if (mounted) {
+                  Navigator.pop(context); // Ferme le dialogue
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text("Security: Please log out and log in again to delete your account.".tr()),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                }
+              }
+            }, 
+            child: Text("Delete".tr(), style: const TextStyle(color: Colors.red))
+          ),
         ],
       ),
     );
