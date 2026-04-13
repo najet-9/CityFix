@@ -150,7 +150,7 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
 
         // send push notification directly
         if (oneSignalId != null) {
-          await http.post(
+          final response = await http.post(
             Uri.parse('https://onesignal.com/api/v1/notifications'),
             headers: {
               'Content-Type': 'application/json',
