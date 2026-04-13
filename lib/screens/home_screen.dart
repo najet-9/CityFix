@@ -9,7 +9,6 @@ import 'package:cityfix/screens/submit_page.dart';
 import 'package:cityfix/screens/alerts_screen.dart';
 import 'package:cityfix/services/report_service.dart';
 import 'package:cityfix/models/report_model.dart';
-import 'all_reports_screen.dart';
 import 'category_reports_screen.dart';
 import 'package:cityfix/screens/language_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -204,29 +203,13 @@ class _HomeScreenState extends State<HomeScreen> {
             // --- RECENT REPORTS TITLE ---
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 25),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    "Recent Reports".tr(),
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF1A1D1E),
-                    ),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const AllReportsScreen(),
-                        ),
-                      );
-                    },
-                    child: Text("View all →".tr()),
-                  ),
-                ],
+              child: Text(
+                "Recent Reports".tr(),
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF1A1D1E),
+                ),
               ),
             ),
 
