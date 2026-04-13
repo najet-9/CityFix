@@ -12,6 +12,7 @@ import 'package:cityfix/screens/help_support_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:cityfix/screens/language_screen.dart';
 import 'package:provider/provider.dart';
+import 'package:cityfix/screens/wrapper.dart'; // Import ajouté pour la redirection
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -32,6 +33,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _loadUserName() async {
+    // Sécurité : Vérifier si l'utilisateur est toujours connecté
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
     final name = await authController.getUserName();
     final userWilaya = await authController.getWilaya();
     if (mounted) {
@@ -67,7 +72,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   _buildMenuItem(
                     context,
                     Icons.assignment_outlined,
-                    "my_reports".tr(),
+                    "My Reports".tr(),
                     Colors.brown[300]!,
                   ),
                   _buildMenuItem(
@@ -79,19 +84,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   _buildMenuItem(
                     context,
                     Icons.lock_outline,
-                    "privacy_security".tr(),
+                    "Privacy & Security".tr(),
                     Colors.green[300]!,
                   ),
                   _buildMenuItem(
                     context,
                     Icons.help_outline,
-                    "help_support".tr(),
+                    "Help & Support".tr(),
                     Colors.red[300]!,
                   ),
                   _buildMenuItem(
                     context,
                     Icons.door_front_door_outlined,
-                    "sign_out".tr(),
+                    "Sign out".tr(),
                     Colors.red[200]!,
                     isLogout: true,
                   ),
@@ -154,7 +159,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
           ),
           const SizedBox(height: 20),
-          // ── REAL USER STATS ──────────────────────────────────────────
           StreamBuilder<Map<String, int>>(
             stream: reportController.fetchUserStats(),
             builder: (context, snapshot) {
@@ -169,7 +173,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
               );
             },
           ),
-          // ─────────────────────────────────────────────────────────────
         ],
       ),
     );
@@ -239,32 +242,34 @@ class _ProfileScreenState extends State<ProfileScreen> {
           if (isLogout) {
             await authController.signOut();
             if (context.mounted) {
-              Navigator.of(
-                context,
-              ).pushNamedAndRemoveUntil('/login', (route) => false);
+              // Retourner au Wrapper qui redirigera vers l'Auth Choice
+              Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(builder: (context) => const Wrapper()),
+                (route) => false,
+              );
             }
-          } else if (title == "language".tr()) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => LanguageScreen()),
-            );
-          } else if (title == "privacy_security".tr()) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => PrivacySecurityScreen()),
-            );
-          } else if (title == "my_reports".tr()) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const MyReportsScreen()),
-            );
-          } else if (title == "help_support".tr()) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const HelpSupportScreen(),
-              ),
-            );
+          } else {
+            if (icon == Icons.assignment_outlined) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const MyReportsScreen()),
+              );
+            } else if (icon == Icons.language) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const LanguageScreen()),
+              );
+            } else if (icon == Icons.lock_outline) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const PrivacySecurityScreen()),
+              );
+            } else if (icon == Icons.help_outline) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const HelpSupportScreen()),
+              );
+            }
           }
         },
       ),
@@ -279,7 +284,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-            // ignore: deprecated_member_use
             color: Colors.black.withOpacity(0.05),
             blurRadius: 10,
             offset: const Offset(0, -5),
@@ -291,7 +295,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         children: [
           _navItem(
             Icons.home_outlined,
-            "home".tr(),
+            "Home".tr(),
             onTap: () {
               Navigator.pushAndRemoveUntil(
                 context,
@@ -302,10 +306,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           _navItem(
             Icons.map_outlined,
-            "maps".tr(),
+            "Maps".tr(),
             onTap: () => Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) => IncidentMapScreen()),
+              MaterialPageRoute(builder: (context) => const IncidentMapScreen()),
             ),
           ),
           GestureDetector(
@@ -337,7 +341,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           _navItem(
             Icons.notifications_outlined,
-            "alerts".tr(),
+            "Alerts".tr(),
             onTap: () {
               Navigator.pushReplacement(
                 context,
@@ -345,7 +349,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               );
             },
           ),
-          _navItem(Icons.person, "profile".tr(), isSelected: true),
+          _navItem(Icons.person, "Profile".tr(), isSelected: true),
         ],
       ),
     );

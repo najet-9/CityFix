@@ -2,6 +2,8 @@ import 'package:cityfix/controllers/report_controller.dart';
 import 'package:cityfix/models/report_model.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:cityfix/screens/language_screen.dart';
 
 class MyReportsScreen extends StatefulWidget {
   const MyReportsScreen({super.key});
@@ -15,7 +17,7 @@ class _MyReportsScreenState extends State<MyReportsScreen> {
   final ReportController _controller = ReportController();
 
   Color _getCategoryColor(String category) {
-    switch (category) {
+    switch (category.toLowerCase()) {
       case 'roads':
         return const Color(0xFFF59E0B);
       case 'lighting':
@@ -32,7 +34,7 @@ class _MyReportsScreenState extends State<MyReportsScreen> {
   }
 
   Color _getCategoryBg(String category) {
-    switch (category) {
+    switch (category.toLowerCase()) {
       case 'roads':
         return const Color(0xFFFEF3C7);
       case 'lighting':
@@ -49,7 +51,7 @@ class _MyReportsScreenState extends State<MyReportsScreen> {
   }
 
   IconData _getCategoryIcon(String category) {
-    switch (category) {
+    switch (category.toLowerCase()) {
       case 'roads':
         return Icons.warning_amber_rounded;
       case 'lighting':
@@ -66,10 +68,11 @@ class _MyReportsScreenState extends State<MyReportsScreen> {
   }
 
   Color _getStatusColor(String status) {
-    switch (status) {
+    switch (status.toLowerCase()) {
       case 'resolved':
         return const Color(0xFF22C55E);
       case 'in_progress':
+      case 'in progress':
         return const Color(0xFF3B82F6);
       case 'pending':
         return const Color(0xFFF59E0B);
@@ -79,10 +82,11 @@ class _MyReportsScreenState extends State<MyReportsScreen> {
   }
 
   Color _getStatusBg(String status) {
-    switch (status) {
+    switch (status.toLowerCase()) {
       case 'resolved':
         return const Color(0xFFDCFCE7);
       case 'in_progress':
+      case 'in progress':
         return const Color(0xFFEFF6FF);
       case 'pending':
         return const Color(0xFFFEF3C7);
@@ -101,7 +105,7 @@ class _MyReportsScreenState extends State<MyReportsScreen> {
           final reports = snapshot.data ?? [];
           final filtered = _selectedFilter == 'All'
               ? reports
-              : reports.where((r) => r.status == _selectedFilter).toList();
+              : reports.where((r) => r.status.toLowerCase() == _selectedFilter.toLowerCase()).toList();
           return Column(
             children: [
               _buildHeader(context, reports.length),
@@ -110,7 +114,7 @@ class _MyReportsScreenState extends State<MyReportsScreen> {
                 child: snapshot.connectionState == ConnectionState.waiting
                     ? const Center(child: CircularProgressIndicator())
                     : snapshot.hasError
-                    ? Center(child: Text('Error: ${snapshot.error}'))
+                    ? Center(child: Text('Error: ${snapshot.error}'.tr()))
                     : filtered.isEmpty
                     ? _buildEmptyState()
                     : ListView.builder(
@@ -173,7 +177,7 @@ class _MyReportsScreenState extends State<MyReportsScreen> {
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
-                  '$totalCount Total',
+                  '$totalCount ' + 'Total'.tr(),
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 12,
@@ -184,14 +188,14 @@ class _MyReportsScreenState extends State<MyReportsScreen> {
             ],
           ),
           const SizedBox(height: 16),
-          const Text(
-            'My Activity',
-            style: TextStyle(color: Colors.white70, fontSize: 13),
+          Text(
+            'My Activity'.tr(),
+            style: const TextStyle(color: Colors.white70, fontSize: 13),
           ),
           const SizedBox(height: 4),
-          const Text(
-            'My Reports',
-            style: TextStyle(
+          Text(
+            'My Reports'.tr(),
+            style: const TextStyle(
               color: Colors.white,
               fontSize: 26,
               fontWeight: FontWeight.bold,
@@ -235,7 +239,7 @@ class _MyReportsScreenState extends State<MyReportsScreen> {
                   ],
                 ),
                 child: Text(
-                  filter,
+                  filter.tr(),
                   style: TextStyle(
                     color: isSelected ? Colors.white : Colors.grey[600],
                     fontWeight: FontWeight.w600,
@@ -251,160 +255,158 @@ class _MyReportsScreenState extends State<MyReportsScreen> {
   }
 
   Widget _buildReportCard(ReportModel report) {
-    {
-      return Container(
-        margin: const EdgeInsets.only(bottom: 14),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: _getCategoryBg(report.category),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Icon(
-                      _getCategoryIcon(report.category),
-                      color: _getCategoryColor(report.category),
-                      size: 22,
-                    ),
+    return Container(
+      margin: const EdgeInsets.only(bottom: 14),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: _getCategoryBg(report.category),
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              report.category,
-                              style: TextStyle(
-                                color: Colors.grey[400],
-                                fontSize: 11,
-                                fontWeight: FontWeight.w500,
-                              ),
+                  child: Icon(
+                    _getCategoryIcon(report.category),
+                    color: _getCategoryColor(report.category),
+                    size: 22,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            report.category.tr(),
+                            style: TextStyle(
+                              color: Colors.grey[400],
+                              fontSize: 11,
+                              fontWeight: FontWeight.w500,
                             ),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 10,
-                                vertical: 4,
-                              ),
-                              decoration: BoxDecoration(
-                                color: _getStatusBg(report.status),
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: Text(
-                                report.status,
-                                style: TextStyle(
-                                  color: _getStatusColor(report.status),
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 3),
-                        Text(
-                          report.description,
-                          style: const TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF1A1D1E),
                           ),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: _getStatusBg(report.status),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Text(
+                              report.status.tr(),
+                              style: TextStyle(
+                                color: _getStatusColor(report.status),
+                                fontSize: 11,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 3),
+                      Text(
+                        report.description,
+                        style: const TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF1A1D1E),
                         ),
-                      ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 14),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF0F5FF),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                children: [
+                  const Icon(
+                    Icons.location_on_outlined,
+                    color: Color(0xFF2B58E4),
+                    size: 16,
+                  ),
+                  const SizedBox(width: 6),
+                  Expanded(
+                    child: Text(
+                      report.address?.tr() ?? 'Unknown location'.tr(),
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: Color(0xFF2B58E4),
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 14),
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF0F5FF),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Row(
+            ),
+            const SizedBox(height: 12),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
                   children: [
-                    const Icon(
-                      Icons.location_on_outlined,
-                      color: Color(0xFF2B58E4),
-                      size: 16,
+                    Icon(
+                      Icons.access_time,
+                      color: Colors.grey[400],
+                      size: 14,
                     ),
-                    const SizedBox(width: 6),
-                    Expanded(
-                      child: Text(
-                        report.address ?? 'Unknown location',
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: Color(0xFF2B58E4),
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
+                    const SizedBox(width: 4),
+                    Text(
+                      report.createdAt != null
+                          ? DateFormat(
+                              'MMM d, yyyy',
+                            ).format(report.createdAt!.toDate())
+                          : 'N/A'.tr(),
+                      style: TextStyle(color: Colors.grey[500], fontSize: 12),
                     ),
                   ],
                 ),
-              ),
-              const SizedBox(height: 12),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.access_time,
-                        color: Colors.grey[400],
-                        size: 14,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        report.createdAt != null
-                            ? DateFormat(
-                                'MMM d, yyyy',
-                              ).format(report.createdAt!.toDate())
-                            : 'N/A',
-                        style: TextStyle(color: Colors.grey[500], fontSize: 12),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.thumb_up_outlined,
-                        color: Colors.grey[400],
-                        size: 14,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        '${report.confirmationCount} confirmations',
-                        style: TextStyle(color: Colors.grey[500], fontSize: 12),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ],
-          ),
+                Row(
+                  children: [
+                    Icon(
+                      Icons.thumb_up_outlined,
+                      color: Colors.grey[400],
+                      size: 14,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      '${report.confirmationCount} ' + 'confirmations'.tr(),
+                      style: TextStyle(color: Colors.grey[500], fontSize: 12),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ],
         ),
-      );
-    }
+      ),
+    );
   }
 
   Widget _buildEmptyState() {
@@ -425,9 +427,9 @@ class _MyReportsScreenState extends State<MyReportsScreen> {
             ),
           ),
           const SizedBox(height: 20),
-          const Text(
-            'No reports found',
-            style: TextStyle(
+          Text(
+            'No reports found'.tr(),
+            style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
               color: Color(0xFF1A1D1E),
@@ -435,7 +437,7 @@ class _MyReportsScreenState extends State<MyReportsScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            'No reports match this filter.',
+            'No reports match this filter.'.tr(),
             style: TextStyle(color: Colors.grey[500], fontSize: 14),
           ),
         ],

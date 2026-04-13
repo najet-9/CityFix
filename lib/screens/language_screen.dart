@@ -21,7 +21,7 @@ class LanguageScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "select_language".tr(),
+                    "Select language".tr(),
                     style: TextStyle(
                       fontSize: 16,
                       color: Colors.grey[600],
@@ -32,21 +32,21 @@ class LanguageScreen extends StatelessWidget {
                   _buildLanguageCard(
                     context,
                     title: "Français",
-                    subTitle: "French",
+                    subTitle: "French".tr(),
                     locale: const Locale('fr'),
                     flag: "🇫🇷",
                   ),
                   _buildLanguageCard(
                     context,
                     title: "English",
-                    subTitle: "English",
+                    subTitle: "English".tr(),
                     locale: const Locale('en'),
                     flag: "🇬🇧",
                   ),
                   _buildLanguageCard(
                     context,
                     title: "العربية",
-                    subTitle: "Arabic",
+                    subTitle: "Arabic".tr(),
                     locale: const Locale('ar'),
                     flag: "🇩🇿", 
                   ),

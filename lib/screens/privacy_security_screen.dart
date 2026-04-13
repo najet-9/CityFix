@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../controllers/privacy_security_controller.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:cityfix/screens/language_screen.dart';
 
 class PrivacySecurityScreen extends StatefulWidget {
   const PrivacySecurityScreen({super.key});
@@ -61,9 +63,9 @@ class _PrivacySecurityScreenState extends State<PrivacySecurityScreen> {
                     ),
                   ),
                   const SizedBox(height: 25),
-                  const Text("Your safety matters", style: TextStyle(color: Colors.white70, fontSize: 16)),
+                  Text("Your safety matters".tr(), style: const TextStyle(color: Colors.white70, fontSize: 16)),
                   const SizedBox(height: 5),
-                  const Text("Privacy & Security", style: TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.bold)),
+                  Text("Privacy & Security".tr(), style: const TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.bold)),
                 ],
               ),
             ),
@@ -73,7 +75,7 @@ class _PrivacySecurityScreenState extends State<PrivacySecurityScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text("Security Settings", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey)),
+                  Text("Security Settings".tr(), style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey)),
                   const SizedBox(height: 15),
                   
                   // CARTE PASSWORD
@@ -86,7 +88,7 @@ class _PrivacySecurityScreenState extends State<PrivacySecurityScreen> {
                           controller: passwordController,
                           obscureText: !_isPasswordVisible,
                           decoration: InputDecoration(
-                            labelText: "New Password",
+                            labelText: "New Password".tr(),
                             prefixIcon: const Icon(Icons.lock_outline, color: Color(0xFF2B58E4)),
                             suffixIcon: IconButton(
                               icon: Icon(_isPasswordVisible ? Icons.visibility : Icons.visibility_off, color: Colors.grey),
@@ -100,13 +102,13 @@ class _PrivacySecurityScreenState extends State<PrivacySecurityScreen> {
                         GestureDetector(
                           onTap: () async {
                             if (passwordController.text.length < 6) {
-                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Password must be at least 6 characters")));
+                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Password must be at least 6 characters".tr())));
                               return;
                             }
                             try {
                               await controller.changePassword(passwordController.text);
                               if (mounted) {
-                                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Password updated successfully!")));
+                                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Password updated successfully!".tr())));
                                 passwordController.clear();
                               }
                             } catch (e) {
@@ -122,7 +124,7 @@ class _PrivacySecurityScreenState extends State<PrivacySecurityScreen> {
                               gradient: const LinearGradient(colors: [Color(0xFF2B58E4), Color(0xFF448AFF)]),
                               borderRadius: BorderRadius.circular(15),
                             ),
-                            child: const Center(child: Text("Update Password", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold))),
+                            child: Center(child: Text("Update Password".tr(), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold))),
                           ),
                         ),
                       ],
@@ -130,15 +132,15 @@ class _PrivacySecurityScreenState extends State<PrivacySecurityScreen> {
                   ),
 
                   const SizedBox(height: 30),
-                  const Text("Account Actions", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey)),
+                  Text("Account Actions".tr(), style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey)),
                   const SizedBox(height: 15),
 
-                  _buildActionTile(icon: Icons.logout, title: "Sign Out", color: Colors.orange, onTap: () async {
+                  _buildActionTile(icon: Icons.logout, title: "Sign Out".tr(), color: Colors.orange, onTap: () async {
                     await controller.signOut();
                     if (mounted) Navigator.pop(context);
                   }),
                   const SizedBox(height: 12),
-                  _buildActionTile(icon: Icons.delete_forever, title: "Delete Account", color: Colors.red, onTap: () => _showDeleteDialog(context)),
+                  _buildActionTile(icon: Icons.delete_forever, title: "Delete Account".tr(), color: Colors.red, onTap: () => _showDeleteDialog(context)),
                 ],
               ),
             ),
@@ -168,14 +170,14 @@ class _PrivacySecurityScreenState extends State<PrivacySecurityScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text("Confirm Delete"),
-        content: const Text("Are you sure? This cannot be undone."),
+        title: Text("Confirm Delete".tr()),
+        content: Text("Are you sure? This cannot be undone.".tr()),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text("Cancel")),
+          TextButton(onPressed: () => Navigator.pop(context), child: Text("Cancel".tr())),
           TextButton(onPressed: () async {
             await controller.deleteAccount();
             if (mounted) Navigator.pop(context);
-          }, child: const Text("Delete", style: TextStyle(color: Colors.red))),
+          }, child: Text("Delete".tr(), style: const TextStyle(color: Colors.red))),
         ],
       ),
     );

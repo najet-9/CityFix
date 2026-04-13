@@ -195,11 +195,12 @@ class ReportController extends ChangeNotifier {
     }
   }
 
-  //[5]=========MyReports (in profile ) display=========
+  // [5]=========MyReports display (Fix)=========
   Stream<List<ReportModel>> fetchReports() {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
     return _db
         .collection("reports")
-        .where("userId", isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+        .where("userId", isEqualTo: uid)
         .snapshots()
         .map(
           (snapshot) => snapshot.docs
@@ -208,11 +209,12 @@ class ReportController extends ChangeNotifier {
         );
   }
 
-  //[7]=========Notifs=========
+  // [7]=========Notifs (Fix)=========
   Stream<List<NotificationModel>> fetchNotifications() {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
     return _db
         .collection("notifications")
-        .where("userId", isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+        .where("userId", isEqualTo: uid)
         .orderBy('createdAt', descending: true)
         .snapshots()
         .map(
@@ -285,4 +287,7 @@ class ReportController extends ChangeNotifier {
           return {'total': total, 'resolved': resolved};
         });
   }
+  
+
+ 
 }

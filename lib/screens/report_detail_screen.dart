@@ -5,6 +5,8 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:cityfix/screens/language_screen.dart';
 
 class ReportDetailScreen extends StatefulWidget {
   final String reportId;
@@ -64,8 +66,8 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
   ) async {
     if (_selectedImage == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Please take a photo to confirm the issue."),
+        SnackBar(
+          content: Text("Please take a photo to confirm the issue.".tr()),
         ),
       );
       return;
@@ -168,8 +170,8 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
         if (mounted) {
           Navigator.pop(context);
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text("Confirmation submitted successfully!"),
+            SnackBar(
+              content: Text("Confirmation submitted successfully!".tr()),
             ),
           );
         }
@@ -177,15 +179,15 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
         debugPrint("Firestore Error: $e");
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("Database error. Please try again.")),
+            SnackBar(content: Text("Database error. Please try again.".tr())),
           );
         }
       }
     } else {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("Failed to upload image. Check your connection."),
+          SnackBar(
+            content: Text("Failed to upload image. Check your connection.".tr()),
           ),
         );
       }
@@ -227,19 +229,19 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
                   ),
                 ),
                 const SizedBox(height: 20),
-                const Text(
-                  "Confirm this issue",
-                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                Text(
+                  "Confirm this issue".tr(),
+                  style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                 ),
-                const Text(
-                  "Help us verify this by adding a photo or description.",
-                  style: TextStyle(color: Colors.grey),
+                Text(
+                  "Help us verify this by adding a photo or description.".tr(),
+                  style: const TextStyle(color: Colors.grey),
                 ),
                 const SizedBox(height: 25),
 
-                const Text(
-                  "Add a Photo",
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                Text(
+                  "Add a Photo".tr(),
+                  style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 10),
 
@@ -263,18 +265,18 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
                           : null,
                     ),
                     child: _selectedImage == null
-                        ? const Column(
+                        ? Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(
+                              const Icon(
                                 Icons.add_a_photo_outlined,
                                 color: Color(0xFF2B58E4),
                                 size: 35,
                               ),
-                              SizedBox(height: 8),
+                              const SizedBox(height: 8),
                               Text(
-                                "Take a picture",
-                                style: TextStyle(
+                                "Take a picture".tr(),
+                                style: const TextStyle(
                                   color: Color(0xFF2B58E4),
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -286,9 +288,9 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
                 ),
 
                 const SizedBox(height: 20),
-                const Text(
-                  "Description (Optional)",
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                Text(
+                  "Description (Optional)".tr(),
+                  style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 10),
 
@@ -296,7 +298,7 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
                   controller: _descriptionController,
                   maxLines: 3,
                   decoration: InputDecoration(
-                    hintText: "Add more details about the problem...",
+                    hintText: "Add more details about the problem...".tr(),
                     filled: true,
                     fillColor: Colors.grey[100],
                     border: OutlineInputBorder(
@@ -322,9 +324,9 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
                         : () => _submitConfirmation(context, data),
                     child: _isLoading
                         ? const CircularProgressIndicator(color: Colors.white)
-                        : const Text(
-                            "Submit Confirmation",
-                            style: TextStyle(
+                        : Text(
+                            "Submit Confirmation".tr(),
+                            style: const TextStyle(
                               color: Colors.white,
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
@@ -355,7 +357,7 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
           );
         }
         if (!snapshot.hasData || !snapshot.data!.exists) {
-          return const Scaffold(body: Center(child: Text("Report not found")));
+          return Scaffold(body: Center(child: Text("Report not found".tr())));
         }
 
         var data = snapshot.data!.data() as Map<String, dynamic>;
@@ -423,7 +425,7 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        category,
+                        category.tr(), // Traduit la catégorie si elle est en clé
                         style: const TextStyle(
                           fontSize: 26,
                           fontWeight: FontWeight.bold,
@@ -431,9 +433,9 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
                         ),
                       ), // Dynamic Category
                       const SizedBox(height: 5),
-                      const Text(
-                        "Recent Report",
-                        style: TextStyle(color: Colors.grey, fontSize: 14),
+                      Text(
+                        "Recent Report".tr(),
+                        style: const TextStyle(color: Colors.grey, fontSize: 14),
                       ),
                       const SizedBox(height: 30),
 
@@ -461,9 +463,9 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  const Text(
-                                    "LOCATION",
-                                    style: TextStyle(
+                                  Text(
+                                    "LOCATION".tr(),
+                                    style: const TextStyle(
                                       color: Colors.grey,
                                       fontSize: 10,
                                       letterSpacing: 1.2,
@@ -513,7 +515,7 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
                               ),
                               const SizedBox(width: 12),
                               Text(
-                                "Confirm Issue ($count)",
+                                "Confirm Issue".tr() + " ($count)",
                                 style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 18,

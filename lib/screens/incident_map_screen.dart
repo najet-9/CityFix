@@ -8,6 +8,8 @@ import 'package:cityfix/screens/submit_page.dart';
 import 'package:cityfix/services/report_service.dart';
 import 'package:cityfix/models/report_model.dart';
 import 'package:geocoding/geocoding.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:cityfix/screens/language_screen.dart';
 
 class IncidentMapScreen extends StatefulWidget {
   const IncidentMapScreen({super.key});
@@ -37,6 +39,10 @@ class _IncidentMapScreenState extends State<IncidentMapScreen> {
 
               return FlutterMap(
                 mapController: _mapController,
+                options: const MapOptions(
+                  initialCenter: LatLng(36.737, 3.088), // Coordonnées par défaut
+                  initialZoom: 13,
+                ),
                 children: [
                   TileLayer(
                     urlTemplate:
@@ -63,7 +69,7 @@ class _IncidentMapScreenState extends State<IncidentMapScreen> {
             },
           ),
 
-          //  SEARCH UI (inchangé)
+          //  SEARCH UI
           Positioned(
             top: 50,
             left: 20,
@@ -71,9 +77,9 @@ class _IncidentMapScreenState extends State<IncidentMapScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  "Incident Map",
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                Text(
+                  "Incident Map".tr(),
+                  style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 10),
                 Container(
@@ -81,14 +87,14 @@ class _IncidentMapScreenState extends State<IncidentMapScreen> {
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(30),
-                    boxShadow: [
+                    boxShadow: const [
                       BoxShadow(color: Colors.black12, blurRadius: 10),
                     ],
                   ),
                   child: TextField(
-                    decoration: const InputDecoration(
-                      icon: Icon(Icons.search, color: Colors.grey),
-                      hintText: "Search a neighborhood...",
+                    decoration: InputDecoration(
+                      icon: const Icon(Icons.search, color: Colors.grey),
+                      hintText: "Search a neighborhood...".tr(),
                       border: InputBorder.none,
                     ),
                     onSubmitted: (value) async {
@@ -124,11 +130,11 @@ class _IncidentMapScreenState extends State<IncidentMapScreen> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _navItem(context, Icons.home_outlined, "Home"),
-              _navItem(context, Icons.map, "Map", isSelected: true),
+              _navItem(context, Icons.home_outlined, "Home".tr()),
+              _navItem(context, Icons.map, "Maps".tr(), isSelected: true),
               const SizedBox(width: 40),
-              _navItem(context, Icons.notifications_outlined, "Alerts"),
-              _navItem(context, Icons.person_outline, "Profile"),
+              _navItem(context, Icons.notifications_outlined, "Alerts".tr()),
+              _navItem(context, Icons.person_outline, "Profile".tr()),
             ],
           ),
         ),
@@ -159,20 +165,21 @@ class _IncidentMapScreenState extends State<IncidentMapScreen> {
     return GestureDetector(
       onTap: () {
         if (!isSelected) {
-          if (label == "Home") {
+          // Comparaison avec les traductions pour maintenir la logique de navigation
+          if (label == "Home".tr()) {
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(builder: (_) => const HomeScreen()),
             );
-          } else if (label == "Alerts") {
+          } else if (label == "Alerts".tr()) {
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(builder: (_) => const AlertsScreen()),
             );
-          } else if (label == "Profile") {
+          } else if (label == "Profile".tr()) {
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (_) => ProfileScreen()),
+              MaterialPageRoute(builder: (_) => const ProfileScreen()),
             );
           }
         }
@@ -212,7 +219,7 @@ class _IncidentMapScreenState extends State<IncidentMapScreen> {
     }
 
     return Container(
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         color: Colors.white,
         shape: BoxShape.circle,
         boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 5)],
