@@ -535,42 +535,12 @@ class ReportSuccessPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 32),
 
-                // ── Reference number card ─────────────────────────────────
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 18,
-                    horizontal: 24,
-                  ),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFEFF6FF),
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Text(
-                    "Reference #: CF-2024-0892",
-                    textAlign: TextAlign.center,
-                    style: GoogleFonts.sora(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w700,
-                      color: const Color(0xFF2563EB),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 20),
-
-                // ── Submit Another button ─────────────────────────────────
+                // ── Home button ───────────────────────────────────────────
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () {
-                      // Pop back to SubmitPage and reset it
-                      Navigator.of(context).popUntil(
-                        (route) =>
-                            route.isFirst || route.settings.name == '/submit',
-                      );
-                      Navigator.of(context).pushReplacement(
-                        MaterialPageRoute(builder: (_) => const SubmitPage()),
-                      );
+                      Navigator.of(context).popUntil((route) => route.isFirst);
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF2563EB),
@@ -580,7 +550,7 @@ class ReportSuccessPage extends StatelessWidget {
                       ),
                     ),
                     child: Text(
-                      "Submit Another".tr(),
+                      "Done".tr(),
                       style: GoogleFonts.sora(
                         fontWeight: FontWeight.w700,
                         fontSize: 15,
