@@ -1,12 +1,10 @@
 import 'dart:io';
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:cityfix/screens/language_screen.dart';
 
 class ReportDetailScreen extends StatefulWidget {
   final String reportId;
@@ -107,6 +105,7 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
         );
 
         //notifs :(R)===========================================================
+        //1) for report owner : someone confirmed your report
         DocumentReference notifRef = FirebaseFirestore.instance
             .collection('notifications')
             .doc();
@@ -119,8 +118,7 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
           'type': 'confirmation',
         });
 
-        //admin alert :(R)========================================================
-        // This checks if the new confirmation hits the threshold of 20
+        //2) for admin alert : if urgent issue > 20 ========================================================
         if (newCount == 20) {
           DocumentReference adminAlertRef = FirebaseFirestore.instance
               .collection('admin_alerts')
@@ -139,33 +137,6 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
 
         // Commit all Firestore operations (Confirm, Count, Notif, and Admin Alert)
         await batch.commit();
-        //========================================================================
-
-        // fetch report owner's oneSignalId
-        final userDoc = await FirebaseFirestore.instance
-            .collection('users')
-            .doc(data['userId'])
-            .get();
-        String? oneSignalId = userDoc.data()?['oneSignalId'];
-
-        // send push notification directly
-        if (oneSignalId != null) {
-          final response = await http.post(
-            Uri.parse('https://onesignal.com/api/v1/notifications'),
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': 'Basic ${dotenv.env['ONESIGNAL_API_KEY']}',
-            },
-            body: jsonEncode({
-              'app_id': 'a20c368d-e7a7-420b-8cdf-e6266b6e82ed',
-              'include_aliases': {
-                'onesignal_id': [oneSignalId],
-              },
-              'target_channel': 'push',
-              'contents': {'en': 'Someone confirmed your report!'},
-            }),
-          );
-        }
 
         if (mounted) {
           Navigator.pop(context);
@@ -187,7 +158,9 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text("Failed to upload image. Check your connection.".tr()),
+            content: Text(
+              "Failed to upload image. Check your connection.".tr(),
+            ),
           ),
         );
       }
@@ -231,7 +204,10 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
                 const SizedBox(height: 20),
                 Text(
                   "Confirm this issue".tr(),
-                  style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 Text(
                   "Help us verify this by adding a photo or description.".tr(),
@@ -425,7 +401,8 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        category.tr(), // Traduit la catégorie si elle est en clé
+                        category
+                            .tr(), // Traduit la catégorie si elle est en clé
                         style: const TextStyle(
                           fontSize: 26,
                           fontWeight: FontWeight.bold,
@@ -435,7 +412,10 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
                       const SizedBox(height: 5),
                       Text(
                         "Recent Report".tr(),
-                        style: const TextStyle(color: Colors.grey, fontSize: 14),
+                        style: const TextStyle(
+                          color: Colors.grey,
+                          fontSize: 14,
+                        ),
                       ),
                       const SizedBox(height: 30),
 

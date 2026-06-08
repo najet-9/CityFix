@@ -6,8 +6,7 @@ import 'package:cityfix/widgets/input_field.dart';
 import 'package:cityfix/widgets/primary_gradient_button.dart';
 import 'package:cityfix/screens/home_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:easy_localization/easy_localization.dart' as ez; 
-import 'package:cityfix/screens/language_screen.dart';
+import 'package:easy_localization/easy_localization.dart' as ez;
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -25,7 +24,7 @@ class _LoginScreenState extends State<LoginScreen> {
   bool loading = false;
 
   //==============================================BACKEND==============================
-  
+
   // 2. Added Reset Password Logic
   _resetPassword() async {
     String email = _emailController.text.trim();
@@ -33,7 +32,9 @@ class _LoginScreenState extends State<LoginScreen> {
     if (email.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(ez.tr("Please enter your email address first.")), // Changé en ez.tr()
+          content: Text(
+            ez.tr("Please enter your email address first."),
+          ), // Changé en ez.tr()
           backgroundColor: const Color(0xFF1D4ED8),
         ),
       );
@@ -43,11 +44,13 @@ class _LoginScreenState extends State<LoginScreen> {
     try {
       // Send reset email via Firebase
       await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
-      
+
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(ez.tr("Password reset link sent! Check your inbox.")), // Changé en ez.tr()
+          content: Text(
+            ez.tr("Password reset link sent! Check your inbox."),
+          ), // Changé en ez.tr()
           backgroundColor: Colors.green,
         ),
       );
@@ -180,7 +183,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         const SizedBox(height: 6),
                         Text(
-                          ez.tr('Sign in to continue improving your city'), 
+                          ez.tr('Sign in to continue improving your city'),
                           style: const TextStyle(
                             fontSize: 14,
                             color: Color(0xBFFFFFFF),
@@ -212,7 +215,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     InputField(
                       controller: _passwordController,
                       icon: Icons.lock_outline,
-                      placeholder: ez.tr('Password'), 
+                      placeholder: ez.tr('Password'),
                       obscureText: !showPass,
                       rightEl: IconButton(
                         icon: Icon(
@@ -251,7 +254,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           )
                         : PrimaryGradientButton(
-                            text: ez.tr('Sign In →'), 
+                            text: ez.tr('Sign In →'),
                             onPressed: _signIn,
                           ),
                     const SizedBox(height: 28),
@@ -259,12 +262,15 @@ class _LoginScreenState extends State<LoginScreen> {
                     Row(
                       children: [
                         Expanded(
-                          child: Container(height: 1, color: const Color(0xFFE2E8F0)),
+                          child: Container(
+                            height: 1,
+                            color: const Color(0xFFE2E8F0),
+                          ),
                         ),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 12),
                           child: Text(
-                            ez.tr('or continue with'), 
+                            ez.tr('or continue with'),
                             style: const TextStyle(
                               fontSize: 12,
                               color: Color(0xFF94A3B8),
@@ -272,7 +278,10 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
                         Expanded(
-                          child: Container(height: 1, color: const Color(0xFFE2E8F0)),
+                          child: Container(
+                            height: 1,
+                            color: const Color(0xFFE2E8F0),
+                          ),
                         ),
                       ],
                     ),
@@ -313,7 +322,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                           const SizedBox(width: 10),
                           Text(
-                            ez.tr('Continue with Google'), 
+                            ez.tr('Continue with Google'),
                             style: const TextStyle(
                               fontWeight: FontWeight.w600,
                               fontSize: 14,
@@ -329,7 +338,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          ez.tr("Don't have an account? "), 
+                          ez.tr("Don't have an account? "),
                           style: const TextStyle(
                             fontSize: 14,
                             color: Color(0xFF64748B),
@@ -345,7 +354,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             );
                           },
                           child: Text(
-                            ez.tr('Sign Up'), 
+                            ez.tr('Sign Up'),
                             style: const TextStyle(
                               fontSize: 14,
                               color: Color(0xFF1D4ED8),

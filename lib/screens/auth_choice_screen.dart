@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cityfix/screens/login_screen.dart';
 import 'package:cityfix/screens/signup_screen.dart';
-import 'package:cityfix/screens/language_screen.dart';
+
 import 'package:easy_localization/easy_localization.dart';
 
 // WelcomeScreen: the first screen users see.
@@ -195,7 +195,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                         children: [
                           // Primary button: filled white → navigates to Sign Up
                           _WelcomeButton(
-                            text: 'Sign Up'.tr(), 
+                            text: 'Sign Up'.tr(),
                             filled: true,
                             onPressed: widget.onGetStarted,
                           ),
@@ -204,7 +204,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
 
                           // Secondary button: outlined → navigates to Sign In
                           _WelcomeButton(
-                            text: 'Sign In'.tr(), 
+                            text: 'Sign In'.tr(),
                             filled: false,
                             onPressed: widget.onLogin,
                           ),

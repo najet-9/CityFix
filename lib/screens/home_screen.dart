@@ -10,7 +10,7 @@ import 'package:cityfix/screens/alerts_screen.dart';
 import 'package:cityfix/services/report_service.dart';
 import 'package:cityfix/models/report_model.dart';
 import 'category_reports_screen.dart';
-import 'package:cityfix/screens/language_screen.dart';
+
 import 'package:easy_localization/easy_localization.dart';
 
 class HomeScreen extends StatefulWidget {

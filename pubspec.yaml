@@ -51,8 +51,6 @@ dependencies:
   geocoding: ^4.0.0
   http: ^1.6.0
   intl: ^0.20.2
-  onesignal_flutter: ^5.5.0
-  flutter_dotenv: ^6.0.0
 
 dev_dependencies:
   flutter_test:

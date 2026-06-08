@@ -1,11 +1,7 @@
 import 'package:cityfix/models/user_model.dart';
-import 'package:cityfix/screens/alerts_screen.dart';
-import 'package:cityfix/screens/home_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthController {
@@ -40,7 +36,8 @@ class AuthController {
       //send notif to admin about new user registration
       await _db.collection('admin_alerts').add({
         'title': 'New User Joined',
-        'desc': '${user.fullName} has just created an account from ${user.wilaya}.',
+        'desc':
+            '${user.fullName} has just created an account from ${user.wilaya}.',
         'time': FieldValue.serverTimestamp(),
         'icon': 'person_add',
         'bgColor': 'blue',
@@ -81,10 +78,10 @@ class AuthController {
     }
   }
 
-  // LOG OUT 
+  // LOG OUT
   Future signOut() async {
     try {
-     // 1. Nettoyage de OneSignal dans Firestore avant de perdre les droits
+      // 1. Nettoyage de OneSignal dans Firestore avant de perdre les droits
       if (_auth.currentUser != null) {
         await _db.collection('users').doc(_auth.currentUser!.uid).update({
           'oneSignalId': null,
@@ -104,7 +101,6 @@ class AuthController {
       }
       // 4. Déconnexion de Firebase
       await _auth.signOut();
-      
     } catch (e) {
       print("Error during signOut: $e");
       // On force quand même la déconnexion Firebase au cas où
@@ -138,10 +134,10 @@ class AuthController {
   }
 
   //get user wilaya -------------------------------------------------------------------------
-  static String? cachedWilaya; 
+  static String? cachedWilaya;
 
   Future<String> getWilaya() async {
-     // 1. memory cache
+    // 1. memory cache
     if (cachedWilaya != null) return cachedWilaya!;
 
     // 2. local storage
@@ -162,21 +158,12 @@ class AuthController {
     return cachedWilaya!;
   }
 
-  //save OneSignal Player ID -------------------------------------------------------------------------
-  Future<void> saveOneSignalPlayerId() async {
-    final playerId = await OneSignal.User.getOnesignalId();
-    if (playerId != null && _auth.currentUser != null) {
-      await _db.collection('users').doc(_auth.currentUser!.uid).update({
-        'oneSignalId': playerId,
-      });
-    }
-  }
-
   // Google Sign-In (Mdf)
   Future<UserCredential?> signInWithGoogle() async {
     // 1. Déclencher le flux d'authentification Google
     final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
-    final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
+    final GoogleSignInAuthentication? googleAuth =
+        await googleUser?.authentication;
 
     final credential = GoogleAuthProvider.credential(
       accessToken: googleAuth?.accessToken,
@@ -184,12 +171,15 @@ class AuthController {
     );
 
     // 2. Se connecter à Firebase
-    UserCredential userCredential = await _auth.signInWithCredential(credential);
+    UserCredential userCredential = await _auth.signInWithCredential(
+      credential,
+    );
     User? user = userCredential.user;
 
     if (user != null) {
       // 3. Récupérer le nom (soit le displayName, soit le début de l'email)
-      String nameToSave = user.displayName ?? user.email?.split('@').first ?? "User";
+      String nameToSave =
+          user.displayName ?? user.email?.split('@').first ?? "User";
 
       // 4. Mettre à jour Firestore
       await _db.collection("users").doc(user.uid).set({
@@ -209,7 +199,7 @@ class AuthController {
 }
 
 class ProfileController {
-    // Simuler une déconnexion
+  // Simuler une déconnexion
   void signOut() {
     print("Déconnexion de l'utilisateur...");
   }

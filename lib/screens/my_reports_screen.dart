@@ -3,7 +3,6 @@ import 'package:cityfix/models/report_model.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:cityfix/screens/language_screen.dart';
 
 class MyReportsScreen extends StatefulWidget {
   const MyReportsScreen({super.key});
@@ -105,7 +104,13 @@ class _MyReportsScreenState extends State<MyReportsScreen> {
           final reports = snapshot.data ?? [];
           final filtered = _selectedFilter == 'All'
               ? reports
-              : reports.where((r) => r.status.toLowerCase() == _selectedFilter.toLowerCase()).toList();
+              : reports
+                    .where(
+                      (r) =>
+                          r.status.toLowerCase() ==
+                          _selectedFilter.toLowerCase(),
+                    )
+                    .toList();
           return Column(
             children: [
               _buildHeader(context, reports.length),
@@ -371,11 +376,7 @@ class _MyReportsScreenState extends State<MyReportsScreen> {
               children: [
                 Row(
                   children: [
-                    Icon(
-                      Icons.access_time,
-                      color: Colors.grey[400],
-                      size: 14,
-                    ),
+                    Icon(Icons.access_time, color: Colors.grey[400], size: 14),
                     const SizedBox(width: 4),
                     Text(
                       report.createdAt != null

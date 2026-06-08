@@ -1,13 +1,12 @@
 import 'package:cityfix/controllers/report_controller.dart';
 import 'package:cityfix/models/notification_model.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:flutter/material.dart';
 import 'package:cityfix/screens/profile_screen.dart';
 import 'package:cityfix/screens/submit_page.dart';
 import 'package:cityfix/screens/incident_map_screen.dart';
-import 'package:cityfix/screens/language_screen.dart';
-import 'package:easy_localization/easy_localization.dart';
 
+import 'package:easy_localization/easy_localization.dart';
 
 class AlertsScreen extends StatefulWidget {
   const AlertsScreen({super.key});
@@ -123,7 +122,9 @@ class _AlertsScreenState extends State<AlertsScreen> {
                   return const Center(child: CircularProgressIndicator());
                 }
                 if (snapshot.hasError) {
-                  return Center(child: Text('Error'.tr() + ': ${snapshot.error}'));
+                  return Center(
+                    child: Text('Error'.tr() + ': ${snapshot.error}'),
+                  );
                 }
                 final notifications = snapshot.data ?? [];
                 if (notifications.isEmpty) {

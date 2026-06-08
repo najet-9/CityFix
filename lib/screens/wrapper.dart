@@ -71,7 +71,7 @@ class _WrapperState extends State<Wrapper> {
                   ),
                 );
               }
-              authController.saveOneSignalPlayerId();
+
               return const HomeScreen();
             },
           );

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:cityfix/screens/language_screen.dart';
+
 import 'package:easy_localization/easy_localization.dart';
 
 class HelpSupportScreen extends StatefulWidget {
@@ -16,17 +16,20 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
     {
       'question': 'How do I submit a report?'.tr(),
       'answer':
-          'Tap the "+" button in the bottom navigation bar. Fill in the issue category, description, and location. You can also attach a photo. Once submitted, your report will be visible to other citizens and the city team.'.tr(),
+          'Tap the "+" button in the bottom navigation bar. Fill in the issue category, description, and location. You can also attach a photo. Once submitted, your report will be visible to other citizens and the city team.'
+              .tr(),
     },
     {
       'question': 'How long does it take to resolve an issue?'.tr(),
       'answer':
-          'Resolution time depends on the severity and type of issue. Most reports are reviewed within 48 hours. You\'ll receive a notification when the status of your report changes to "In Progress" or "Resolved".'.tr(),
+          'Resolution time depends on the severity and type of issue. Most reports are reviewed within 48 hours. You\'ll receive a notification when the status of your report changes to "In Progress" or "Resolved".'
+              .tr(),
     },
     {
       'question': 'Can I edit or delete my report after submitting?'.tr(),
       'answer':
-          'Currently, reports cannot be edited after submission. If you need to remove a report, please contact our support team and provide your report ID.'.tr(),
+          'Currently, reports cannot be edited after submission. If you need to remove a report, please contact our support team and provide your report ID.'
+              .tr(),
     },
   ];
 
@@ -56,7 +59,6 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
           ),
         ],
       ),
-
     );
   }
 
@@ -86,7 +88,11 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                 color: Colors.white.withOpacity(0.2),
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: const Icon(Icons.arrow_back, color: Colors.white, size: 20),
+              child: const Icon(
+                Icons.arrow_back,
+                color: Colors.white,
+                size: 20,
+              ),
             ),
           ),
           const SizedBox(height: 16),

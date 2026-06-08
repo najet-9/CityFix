@@ -1,26 +1,16 @@
 import 'package:cityfix/controllers/report_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cityfix/firebase_options.dart';
 import 'package:cityfix/screens/wrapper.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  await dotenv.load(fileName: ".env");
-
-  OneSignal.Debug.setLogLevel(OSLogLevel.verbose);
-  OneSignal.initialize("a20c368d-e7a7-420b-8cdf-e6266b6e82ed");
-  OneSignal.Notifications.addForegroundWillDisplayListener((event) {
-    event.notification.display();
-  });
-  OneSignal.Notifications.requestPermission(true);
 
   runApp(
     EasyLocalization(

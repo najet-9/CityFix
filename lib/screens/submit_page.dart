@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:cityfix/screens/language_screen.dart';
 
 class SubmitPage extends StatefulWidget {
   const SubmitPage({Key? key}) : super(key: key);

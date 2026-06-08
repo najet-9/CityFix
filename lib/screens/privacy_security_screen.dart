@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../controllers/privacy_security_controller.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:cityfix/screens/language_screen.dart';
+
 import 'package:cityfix/screens/wrapper.dart';
 
 class PrivacySecurityScreen extends StatefulWidget {
@@ -14,7 +14,7 @@ class PrivacySecurityScreen extends StatefulWidget {
 class _PrivacySecurityScreenState extends State<PrivacySecurityScreen> {
   final PrivacySecurityController controller = PrivacySecurityController();
   final TextEditingController passwordController = TextEditingController();
-  
+
   bool _isPasswordVisible = false;
 
   // --- Widgets de Style ---
@@ -23,7 +23,11 @@ class _PrivacySecurityScreenState extends State<PrivacySecurityScreen> {
       color: Colors.white,
       borderRadius: BorderRadius.circular(20),
       boxShadow: [
-        BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, 4)),
+        BoxShadow(
+          color: Colors.black.withOpacity(0.05),
+          blurRadius: 10,
+          offset: const Offset(0, 4),
+        ),
       ],
     );
   }
@@ -39,7 +43,12 @@ class _PrivacySecurityScreenState extends State<PrivacySecurityScreen> {
             // HEADER BLEU
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.only(top: 60, left: 20, right: 20, bottom: 40),
+              padding: const EdgeInsets.only(
+                top: 60,
+                left: 20,
+                right: 20,
+                bottom: 40,
+              ),
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
                   colors: [Color(0xFF2B58E4), Color(0xFF448AFF)],
@@ -60,13 +69,27 @@ class _PrivacySecurityScreenState extends State<PrivacySecurityScreen> {
                         color: Colors.white.withOpacity(0.2),
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: const Icon(Icons.arrow_back, color: Colors.white, size: 20),
+                      child: const Icon(
+                        Icons.arrow_back,
+                        color: Colors.white,
+                        size: 20,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 25),
-                  Text("Your safety matters".tr(), style: const TextStyle(color: Colors.white70, fontSize: 16)),
+                  Text(
+                    "Your safety matters".tr(),
+                    style: const TextStyle(color: Colors.white70, fontSize: 16),
+                  ),
                   const SizedBox(height: 5),
-                  Text("Privacy & Security".tr(), style: const TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.bold)),
+                  Text(
+                    "Privacy & Security".tr(),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -76,9 +99,16 @@ class _PrivacySecurityScreenState extends State<PrivacySecurityScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("Security Settings".tr(), style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey)),
+                  Text(
+                    "Security Settings".tr(),
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey,
+                    ),
+                  ),
                   const SizedBox(height: 15),
-                  
+
                   // CARTE PASSWORD
                   Container(
                     padding: const EdgeInsets.all(20),
@@ -90,30 +120,62 @@ class _PrivacySecurityScreenState extends State<PrivacySecurityScreen> {
                           obscureText: !_isPasswordVisible,
                           decoration: InputDecoration(
                             labelText: "New Password".tr(),
-                            prefixIcon: const Icon(Icons.lock_outline, color: Color(0xFF2B58E4)),
-                            suffixIcon: IconButton(
-                              icon: Icon(_isPasswordVisible ? Icons.visibility : Icons.visibility_off, color: Colors.grey),
-                              onPressed: () => setState(() => _isPasswordVisible = !_isPasswordVisible),
+                            prefixIcon: const Icon(
+                              Icons.lock_outline,
+                              color: Color(0xFF2B58E4),
                             ),
-                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(15)),
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _isPasswordVisible
+                                    ? Icons.visibility
+                                    : Icons.visibility_off,
+                                color: Colors.grey,
+                              ),
+                              onPressed: () => setState(
+                                () => _isPasswordVisible = !_isPasswordVisible,
+                              ),
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15),
+                            ),
                           ),
                         ),
                         const SizedBox(height: 20),
                         GestureDetector(
                           onTap: () async {
                             if (passwordController.text.length < 6) {
-                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Password must be at least 6 characters".tr())));
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    "Password must be at least 6 characters"
+                                        .tr(),
+                                  ),
+                                ),
+                              );
                               return;
                             }
                             try {
-                              await controller.changePassword(passwordController.text);
+                              await controller.changePassword(
+                                passwordController.text,
+                              );
                               if (mounted) {
-                                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Password updated successfully!".tr())));
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      "Password updated successfully!".tr(),
+                                    ),
+                                  ),
+                                );
                                 passwordController.clear();
                               }
                             } catch (e) {
                               if (mounted) {
-                                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString()), backgroundColor: Colors.red));
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(e.toString()),
+                                    backgroundColor: Colors.red,
+                                  ),
+                                );
                               }
                             }
                           },
@@ -121,10 +183,20 @@ class _PrivacySecurityScreenState extends State<PrivacySecurityScreen> {
                             width: double.infinity,
                             height: 55,
                             decoration: BoxDecoration(
-                              gradient: const LinearGradient(colors: [Color(0xFF2B58E4), Color(0xFF448AFF)]),
+                              gradient: const LinearGradient(
+                                colors: [Color(0xFF2B58E4), Color(0xFF448AFF)],
+                              ),
                               borderRadius: BorderRadius.circular(15),
                             ),
-                            child: Center(child: Text("Update Password".tr(), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold))),
+                            child: Center(
+                              child: Text(
+                                "Update Password".tr(),
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
                           ),
                         ),
                       ],
@@ -132,21 +204,40 @@ class _PrivacySecurityScreenState extends State<PrivacySecurityScreen> {
                   ),
 
                   const SizedBox(height: 30),
-                  Text("Account Actions".tr(), style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey)),
+                  Text(
+                    "Account Actions".tr(),
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey,
+                    ),
+                  ),
                   const SizedBox(height: 15),
 
-                  // M:Sign Out 
-                  _buildActionTile(icon: Icons.logout, title: "Sign Out".tr(), color: Colors.orange, onTap: () async {
-                    await controller.signOut();
-                    if (mounted) {
-                      Navigator.of(context).pushAndRemoveUntil(
-                        MaterialPageRoute(builder: (context) => const Wrapper()), 
-                        (route) => false,
-                      );
-                    }
-                  }),
+                  // M:Sign Out
+                  _buildActionTile(
+                    icon: Icons.logout,
+                    title: "Sign Out".tr(),
+                    color: Colors.orange,
+                    onTap: () async {
+                      await controller.signOut();
+                      if (mounted) {
+                        Navigator.of(context).pushAndRemoveUntil(
+                          MaterialPageRoute(
+                            builder: (context) => const Wrapper(),
+                          ),
+                          (route) => false,
+                        );
+                      }
+                    },
+                  ),
                   const SizedBox(height: 12),
-                  _buildActionTile(icon: Icons.delete_forever, title: "Delete Account".tr(), color: Colors.red, onTap: () => _showDeleteDialog(context)),
+                  _buildActionTile(
+                    icon: Icons.delete_forever,
+                    title: "Delete Account".tr(),
+                    color: Colors.red,
+                    onTap: () => _showDeleteDialog(context),
+                  ),
                 ],
               ),
             ),
@@ -156,13 +247,21 @@ class _PrivacySecurityScreenState extends State<PrivacySecurityScreen> {
     );
   }
 
-  Widget _buildActionTile({required IconData icon, required String title, required Color color, required VoidCallback onTap}) {
+  Widget _buildActionTile({
+    required IconData icon,
+    required String title,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
     return Container(
       decoration: _cardDecoration(),
       child: ListTile(
         leading: Container(
           padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(color: color.withOpacity(0.1), borderRadius: BorderRadius.circular(10)),
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(10),
+          ),
           child: Icon(icon, color: color),
         ),
         title: Text(title, style: const TextStyle(fontWeight: FontWeight.w500)),
@@ -172,7 +271,7 @@ class _PrivacySecurityScreenState extends State<PrivacySecurityScreen> {
     );
   }
 
-  // M : Logique de suppression 
+  // M : Logique de suppression
   void _showDeleteDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -181,14 +280,17 @@ class _PrivacySecurityScreenState extends State<PrivacySecurityScreen> {
         title: Text("Confirm Delete".tr()),
         content: Text("Are you sure? This cannot be undone.".tr()),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: Text("Cancel".tr())),
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text("Cancel".tr()),
+          ),
           TextButton(
             onPressed: () async {
               try {
                 await controller.deleteAccount();
                 if (mounted) {
                   Navigator.of(context).pushAndRemoveUntil(
-                    MaterialPageRoute(builder: (context) => const Wrapper()), 
+                    MaterialPageRoute(builder: (context) => const Wrapper()),
                     (route) => false,
                   );
                 }
@@ -197,14 +299,20 @@ class _PrivacySecurityScreenState extends State<PrivacySecurityScreen> {
                   Navigator.pop(context); // Ferme le dialogue
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text("Security: Please log out and log in again to delete your account.".tr()),
+                      content: Text(
+                        "Security: Please log out and log in again to delete your account."
+                            .tr(),
+                      ),
                       backgroundColor: Colors.red,
                     ),
                   );
                 }
               }
-            }, 
-            child: Text("Delete".tr(), style: const TextStyle(color: Colors.red))
+            },
+            child: Text(
+              "Delete".tr(),
+              style: const TextStyle(color: Colors.red),
+            ),
           ),
         ],
       ),

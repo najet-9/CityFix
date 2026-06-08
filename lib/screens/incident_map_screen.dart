@@ -9,7 +9,6 @@ import 'package:cityfix/services/report_service.dart';
 import 'package:cityfix/models/report_model.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:cityfix/screens/language_screen.dart';
 
 class IncidentMapScreen extends StatefulWidget {
   const IncidentMapScreen({super.key});
@@ -40,7 +39,10 @@ class _IncidentMapScreenState extends State<IncidentMapScreen> {
               return FlutterMap(
                 mapController: _mapController,
                 options: const MapOptions(
-                  initialCenter: LatLng(36.737, 3.088), // Coordonnées par défaut
+                  initialCenter: LatLng(
+                    36.737,
+                    3.088,
+                  ), // Coordonnées par défaut
                   initialZoom: 13,
                 ),
                 children: [
@@ -79,7 +81,10 @@ class _IncidentMapScreenState extends State<IncidentMapScreen> {
               children: [
                 Text(
                   "Incident Map".tr(),
-                  style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 const SizedBox(height: 10),
                 Container(

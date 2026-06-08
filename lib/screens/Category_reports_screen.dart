@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cityfix/models/report_model.dart';
 import 'package:cityfix/services/report_service.dart';
 import 'package:cityfix/screens/report_detail_screen.dart';
-import 'package:cityfix/screens/language_screen.dart';
+
 import 'package:easy_localization/easy_localization.dart';
 
 class CategoryReportsScreen extends StatelessWidget {
@@ -30,12 +30,21 @@ class CategoryReportsScreen extends StatelessWidget {
           }
 
           // Filtrage local des rapports par catégorie
-          final reports = snapshot.data?.where((r) => 
-            category == "All" .tr()? true : r.category.toLowerCase() == category.toLowerCase()
-          ).toList() ?? [];
+          final reports =
+              snapshot.data
+                  ?.where(
+                    (r) => category == "All".tr()
+                        ? true
+                        : r.category.toLowerCase() == category.toLowerCase(),
+                  )
+                  .toList() ??
+              [];
 
           if (reports.isEmpty) {
-return Center(child: Text("No reports found for this category.".tr()));          }
+            return Center(
+              child: Text("No reports found for this category.".tr()),
+            );
+          }
 
           return ListView.builder(
             padding: const EdgeInsets.only(top: 10, bottom: 20),
@@ -80,8 +89,15 @@ return Center(child: Text("No reports found for this category.".tr()));         
               ),
             ),
             ListTile(
-              title: Text(report.category, style: const TextStyle(fontWeight: FontWeight.bold)),
-              subtitle: Text(report.description, maxLines: 1, overflow: TextOverflow.ellipsis),
+              title: Text(
+                report.category,
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              subtitle: Text(
+                report.description,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
               trailing: Text("👍 ${report.confirmationCount}"),
             ),
           ],

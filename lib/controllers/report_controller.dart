@@ -1,7 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-
-import 'package:cityfix/controllers/auth_controller.dart';
 import 'package:cityfix/models/notification_model.dart';
 import 'package:cityfix/models/report_model.dart';
 
@@ -9,7 +7,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
@@ -148,9 +146,9 @@ class ReportController extends ChangeNotifier {
       );
       await _db.collection("reports").add(report.toMap());
 
-      //send notif (nearby users in the same wilaya)=========================================================
-      //for admin alert
-      // Inside submitReport after the report is added to Firestore:
+      //send notif part=========================================================
+
+      //1) for admin alert : new report
       await _db.collection('admin_alerts').add({
         'title': 'New Report Submitted',
         'desc':
@@ -160,8 +158,9 @@ class ReportController extends ChangeNotifier {
         'bgColor': 'amber',
         'isRead': false,
       });
+
+      //2) for nearby users alert : urgent issue near you
       // fetch nearby users
-      // notify each nearby user except the one who submitted
       QuerySnapshot users = await _db
           .collection('users')
           .where('wilaya', isEqualTo: wilaya)
@@ -176,15 +175,6 @@ class ReportController extends ChangeNotifier {
             'isRead': false,
             'createdAt': FieldValue.serverTimestamp(),
           });
-          // send push notification
-          String? oneSignalId =
-              (user.data() as Map<String, dynamic>)['oneSignalId'];
-          if (oneSignalId != null) {
-            await sendPushNotification(
-              oneSignalId,
-              'Urgent incident detected near you!',
-            );
-          }
         }
       }
     } catch (e) {
@@ -231,25 +221,6 @@ class ReportController extends ChangeNotifier {
     });
   }
 
-  //[9]=========Send push notification (OneSignal)=========
-  Future<void> sendPushNotification(String oneSignalId, String message) async {
-    final response = await http.post(
-      Uri.parse('https://onesignal.com/api/v1/notifications'),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Basic ${dotenv.env['ONESIGNAL_API_KEY']}',
-      },
-      body: jsonEncode({
-        'app_id': 'a20c368d-e7a7-420b-8cdf-e6266b6e82ed',
-        'include_aliases': {
-          'onesignal_id': [oneSignalId],
-        },
-        'target_channel': 'push',
-        'contents': {'en': message},
-      }),
-    );
-  }
-
   //calculations===============================
 
   //=========for HomeScreen=========
@@ -287,7 +258,4 @@ class ReportController extends ChangeNotifier {
           return {'total': total, 'resolved': resolved};
         });
   }
-  
-
- 
 }
