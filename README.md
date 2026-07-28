@@ -24,3 +24,14 @@ the application helps citizens report and confirm urban issues in their environm
 ## License
 This project is provided for portfolio and demonstration purposes only.
 No part of this source code may be copied, modified, or redistributed without explicit permission from the authors.
+
+## Screenshots 
+
+### Home
+
+![Home](assets/images/screenshots/homepage.jpg) 
+
+### Confirm a report 
+
+
+![Confirmation formula ](assets/screenshots/confirmpage.jpg)
