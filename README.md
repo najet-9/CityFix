@@ -1,7 +1,6 @@
 
-# cityfix
-the application helps citizens report and confirm urban issues in their environment
-
+# CityFix
+CityFix is a university graduation project that enables citizens to report, confirm, and track urban issues in their communities, helping municipalities identify and prioritize problems more efficiently.
 
 ## Features
 - user can submit new report
