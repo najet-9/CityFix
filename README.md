@@ -1,6 +1,6 @@
 
 # CityFix
-CityFix is a university graduation project that enables citizens to report, confirm, and track urban issues in their communities, helping municipalities identify and prioritize problems more efficiently.
+CityFix is a Flutter mobile application developed as a university graduation project. It allows citizens to report, confirm, and track urban issues such as potholes, broken streetlights, and waste management problems, while providing administrators with tools to manage and resolve reports.
 
 ## Features
 - user can submit new report
