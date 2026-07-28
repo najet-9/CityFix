@@ -229,11 +229,11 @@ class ReportController extends ChangeNotifier {
     return _db.collection('reports').snapshots().map((snapshot) {
       //in progress (all reports that are still in progress regardless of user)
       final inProgress = snapshot.docs.where((doc) {
-        return (doc.data() as Map<String, dynamic>)['status'] == 'in_progress';
+        return (doc.data())['status'] == 'in_progress';
       }).length;
       //resolved (all reports that are resolved regardless of user)
       final resolved = snapshot.docs.where((doc) {
-        return (doc.data() as Map<String, dynamic>)['status'] == 'resolved';
+        return (doc.data())['status'] == 'resolved';
       }).length;
       return {'inProgress': inProgress, 'resolved': resolved};
     });
@@ -253,7 +253,7 @@ class ReportController extends ChangeNotifier {
           final total = snapshot.docs.length;
           //my resolved reports count
           final resolved = snapshot.docs.where((doc) {
-            return (doc.data() as Map<String, dynamic>)['status'] == 'resolved';
+            return (doc.data())['status'] == 'resolved';
           }).length;
           return {'total': total, 'resolved': resolved};
         });
