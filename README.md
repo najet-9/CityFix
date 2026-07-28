@@ -34,3 +34,19 @@ No part of this source code may be copied, modified, or redistributed without ex
 <h3> Confirm a Report</h3>
 
 <img src="assets/screenshots/confirmpage.jpg" width="250">
+
+<h3>Submit a Report</h3>
+
+<p>
+  <img src="assets/screenshots/submitReport1.jpg" width="250">
+  <img src="assets/screenshots/submitReport2.jpg" width="250">
+  <img src="assets/screenshots/submitReport3.jpg" width="250">
+</p>
+
+<h3> Map </h3>
+
+<img src="assets/screenshots/map.jpg" width="250">
+
+<h3> User's reports </h3>
+
+<img src="assets/screenshots/profilepage.jpg" width="250">
