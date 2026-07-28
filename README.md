@@ -27,11 +27,10 @@ No part of this source code may be copied, modified, or redistributed without ex
 
 ## Screenshots 
 
-### Home
+<h3> Home</h3>
 
-![Home](assets/screenshots/homepage.jpg) 
+<img src="assets/screenshots/homepage.jpg" width="250">
 
-### Confirm a report 
+<h3> Confirm a Report</h3>
 
-
-![Confirmation formula ](assets/screenshots/confirmpage.jpg)
+<img src="assets/screenshots/confirmpage.jpg" width="250">
