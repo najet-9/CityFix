@@ -29,9 +29,9 @@ No part of this source code may be copied, modified, or redistributed without ex
 
 ### Home
 
-![Home](assets/images/screenshots/homepage.jpg) 
+![Home](assets/screenshots/homepage.jpg) 
 
 ### Confirm a report 
 
 
-![Confirmation formula ](assets/images/screenshots/confirmpage.jpg)
+![Confirmation formula ](assets/screenshots/confirmpage.jpg)
